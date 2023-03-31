@@ -1,0 +1,77 @@
+﻿<UserControl
+    x:Class="cbhk_environment.Generators.DataPackGenerator.Components.ContentItems"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:cbhk_environment.Generators.DataPackGenerator.Components"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Margin="5,0,0,0"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ImageBrush x:Key="RemoveNode" ImageSource="/cbhk_environment;component/resources/common/images/Remove.png" />
+        <ImageBrush x:Key="EditNode" ImageSource="/cbhk_environment;component/resources/common/images/Edit.png" />
+    </UserControl.Resources>
+
+    <Grid Height="30" HorizontalAlignment="Left">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Image
+            x:Name="StateIcon"
+            Grid.Column="0"
+            Width="8"
+            Height="8"
+            Margin="0,1,5,0"
+            HorizontalAlignment="Left"
+            RenderOptions.BitmapScalingMode="HighQuality"
+            RenderOptions.ClearTypeHint="Enabled"
+            Source="{DynamicResource CheckedIn}"
+            ToolTip="已签入"
+            ToolTipService.InitialShowDelay="0"
+            ToolTipService.ShowDuration="1000" />
+        <Image
+            x:Name="FileTypeIcon"
+            Grid.Column="1"
+            Width="15"
+            Height="15"
+            Margin="0,2,5,0"
+            HorizontalAlignment="Left"
+            RenderOptions.BitmapScalingMode="HighQuality"
+            RenderOptions.ClearTypeHint="Enabled"
+            Source="{DynamicResource .mcfunction}" />
+        <TextBox
+            x:Name="FileName"
+            Grid.Column="2"
+            Width="Auto"
+            Margin="0,0,5,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="Transparent"
+            BorderBrush="Black"
+            BorderThickness="0"
+            CaretBrush="White"
+            FontSize="15"
+            Foreground="White"
+            KeyDown="ModifyCompletedKeyDown"
+            Text="abc"
+            Visibility="Collapsed" />
+        <TextBlock
+            x:Name="DisplayFileName"
+            Grid.Column="2"
+            Width="Auto"
+            Margin="0,0,5,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="Transparent"
+            FontSize="15"
+            Foreground="White"
+            Text="abc"
+            Visibility="Visible" />
+    </Grid>
+</UserControl>

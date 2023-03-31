@@ -1,0 +1,257 @@
+﻿<Window
+    x:Class="cbhk_signin.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls;assembly=cbhk_environment"
+    xmlns:LocalCustomControls="clr-namespace:cbhk_signin.CustomControls"
+    xmlns:PasswordContext="clr-namespace:cbhk_signin.resources.Tools"
+    xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:cbhk_signin"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="SignForm"
+    Title="命令管家"
+    Width="528"
+    Height="352"
+    MouseMove="Window_MouseMove"
+    ResizeMode="NoResize"
+    WindowChrome.WindowChrome="{DynamicResource WindowChromeKey}"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    mc:Ignorable="d">
+    <Window.DataContext>
+        <local:SignInDataContext />
+    </Window.DataContext>
+
+    <behavior:Interaction.Triggers>
+        <behavior:EventTrigger EventName="Loaded">
+            <behavior:CallMethodAction MethodName="SignInWindowLoaded" TargetObject="{Binding}" />
+        </behavior:EventTrigger>
+    </behavior:Interaction.Triggers>
+
+    <!--  WindowChrome.WindowChrome="{DynamicResource WindowChromeKey}"  -->
+    <Window.Background>
+        <ImageBrush ImageSource="resources/Images/SigninBackground.png" />
+    </Window.Background>
+    <Window.Resources>
+        <!--  窗体标题栏无白条  -->
+        <WindowChrome x:Key="WindowChromeKey">
+            <WindowChrome.ResizeBorderThickness>
+                <Thickness>5</Thickness>
+            </WindowChrome.ResizeBorderThickness>
+            <WindowChrome.CaptionHeight>0</WindowChrome.CaptionHeight>
+        </WindowChrome>
+
+        <ImageBrush x:Key="SignInNormal" ImageSource="/cbhk_environment;component/resources/common/images/TextToggleButtonNormal.png" />
+        <ImageBrush x:Key="SignInPressed" ImageSource="/cbhk_environment;component/resources/common/images/TextToggleButtonPressed.png" />
+        <ImageBrush x:Key="WindowBackground" ImageSource="resources/Images/SigninBackground.png" />
+        <DataTemplate x:Key="MinimizeHover">
+            <Grid>
+                <Image
+                    Width="10"
+                    Height="10"
+                    Source="/cbhk_environment;component/resources/common/images/MinimizeHover.png" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="CloseHover">
+            <Grid UseLayoutRounding="True">
+                <Image
+                    Width="12"
+                    Height="12"
+                    Source="/cbhk_environment;component/resources/common/images/CloseHover.png" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="MinimizeWhite">
+            <Grid>
+                <Image
+                    Width="12"
+                    Height="12"
+                    Source="/cbhk_environment;component/resources/common/images/Minimize.png" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="CloseBtn">
+            <Grid UseLayoutRounding="True">
+                <Image
+                    Width="12"
+                    Height="12"
+                    Source="/cbhk_environment;component/resources/common/images/Close.png" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" Executed="MinimizeWindow_Exec" />
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" Executed="CloseWindow_Exec" />
+    </Window.CommandBindings>
+
+
+    <Grid Background="Transparent">
+        <StackPanel
+            x:Name="TitleStack"
+            Height="90"
+            Margin="0,5,0,0"
+            VerticalAlignment="Top"
+            Background="Transparent">
+            <DockPanel
+                Margin="0,24,0,0"
+                Background="Transparent"
+                FlowDirection="RightToLeft"
+                LastChildFill="False">
+                <Button
+                    Width="13"
+                    Height="13"
+                    Margin="27,-6,0,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{x:Static SystemCommands.CloseWindowCommand}"
+                    ContentTemplate="{StaticResource CloseBtn}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource CloseHover}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource CloseHover}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button
+                    Width="12"
+                    Height="12"
+                    Margin="12,0,0,5"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    Command="{x:Static SystemCommands.MinimizeWindowCommand}"
+                    ContentTemplate="{StaticResource MinimizeWhite}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource MinimizeHover}" />
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="ContentTemplate" Value="{StaticResource MinimizeHover}" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </DockPanel>
+        </StackPanel>
+        <StackPanel Margin="0,150,0,0" Background="Transparent">
+            <TextBlock
+                Margin="0,0,250,0"
+                HorizontalAlignment="Center"
+                FontSize="15"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="账号" />
+            <TextBox
+                Height="25"
+                Margin="120,0"
+                HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
+                BorderBrush="Black"
+                BorderThickness="1"
+                FontSize="20"
+                Foreground="White"
+                Text="{Binding UserAccount, Mode=TwoWay}">
+                <behavior:Interaction.Triggers>
+                    <behavior:EventTrigger EventName="KeyDown">
+                        <behavior:CallMethodAction MethodName="UserAccountBoxKeyDown" TargetObject="{Binding}" />
+                    </behavior:EventTrigger>
+                </behavior:Interaction.Triggers>
+            </TextBox>
+            <TextBlock
+                Margin="0,0,250,0"
+                HorizontalAlignment="Center"
+                FontSize="15"
+                FontWeight="Bold"
+                Foreground="White"
+                Text="密码" />
+            <DockPanel Margin="120,0,0,0" LastChildFill="False">
+                <LocalCustomControls:PasswordBoxUserControl
+                    Width="287"
+                    LocalCustomControls:PasswordBoxHelper.Attach="True"
+                    LocalCustomControls:PasswordBoxHelper.Password="{Binding UserPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Background="#2F2F2F"
+                    BorderThickness="0"
+                    FontSize="20"
+                    Foreground="White"
+                    TbVisibility="Collapsed">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="KeyUp">
+                            <behavior:CallMethodAction MethodName="UserPasswordBoxKeyDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                </LocalCustomControls:PasswordBoxUserControl>
+                <CustomControls:TextButtons
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Right"
+                    Background="Transparent"
+                    Command="{Binding ForgotPassword}"
+                    Style="{DynamicResource TextButtonsStyle}">
+                    <TextBlock
+                        Background="Transparent"
+                        Foreground="White"
+                        Text="忘记密码">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="TextDecorations" Value="Baseline" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </CustomControls:TextButtons>
+            </DockPanel>
+            <DockPanel Margin="0,10,0,0" HorizontalAlignment="Center">
+                <CustomControls:TextCheckBoxs
+                    Margin="0,0,35,0"
+                    Padding="0,3,0,0"
+                    HorizontalAlignment="Left"
+                    Content="记住账号"
+                    FontSize="15"
+                    Foreground="White"
+                    HeaderHeight="25"
+                    HeaderWidth="25"
+                    IsChecked="{Binding SaveUserAccount, Mode=TwoWay}"
+                    Style="{StaticResource TextCheckBox}" />
+                <CustomControls:TextCheckBoxs
+                    Padding="0,3,0,0"
+                    HorizontalAlignment="Left"
+                    Content="自动登录"
+                    FontSize="15"
+                    Foreground="White"
+                    HeaderHeight="25"
+                    HeaderWidth="25"
+                    IsChecked="{Binding SaveUserPassword, Mode=TwoWay}"
+                    Style="{StaticResource TextCheckBox}" />
+            </DockPanel>
+            <CustomControls:IconTextButtons
+                x:Name="signin_btn"
+                Width="125"
+                Height="50"
+                Padding="0,0,0,5"
+                HorizontalAlignment="Center"
+                HorizontalContentAlignment="Center"
+                Background="{StaticResource SignInNormal}"
+                BorderBrush="{x:Null}"
+                BorderThickness="0"
+                Command="{Binding SignIn}"
+                Content="登录"
+                FontSize="20"
+                FontWeight="Bold"
+                Foreground="White"
+                IsEnabled="{Binding IsOpenSignIn, Mode=OneWay}"
+                PressedBackground="{StaticResource SignInPressed}"
+                Style="{StaticResource IconTextButton}" />
+        </StackPanel>
+    </Grid>
+</Window>

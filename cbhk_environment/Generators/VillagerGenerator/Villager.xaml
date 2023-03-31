@@ -1,0 +1,924 @@
+﻿<local_window:CommonWindow
+    x:Class="cbhk_environment.Generators.VillagerGenerator.Villager"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
+    xmlns:GeneralTools="clr-namespace:cbhk_environment.GeneralTools"
+    xmlns:VirtualizingWrapPanel="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
+    xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:cbhk_environment.Generators.VillagerGenerator"
+    xmlns:local_datacontext="clr-namespace:cbhk_environment.Generators.VillagerGenerator"
+    xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="村民生成器"
+    Width="1100"
+    Height="700"
+    MinWidth="1100"
+    MinHeight="700"
+    Background="#2F2F2F"
+    Icon="/cbhk_environment;component/resources/common/images/spawnerIcons/IconVillagers.png"
+    ResizeMode="CanResizeWithGrip"
+    WindowStyle="None"
+    mc:Ignorable="d">
+
+    <Window.DataContext>
+        <local_datacontext:villager_datacontext />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <CollectionViewSource x:Key="BagItemSource" Source="{Binding BagItems, IsAsync=True}" />
+        <GeneralTools:UriToBitmapConverter x:Key="UriToBitmapImage" />
+        <GeneralTools:ToolTipToString x:Key="ToolTipToString" />
+        <GeneralTools:UriHelper x:Key="UriHelper" />
+        <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
+        <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
+        <ImageBrush x:Key="LeftArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
+        <ImageBrush x:Key="RightArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowRight.png" />
+    </Window.Resources>
+
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RunCommand}" />
+        <KeyBinding
+            Key="Esc"
+            Command="{Binding ReturnCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local_window:CommonWindow}}" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+        <DockPanel
+            Grid.Row="0"
+            Grid.Column="0"
+            Background="Transparent">
+            <CustomControls:IconTextButtons
+                Width="16"
+                Height="16"
+                Margin="5,0"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Background="{StaticResource LeftArrow}"
+                BorderThickness="0"
+                Command="{Binding ReturnCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local_window:CommonWindow}}"
+                FontSize="15"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="返回主页"
+                ToolTipService.InitialShowDelay="0" />
+            <CustomControls:IconTextButtons
+                Width="16"
+                Height="16"
+                Margin="5,0"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Background="{StaticResource RightArrow}"
+                BorderThickness="0"
+                Command="{Binding RunCommand}"
+                FontSize="15"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="运行"
+                ToolTipService.InitialShowDelay="0" />
+            <TextBlock
+                Margin="10,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontSize="15"
+                Foreground="White"
+                Text="版本"
+                TextAlignment="Center" />
+            <ComboBox
+                Width="100"
+                HorizontalAlignment="Left"
+                FontSize="20"
+                SelectedIndex="0"
+                SelectedItem="{Binding SelectedVersion}"
+                Style="{DynamicResource TextComboBoxStyle}">
+                <behavior:Interaction.Triggers>
+                    <behavior:EventTrigger EventName="Loaded">
+                        <behavior:CallMethodAction MethodName="VersionLoaded" TargetObject="{Binding}" />
+                    </behavior:EventTrigger>
+                </behavior:Interaction.Triggers>
+            </ComboBox>
+        </DockPanel>
+        <Grid
+            Grid.Row="1"
+            Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Viewbox}, Path=ActualWidth}"
+            Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Viewbox}, Path=ActualHeight}"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Background="#323232">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" MinHeight="600" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="10,0,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="10*" />
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Margin="0,20,0,0">
+                    <TextBlock
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        FontSize="25"
+                        FontWeight="Bold"
+                        Foreground="White"
+                        Text="交易" />
+                    <CustomControls:IconTextButtons
+                        Width="30"
+                        Padding="0,-5,0,0"
+                        HorizontalAlignment="Right"
+                        Background="{StaticResource ButtonNormal}"
+                        Command="{Binding ClearTransactionItem}"
+                        Content="🗙"
+                        DockPanel.Dock="Right"
+                        FontSize="25"
+                        IconColor="Black"
+                        PressedBackground="{StaticResource ButtonPressed}"
+                        Style="{DynamicResource IconTextButton}" />
+                    <CustomControls:IconTextButtons
+                        Width="30"
+                        Margin="0,0,10,0"
+                        Padding="0,-5,0,0"
+                        HorizontalAlignment="Right"
+                        Background="{StaticResource ButtonNormal}"
+                        Command="{Binding AddTransactionItem}"
+                        Content="+"
+                        DockPanel.Dock="Right"
+                        FontSize="25"
+                        IconColor="Black"
+                        PressedBackground="{StaticResource ButtonPressed}"
+                        Style="{DynamicResource IconTextButton}" />
+                </DockPanel>
+                <ScrollViewer
+                    Grid.Row="1"
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Stretch"
+                    Background="#555956"
+                    DockPanel.Dock="Top"
+                    HorizontalScrollBarVisibility="Disabled"
+                    Style="{DynamicResource DefaultScrollViewer}"
+                    VerticalScrollBarVisibility="Auto">
+                    <ItemsControl Background="Transparent" ItemsSource="{Binding transactionItems}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Grid>
+            <Grid Grid.Row="0" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="2.4*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DockPanel
+                    Grid.Row="0"
+                    Margin="10,20,0,0"
+                    LastChildFill="False">
+                    <TextBlock
+                        Margin="0,0,5,0"
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        Foreground="White"
+                        Text="种类" />
+                    <ComboBox
+                        Width="105"
+                        Margin="0,0,5,0"
+                        HorizontalAlignment="Left"
+                        VerticalContentAlignment="Center"
+                        AllowDrop="False"
+                        FontSize="18"
+                        SelectedItem="{Binding VillagerType, Mode=TwoWay}"
+                        Style="{DynamicResource TextComboBoxStyle}">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="Loaded">
+                                <behavior:CallMethodAction MethodName="VillagerTypeLoaded" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                    </ComboBox>
+                    <TextBlock
+                        Margin="0,0,5,0"
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        Foreground="White"
+                        Text="职业" />
+                    <ComboBox
+                        Width="120"
+                        Margin="0,0,5,0"
+                        HorizontalAlignment="Left"
+                        VerticalContentAlignment="Center"
+                        AllowDrop="False"
+                        FontSize="18"
+                        SelectedItem="{Binding VillagerProfessionType, Mode=TwoWay}"
+                        Style="{DynamicResource TextComboBoxStyle}">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="Loaded">
+                                <behavior:CallMethodAction MethodName="VillagerProfessionTypeLoaded" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                    </ComboBox>
+                    <TextBlock
+                        Margin="0,0,5,0"
+                        VerticalAlignment="Center"
+                        FontSize="15"
+                        Foreground="White"
+                        Text="交易等级" />
+                    <ComboBox
+                        Width="50"
+                        Margin="0,0,5,0"
+                        HorizontalAlignment="Left"
+                        VerticalContentAlignment="Center"
+                        AllowDrop="False"
+                        FontSize="18"
+                        SelectedItem="{Binding VillagerLevel, Mode=TwoWay}"
+                        Style="{DynamicResource TextComboBoxStyle}">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="Loaded">
+                                <behavior:CallMethodAction MethodName="VillagerLevelLoaded" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                    </ComboBox>
+                    <CustomControls:TextToggleButtons
+                        Height="30"
+                        Margin="5,0"
+                        Padding="10,0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        Content="愿意交配"
+                        FontSize="15"
+                        IsChecked="{Binding Willing, Mode=TwoWay}"
+                        Style="{DynamicResource TextToggleButtonsStyle}" />
+                    <CustomControls:TextToggleButtons
+                        Height="30"
+                        Margin="5,0"
+                        Padding="10,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        Content="开启言论"
+                        FontSize="15"
+                        IsChecked="{Binding CanEditGossips, Mode=TwoWay}"
+                        Style="{DynamicResource TextToggleButtonsStyle}" />
+                    <CustomControls:TextToggleButtons
+                        Height="30"
+                        Margin="5,0"
+                        Padding="10,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        Content="开启记忆"
+                        FontSize="15"
+                        IsChecked="{Binding CanEditBrain, Mode=TwoWay}"
+                        Style="{DynamicResource TextToggleButtonsStyle}" />
+                </DockPanel>
+                <!--  记忆，言论  -->
+                <Grid
+                    Grid.Row="1"
+                    Margin="10,5,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top"
+                    Background="#555956"
+                    Visibility="{Binding OnlyEditItem, Mode=TwoWay}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ScrollViewer
+                        Grid.Column="0"
+                        MaxHeight="275"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        Style="{DynamicResource DefaultScrollViewer}">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="Loaded">
+                                <behavior:CallMethodAction MethodName="GossipViewerLoaded" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <Grid
+                            Margin="0,0,10,0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Top"
+                            DockPanel.Dock="Left"
+                            Visibility="{Binding IsEditGossips, Mode=OneWay}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <DockPanel Grid.Row="0">
+                                <TextBlock
+                                    Margin="120,0,25,0"
+                                    VerticalAlignment="Center"
+                                    DockPanel.Dock="Left"
+                                    FontSize="25"
+                                    FontWeight="Bold"
+                                    Foreground="White"
+                                    Text="言论" />
+                                <DockPanel HorizontalAlignment="Right" DockPanel.Dock="Right">
+                                    <CustomControls:IconTextButtons
+                                        Width="35"
+                                        Padding="0,-5,0,0"
+                                        Background="{StaticResource ButtonNormal}"
+                                        Command="{Binding AddGossipItem}"
+                                        Content="+"
+                                        FontSize="25"
+                                        PressedBackground="{StaticResource ButtonPressed}"
+                                        Style="{DynamicResource IconTextButton}" />
+                                    <CustomControls:IconTextButtons
+                                        Width="35"
+                                        Margin="5,0,0,0"
+                                        Padding="0,-5,0,0"
+                                        Background="{StaticResource ButtonNormal}"
+                                        Command="{Binding ClearGossipItem}"
+                                        Content="🗙"
+                                        FontSize="25"
+                                        PressedBackground="{StaticResource ButtonPressed}"
+                                        Style="{DynamicResource IconTextButton}" />
+                                </DockPanel>
+                            </DockPanel>
+                            <!--<ScrollViewer
+                                Grid.Row="1"
+                                Margin="0,5"
+                                HorizontalScrollBarVisibility="Disabled"
+                                Style="{DynamicResource DefaultScrollViewer}"
+                                VerticalScrollBarVisibility="Auto">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Loaded">
+                                        <behavior:CallMethodAction MethodName="GossipViewerLoaded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>-->
+                            <ItemsControl
+                                Grid.Row="1"
+                                Margin="0,5"
+                                ItemsSource="{Binding gossipItems}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <VirtualizingStackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                            <!--</ScrollViewer>-->
+                        </Grid>
+                    </ScrollViewer>
+                    <Grid
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        DockPanel.Dock="Right"
+                        Visibility="{Binding IsEditBrain, Mode=TwoWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Grid.Row="0"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="25"
+                            FontWeight="Bold"
+                            Foreground="White"
+                            Text="记忆" />
+                        <ScrollViewer
+                            Grid.Row="1"
+                            Style="{DynamicResource DefaultScrollViewer}"
+                            VerticalScrollBarVisibility="Disabled">
+                            <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                                <TextBlock
+                                    Margin="20,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    FontSize="15"
+                                    Foreground="White"
+                                    Text="聚集点" />
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,0,5,0">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="X" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding MeetingPointX, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Margin="0,0,5,0">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="Y" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding MeetingPointY, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel Grid.Row="0" Grid.Column="2">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="Z" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding MeetingPointZ, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="维度"
+                                            ToolTip="维度" />
+                                        <ComboBox
+                                            Height="25"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            SelectedIndex="0"
+                                            SelectedItem="{Binding MeetingPointDimension, Mode=TwoWay}"
+                                            Style="{DynamicResource TextComboBoxStyle}">
+                                            <behavior:Interaction.Triggers>
+                                                <behavior:EventTrigger EventName="Loaded">
+                                                    <behavior:CallMethodAction MethodName="DimensionTypeLoaded" TargetObject="{Binding}" />
+                                                </behavior:EventTrigger>
+                                            </behavior:Interaction.Triggers>
+                                        </ComboBox>
+                                    </DockPanel>
+                                </Grid>
+                                <TextBlock
+                                    Margin="20,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    FontSize="15"
+                                    Foreground="White"
+                                    Text="床位置" />
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel
+                                        Grid.Row="0"
+                                        Grid.Column="0"
+                                        Margin="0,0,5,0">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="X" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding HomeX, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel
+                                        Grid.Row="0"
+                                        Grid.Column="1"
+                                        Margin="0,0,5,0">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="Y" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding HomeY, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel Grid.Row="0" Grid.Column="2">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="Z" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding HomeZ, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="维度"
+                                            ToolTip="维度" />
+                                        <ComboBox
+                                            Height="25"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            SelectedIndex="0"
+                                            SelectedItem="{Binding HomeDimension, Mode=TwoWay}"
+                                            Style="{DynamicResource TextComboBoxStyle}">
+                                            <behavior:Interaction.Triggers>
+                                                <behavior:EventTrigger EventName="Loaded">
+                                                    <behavior:CallMethodAction MethodName="DimensionTypeLoaded" TargetObject="{Binding}" />
+                                                </behavior:EventTrigger>
+                                            </behavior:Interaction.Triggers>
+                                        </ComboBox>
+                                    </DockPanel>
+                                </Grid>
+                                <TextBlock
+                                    Margin="20,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    FontSize="15"
+                                    Foreground="White"
+                                    Text="工作站点位置" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <DockPanel Grid.Row="0" Grid.Column="0">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="X" />
+                                        <Slider
+                                            Height="30"
+                                            Margin="0,0,5,0"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding JobSiteX, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel Grid.Row="0" Grid.Column="1">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="Y" />
+                                        <Slider
+                                            Height="30"
+                                            Margin="0,0,5,0"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding JobSiteY, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel Grid.Row="0" Grid.Column="2">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="Z" />
+                                        <Slider
+                                            Height="30"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Maximum="2147483647"
+                                            Minimum="-2147483648"
+                                            Style="{DynamicResource NumberBoxStyle}"
+                                            Value="{Binding JobSiteZ, Mode=TwoWay}" />
+                                    </DockPanel>
+                                    <DockPanel
+                                        Grid.Row="1"
+                                        Grid.Column="0"
+                                        Grid.ColumnSpan="4">
+                                        <TextBlock
+                                            Margin="0,0,5,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            Text="维度" />
+                                        <ComboBox
+                                            Height="25"
+                                            HorizontalAlignment="Stretch"
+                                            AllowDrop="False"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            FontSize="15"
+                                            Foreground="White"
+                                            SelectedIndex="0"
+                                            SelectedItem="{Binding JobSiteDimension, Mode=TwoWay}"
+                                            Style="{DynamicResource TextComboBoxStyle}">
+                                            <behavior:Interaction.Triggers>
+                                                <behavior:EventTrigger EventName="Loaded">
+                                                    <behavior:CallMethodAction MethodName="DimensionTypeLoaded" TargetObject="{Binding}" />
+                                                </behavior:EventTrigger>
+                                            </behavior:Interaction.Triggers>
+                                        </ComboBox>
+                                    </DockPanel>
+                                </Grid>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+                <!--  背包  -->
+                <ListView
+                    Grid.Row="2"
+                    Margin="9,0,0,0"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Top"
+                    BorderThickness="0"
+                    IsSynchronizedWithCurrentItem="True"
+                    ItemsSource="{Binding Source={StaticResource BagItemSource}}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{DynamicResource ListBoxScrollViewerStyle}"
+                    VirtualizingPanel.IsVirtualizing="true"
+                    VirtualizingPanel.ScrollUnit="Pixel"
+                    VirtualizingPanel.VirtualizationMode="Recycling">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Image
+                                x:Name="contentImage"
+                                Width="70"
+                                Height="70"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                RenderOptions.ClearTypeHint="Enabled"
+                                SnapsToDevicePixels="True"
+                                Source="{Binding Path=ImagePath, Converter={StaticResource UriToBitmapImage}, Mode=OneWay, IsAsync=True}"
+                                ToolTip="{Binding Path=IDAndName, Mode=OneWay, IsAsync=True}"
+                                ToolTipService.InitialShowDelay="0"
+                                ToolTipService.ShowDuration="1000"
+                                UseLayoutRounding="True" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingWrapPanel:VirtualizingWrapPanel
+                                Background="#555956"
+                                ScrollViewer.CanContentScroll="True"
+                                VirtualizingPanel.CacheLength="200 200"
+                                VirtualizingPanel.CacheLengthUnit="Pixel"
+                                VirtualizingPanel.IsVirtualizing="True" />
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="PreviewMouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="SelectItemClickDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeave">
+                            <behavior:CallMethodAction MethodName="ListBox_MouseLeave" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="BagItemLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                </ListView>
+                <Grid
+                    Grid.Row="3"
+                    Margin="10,10,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="35" />
+                        <RowDefinition Height="40" />
+                    </Grid.RowDefinitions>
+                    <!--  普通属性  -->
+                    <DockPanel
+                        Grid.Row="0"
+                        Margin="0,0,0,10"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Background="Transparent">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            Foreground="White"
+                            Text="搜索言论类型" />
+                        <ComboBox
+                            Width="150"
+                            Margin="10,0"
+                            FontSize="15"
+                            Foreground="White"
+                            Style="{DynamicResource TextComboBoxStyle}">
+                            <behavior:Interaction.Triggers>
+                                <behavior:EventTrigger EventName="Loaded">
+                                    <behavior:CallMethodAction MethodName="GossipSearchTypeLoaded" TargetObject="{Binding}" />
+                                </behavior:EventTrigger>
+                            </behavior:Interaction.Triggers>
+                        </ComboBox>
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            Foreground="White"
+                            Text="搜索言论目标" />
+                        <TextBox
+                            Width="150"
+                            Margin="10,0"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            FontSize="15"
+                            Foreground="White">
+                            <behavior:Interaction.Triggers>
+                                <behavior:EventTrigger EventName="TextChanged">
+                                    <behavior:CallMethodAction MethodName="SearchGossipsTextChanged" TargetObject="{Binding}" />
+                                </behavior:EventTrigger>
+                                <behavior:EventTrigger EventName="Loaded">
+                                    <behavior:CallMethodAction MethodName="GossipSearchTargetLoaded" TargetObject="{Binding}" />
+                                </behavior:EventTrigger>
+                            </behavior:Interaction.Triggers>
+                        </TextBox>
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            Foreground="White"
+                            Text="搜索物品" />
+                        <TextBox
+                            Width="100"
+                            Margin="10,0"
+                            HorizontalAlignment="Left"
+                            BorderBrush="Black"
+                            BorderThickness="1"
+                            FontSize="15"
+                            Foreground="White"
+                            Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}">
+                            <behavior:Interaction.Triggers>
+                                <behavior:EventTrigger EventName="GotFocus">
+                                    <behavior:CallMethodAction MethodName="TextBox_GotFocus" TargetObject="{Binding}" />
+                                </behavior:EventTrigger>
+                            </behavior:Interaction.Triggers>
+                        </TextBox>
+                    </DockPanel>
+                    <!--  普通属性  -->
+                    <DockPanel
+                        Grid.Row="1"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        AllowDrop="False"
+                        Background="Transparent">
+                        <TextBlock
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            Foreground="White"
+                            Text="LastRestock"
+                            ToolTip="此村民最后一次前往工作站点重新供应交易的刻。"
+                            ToolTipService.InitialShowDelay="0"
+                            ToolTipService.ShowDuration="1000" />
+                        <Slider
+                            Width="275"
+                            Height="30"
+                            Margin="10,0"
+                            HorizontalAlignment="Left"
+                            AllowDrop="False"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="25"
+                            Foreground="White"
+                            Maximum="2147483647"
+                            Minimum="-2147483648"
+                            Style="{DynamicResource NumberBoxStyle}"
+                            Value="{Binding LastRestock, Mode=TwoWay}" />
+                        <TextBlock
+                            Margin="0,0,5,0"
+                            VerticalAlignment="Center"
+                            FontSize="15"
+                            Foreground="White"
+                            Text="Xp"
+                            ToolTip="此村民当前的经验值。"
+                            ToolTipService.InitialShowDelay="0"
+                            ToolTipService.ShowDuration="1000" />
+                        <Slider
+                            Width="275"
+                            Height="30"
+                            Margin="10,0,0,0"
+                            HorizontalAlignment="Left"
+                            AllowDrop="False"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            FontSize="25"
+                            Foreground="White"
+                            Maximum="2147483647"
+                            Minimum="-2147483648"
+                            Style="{DynamicResource NumberBoxStyle}"
+                            Value="{Binding Xp, Mode=TwoWay}" />
+                    </DockPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</local_window:CommonWindow>

@@ -1,0 +1,21 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ContextMenu
+        x:Key="DatapackMenuContext"
+        Background="#1E1E1E"
+        BorderBrush="#3D3D3D"
+        BorderThickness="1">
+        <MenuItem
+            Background="#2F2F2F"
+            BorderThickness="0"
+            Command="{Binding}"
+            Foreground="White"
+            Header="打开管家" />
+        <Separator />
+        <MenuItem
+            Background="#2F2F2F"
+            BorderThickness="0"
+            Command="{Binding}"
+            Foreground="White"
+            Header="退出" />
+    </ContextMenu>
+</ResourceDictionary>

@@ -1,0 +1,183 @@
+﻿<UserControl
+    x:Class="cbhk_environment.Generators.VillagerGenerator.Components.TransactionItemDataForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:cbhk_environment.Generators.VillagerGenerator.Components"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <ScrollViewer
+        HorizontalScrollBarVisibility="Auto"
+        Style="{DynamicResource DefaultScrollViewer}"
+        VerticalScrollBarVisibility="Auto">
+        <StackPanel>
+            <CustomControls:RadiusToggleButtons
+                x:Name="rewardExp"
+                Height="30"
+                HorizontalAlignment="Center"
+                FontSize="20"
+                Foreground="White"
+                SelectedToggleText="rewardExp"
+                Style="{DynamicResource RadiusToggleButton}"
+                ToggleHeight="30"
+                ToggleWidth="50"
+                ToolTip="1 或 0 (true/false) - true代表交易会提供经验球。Java版中所有自然生成的村民的交易都会给予经验球。"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1500"
+                UnSelectedToggleText="rewardExp" />
+            <DockPanel Margin="0,3,0,0">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="maxUses"
+                    ToolTip="代表在交易选项失效前能进行的最大交易次数。当交易被刷新时，以2到12的随机数增加。"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1500" />
+                <Slider
+                    x:Name="maxUses"
+                    Width="135"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    AllowDrop="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="25"
+                    Foreground="White"
+                    Maximum="2147483647"
+                    Minimum="0"
+                    Style="{DynamicResource NumberBoxStyle}"
+                    Value="0" />
+            </DockPanel>
+            <DockPanel Margin="0,3,0,0">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="uses"
+                    ToolTip="已经交易的次数，如果大于或等于maxUses，该交易将失效。"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1500" />
+                <Slider
+                    x:Name="uses"
+                    Width="160"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    AllowDrop="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="25"
+                    Foreground="White"
+                    Maximum="2147483647"
+                    Minimum="0"
+                    Style="{DynamicResource NumberBoxStyle}"
+                    Value="0" />
+            </DockPanel>
+            <DockPanel Margin="0,3,0,0">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="xp"
+                    ToolTip="村民从此交易选项中能获得的经验值。"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1500" />
+                <Slider
+                    x:Name="xp"
+                    Width="170"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    AllowDrop="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="25"
+                    Foreground="White"
+                    Maximum="2147483647"
+                    Minimum="0"
+                    Style="{DynamicResource NumberBoxStyle}"
+                    Value="0" />
+            </DockPanel>
+            <DockPanel Margin="0,3,0,0">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="demand"
+                    ToolTip="根据需求确定的第一个收购物品的价格调节。当村民重新供应后更新此字段。"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1500" />
+                <Slider
+                    x:Name="demand"
+                    Width="135"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    AllowDrop="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="25"
+                    Foreground="White"
+                    Maximum="2147483647"
+                    Minimum="-2147483648"
+                    Style="{DynamicResource NumberBoxStyle}"
+                    Value="0" />
+            </DockPanel>
+            <DockPanel Margin="0,3,0,0">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="specialPrice"
+                    ToolTip="添加到第一个收购物品的价格调节。"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1500" />
+                <Slider
+                    x:Name="specialPrice"
+                    Width="115"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    AllowDrop="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="25"
+                    Foreground="White"
+                    Maximum="2147483647"
+                    Minimum="-2147483648"
+                    Style="{DynamicResource NumberBoxStyle}"
+                    Value="0" />
+            </DockPanel>
+            <DockPanel Margin="0,3,0,0">
+                <TextBlock
+                    Margin="0,0,5,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="priceMultiplier"
+                    ToolTip="当前应用到此交易选项价格的乘数。"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1500" />
+                <Slider
+                    x:Name="priceMultiplier"
+                    Width="100"
+                    Height="30"
+                    HorizontalAlignment="Left"
+                    AllowDrop="False"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    FontSize="25"
+                    Foreground="White"
+                    Maximum="2147483647"
+                    Minimum="-2147483648"
+                    Style="{DynamicResource NumberBoxStyle}"
+                    Value="0" />
+            </DockPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

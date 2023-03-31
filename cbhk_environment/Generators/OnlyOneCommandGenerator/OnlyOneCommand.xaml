@@ -1,0 +1,779 @@
+﻿<local_window:CommonWindow
+    x:Class="cbhk_environment.Generators.OnlyOneCommandGenerator.OnlyOneCommand"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
+    xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:cbhk_environment.Generators.OnlyOneCommandGenerator"
+    xmlns:local_datacontext="clr-namespace:cbhk_environment.Generators.OnlyOneCommandGenerator"
+    xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="一键命令方块生成器"
+    Width="800"
+    Height="450"
+    MinWidth="800"
+    MinHeight="450"
+    Background="#2F2F2F"
+    Icon="/cbhk_environment;component/resources/common/images/spawnerIcons/IconCommandBlock.png"
+    ResizeMode="CanResizeWithGrip"
+    mc:Ignorable="d">
+
+    <Window.DataContext>
+        <local_datacontext:only_one_command_datacontext />
+    </Window.DataContext>
+
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding RunCommand}" />
+        <KeyBinding
+            Key="Esc"
+            Command="{Binding ReturnCommand}"
+            CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}" />
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <ImageBrush x:Key="IssueIcon" ImageSource="/cbhk_environment;component/resources/common/images/Issue.png" />
+        <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
+        <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
+        <ImageBrush x:Key="LeftArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
+        <ImageBrush x:Key="RightArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowRight.png" />
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Row="0" Grid.Column="0">
+            <CustomControls:IconTextButtons
+                Width="16"
+                Height="16"
+                Margin="5,0"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Background="{StaticResource LeftArrow}"
+                BorderThickness="0"
+                Command="{Binding ReturnCommand}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local_window:CommonWindow}}"
+                FontSize="15"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="ESC:返回主页"
+                ToolTipService.InitialShowDelay="0" />
+            <CustomControls:IconTextButtons
+                Width="16"
+                Height="16"
+                Margin="5,0"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Background="{StaticResource RightArrow}"
+                BorderThickness="0"
+                Command="{Binding RunCommand}"
+                FontSize="15"
+                IconColor="White"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="F5:运行"
+                ToolTipService.InitialShowDelay="0" />
+            <CustomControls:IconTextButtons
+                Width="25"
+                Padding="0,0,0,5"
+                HorizontalAlignment="Left"
+                Background="{StaticResource ButtonNormal}"
+                Command="{Binding AddOneCommandPage}"
+                Content="+"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="添加"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000" />
+            <CustomControls:IconTextButtons
+                Width="25"
+                Padding="0,0,0,5"
+                HorizontalAlignment="Left"
+                Background="{StaticResource ButtonNormal}"
+                Command="{Binding ClearCommandPage}"
+                Content="🗙"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="清除"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000" />
+            <TextBlock
+                Margin="10,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                FontSize="15"
+                Foreground="White"
+                Text="当前标记"
+                TextAlignment="Center" />
+            <TextBox
+                Width="200"
+                HorizontalAlignment="Left"
+                FontSize="15"
+                Foreground="White"
+                Text="{Binding CurrentItem.Header, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+        </DockPanel>
+        <TabControl
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="0,5,0,0"
+            Background="Transparent"
+            SelectedIndex="0"
+            Style="{DynamicResource TabControlWithScrollBar}">
+            <behavior:Interaction.Triggers>
+                <behavior:EventTrigger EventName="Loaded">
+                    <behavior:CallMethodAction MethodName="TabControlLoaded" TargetObject="{Binding}" />
+                </behavior:EventTrigger>
+            </behavior:Interaction.Triggers>
+            <CustomControls:RichTabItems
+                Uid="Display"
+                Padding="10,2,0,0"
+                HorizontalContentAlignment="Right"
+                VerticalContentAlignment="Bottom"
+                FontSize="12"
+                Foreground="#FFFFFF"
+                Header="欢迎使用"
+                IsContentSaved="True"
+                Style="{DynamicResource RichTabItemStyle}">
+                <RichTextBox
+                    MinHeight="318"
+                    HorizontalAlignment="Stretch"
+                    Background="#1A1A1A"
+                    BorderBrush="#3D3D3D"
+                    BorderThickness="1"
+                    CaretBrush="White"
+                    FontSize="15"
+                    Foreground="White"
+                    HorizontalScrollBarVisibility="Disabled"
+                    IsReadOnly="True"
+                    VerticalScrollBarVisibility="Auto">
+                    <CustomControls:EnabledFlowDocument LineHeight="10">
+                        <Paragraph Padding="0,10,0,0" TextAlignment="Center">
+                            <Run
+                                FontSize="20"
+                                Foreground="#7160E8"
+                                Text="欢迎使用一键命令方块生成器" />
+                        </Paragraph>
+                        <Paragraph Padding="0,10,0,0" TextAlignment="Left">
+                            <Run
+                                FontSize="20"
+                                Foreground="Gray"
+                                Text="  功能" />
+                        </Paragraph>
+                        <Paragraph TextAlignment="Left">
+                            <Run
+                                FontSize="20"
+                                Foreground="Gray"
+                                Text="  1.???" />
+                            <Run
+                                FontSize="20"
+                                Foreground="Gray"
+                                Text="  2.快捷操作" />
+                        </Paragraph>
+                        <Paragraph
+                            Padding="0,10,0,0"
+                            FontSize="20"
+                            Foreground="Gray"
+                            TextAlignment="Left">
+                            <Run Text="  快捷键列表" />
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="  上下移动选定行内容" />
+                            <Border
+                                Width="40"
+                                Height="20"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Alt" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="40"
+                                Height="20"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="25"
+                                    Foreground="#D7D7D7"
+                                    Text="↑" />
+                            </Border>
+                            <Run Foreground="White" Text="/" />
+                            <Border
+                                Width="40"
+                                Height="20"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="25"
+                                    Foreground="#D7D7D7"
+                                    Text="↓" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                  打开补全框" />
+                            <Border
+                                Width="45"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="65"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Space" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      执行补全" />
+                            <Border
+                                Width="45"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Tab" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      切换页面" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="45"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Tab" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="  当前行之前开辟一行" />
+                            <Border
+                                Width="45"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="65"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Enter" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      回到行首" />
+                            <Border
+                                Width="60"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Home" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      跳到行尾" />
+                            <Border
+                                Width="50"
+                                Height="20"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="End" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      快速查找" />
+                            <Border
+                                Width="55"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="F" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      快速替换" />
+                            <Border
+                                Width="55"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="H" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="                      复制一行" />
+                            <Border
+                                Width="55"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="D" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="      选定内容转为大写" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Shift" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="U" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="      选定内容转为小写" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="U" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="              注释选定内容" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="K" />
+                            </Border>
+                            <Run Foreground="White" Text="," />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="C" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="              取消注释选定内容" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="K" />
+                            </Border>
+                            <Run Foreground="White" Text="," />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="25"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="U" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="      从头到尾选择整行" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="End" />
+                            </Border>
+                        </Paragraph>
+                        <Paragraph Foreground="Gray" TextAlignment="Left">
+                            <Run Text="      从尾到头选择整行" />
+                            <Border
+                                Width="50"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Ctrl" />
+                            </Border>
+                            <Run Foreground="White" Text="+" />
+                            <Border
+                                Width="55"
+                                Height="25"
+                                Margin="5,0,0,0"
+                                Background="#494949"
+                                BorderBrush="#737373"
+                                BorderThickness="1"
+                                CornerRadius="3">
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="15"
+                                    Foreground="#D7D7D7"
+                                    Text="Home" />
+                            </Border>
+                        </Paragraph>
+                    </CustomControls:EnabledFlowDocument>
+                </RichTextBox>
+            </CustomControls:RichTabItems>
+        </TabControl>
+    </Grid>
+</local_window:CommonWindow>

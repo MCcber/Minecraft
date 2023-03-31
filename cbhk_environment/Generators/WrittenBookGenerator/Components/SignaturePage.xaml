@@ -1,0 +1,58 @@
+﻿<Page
+    x:Class="cbhk_environment.Generators.WrittenBookGenerator.Components.SignaturePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+
+xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:cbhk_environment.Generators.WrittenBookGenerator.Components"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="SignaturePage"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+
+    <Grid>
+        <Border
+            Width="350"
+            Height="450"
+            VerticalAlignment="Top">
+            <behavior:Interaction.Triggers>
+                <behavior:EventTrigger EventName="Loaded">
+                    <behavior:CallMethodAction MethodName="SignatureBackgroundLoaded" TargetObject="{Binding}" />
+                </behavior:EventTrigger>
+            </behavior:Interaction.Triggers>
+            <Grid>
+                <TextBox
+                    Width="250"
+                    Height="30"
+                    Margin="35,110,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    Panel.ZIndex="1"
+                    BorderBrush="Black"
+                    FontFamily="Minecraft AE Pixel"
+                    FontSize="18"
+                    Foreground="White"
+                    Text="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox
+                    Width="150"
+                    Height="25"
+                    Margin="35,140,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    Panel.ZIndex="1"
+                    BorderBrush="Black"
+                    FontFamily="Minecraft AE Pixel"
+                    FontSize="20"
+                    Foreground="White"
+                    Text="{Binding Author, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </Border>
+    </Grid>
+</Page>
