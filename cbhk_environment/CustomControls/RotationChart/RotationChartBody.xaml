@@ -11,8 +11,8 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
-        <ImageBrush x:Key="LeftArraw" ImageSource="D:\C#Projects\CommandHelper-EfficiencyV\cbhk_environment\resources\common\images\IconArrowLeft.png" />
-        <ImageBrush x:Key="RightArrow" ImageSource="D:\C#Projects\CommandHelper-EfficiencyV\cbhk_environment\resources\common\images\IconArrowRight.png" />
+        <ImageBrush x:Key="LeftArraw" ImageSource="pack://application:,,,/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
+        <ImageBrush x:Key="RightArrow" ImageSource="pack://application:,,,/cbhk_environment;component/resources/common/images/IconArrowRight.png" />
     </UserControl.Resources>
 
     <Grid>
