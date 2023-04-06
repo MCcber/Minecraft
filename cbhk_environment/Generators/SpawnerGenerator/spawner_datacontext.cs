@@ -16,7 +16,7 @@ namespace cbhk_environment.Generators.SpawnerGenerator
         /// <summary>
         /// 刷怪笼配置文件路径
         /// </summary>
-        string treeViewStructureFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Spawner\\data\\structure.json";
+        private readonly string treeViewStructureFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Spawner\\data\\structure.json";
         /// <summary>
         /// 刷怪笼树结构数据源
         /// </summary>

@@ -10,10 +10,10 @@
     xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="实体生成器"
-    Width="664"
-    Height="370"
-    MinWidth="664"
-    MinHeight="370"
+    Width="670"
+    Height="440"
+    MinWidth="670"
+    MinHeight="440"
     Background="#2F2F2F"
     Icon="/cbhk_environment;component/resources/common/images/spawnerIcons/IconEntities.png"
     ResizeMode="CanResizeWithGrip"
@@ -114,7 +114,7 @@
                 BorderThickness="0"
                 Content="召唤"
                 Cursor="Hand"
-                Foreground="White"
+                Foreground="Black"
                 IsChecked="{Binding Summon, Mode=TwoWay}"
                 Style="{DynamicResource TextToggleButtonsStyle}" />
             <CustomControls:TextToggleButtons
@@ -124,7 +124,7 @@
                 BorderThickness="0"
                 Content="怪物蛋"
                 Cursor="Hand"
-                Foreground="White"
+                Foreground="Black"
                 IsChecked="{Binding Give, Mode=TwoWay}"
                 Style="{DynamicResource TextToggleButtonsStyle}" />
         </DockPanel>

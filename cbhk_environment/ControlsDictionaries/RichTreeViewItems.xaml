@@ -62,13 +62,13 @@
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="35" />
-                            <RowDefinition />
+                            <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <!--  Connecting Lines  -->
                         <Rectangle
                             x:Name="HorLn"
                             Height="4"
-                            Margin="9,1,0,0"
+                            Margin="6,1,0,0"
                             Fill="{TemplateBinding ConnectingLineFill}"
                             SnapsToDevicePixels="True"
                             Stroke="{TemplateBinding ConnectingLineFill}" />

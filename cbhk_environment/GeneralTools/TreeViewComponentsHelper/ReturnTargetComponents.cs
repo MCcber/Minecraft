@@ -1,9 +1,13 @@
 ﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools.ScrollViewerHelper;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -27,119 +31,324 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         /// </summary>
         private static SolidColorBrush blackBrush = new((Color)ColorConverter.ConvertFromString("#000000"));
 
-        /// <summary>
-        /// 判断是否需要切换子结构
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsNeedSwitchStrcuture(JObject currentStructure)
+        public static void SetHeader(ref DockPanel container,ref RichTreeViewItems parentItem,List<string> requestList, ObservableCollection<string> enumList = null)
         {
-            bool result = false;
-            JToken HaveEnum = currentStructure["enum"];
-            if (HaveEnum != null)
-                result = bool.Parse(HaveEnum.ToString());
-            return result;
+            #region 一般的数据控件
+            IconTextButtons description = null;
+            //枚举框标记
+            bool AddedEnum = false;
+            foreach (string item in requestList)
+            {
+                #region 取出固定组件数据
+                string value = item;
+                if (item.Contains('-'))
+                    value = item[(item.IndexOf('-') + 1)..];
+                #endregion
+
+                #region key
+                if (item.StartsWith("key"))
+                {
+                    TextBlock key = new()
+                    {
+                        Uid = "key",
+                        Text = value,
+                        Foreground = whiteBrush,
+                        FontSize = 12,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextAlignment = TextAlignment.Center
+                    };
+                    container.Children.Add(key);
+                }
+                #endregion
+
+                #region 封装用于切换子结构的ComboBox
+
+                if (enumList != null && enumList.Count > 1 && !AddedEnum)
+                {
+                    AddedEnum = true;
+                    ComboBox subStructureSwitchBox = new()
+                    {
+                        Uid = "enum",
+                        Style = Application.Current.Resources["TextComboBoxStyle"] as Style,
+                        ItemsSource = enumList,
+                        VerticalContentAlignment = VerticalAlignment.Center,
+                        SelectedIndex = 0,
+                        FontSize = 15,
+                        Width = 100,
+                        Tag = parentItem
+                    };
+                    subStructureSwitchBox.SelectionChanged += SubStructureSwitchBox_SelectionChanged;
+                    container.Children.Add(subStructureSwitchBox);
+                }
+                #endregion
+
+                #region description
+                if (item.StartsWith("description"))
+                {
+                    description = new()
+                    {
+                        Uid = "description",
+                        Height = 18,
+                        Width = 18,
+                        Margin = new Thickness(5, 0, 0, 0),
+                        Style = Application.Current.Resources["IconTextButton"] as Style,
+                        Foreground = blackBrush,
+                        Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/Issue.png", UriKind.RelativeOrAbsolute))),
+                        ToolTip = value
+                    };
+                    ToolTipService.SetInitialShowDelay(description,0);
+                    ToolTipService.SetBetweenShowDelay(description,0);
+                }
+                #endregion
+
+                #region boolean
+                if(item == "bool")
+                {
+                    TextToggleButtons trueButton = new()
+                    {
+                        IsChecked = false,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        Style = Application.Current.Resources["TextToggleButtonsStyle"] as Style,
+                        Foreground = blackBrush,
+                        Padding = new Thickness(5),
+                        Content = "True"
+                    };
+                    TextToggleButtons falseButton = new()
+                    {
+                        IsChecked = false,
+                        HorizontalContentAlignment = HorizontalAlignment.Center,
+                        Style = Application.Current.Resources["TextToggleButtonsStyle"] as Style,
+                        Foreground = blackBrush,
+                        Padding = new Thickness(5),
+                        Content = "False"
+                    };
+                    container.Children.Add(trueButton);
+                    container.Children.Add(falseButton);
+                }
+
+                //ComboBox booleanBox = new()
+                //{
+                //    Style = Application.Current.Resources["TextComboBoxStyle"] as Style,
+                //    SelectedIndex = 0,
+                //    FontSize = 12
+                //};
+                //booleanBox.Items.Add("True");
+                //booleanBox.Items.Add("False");
+                //container.Children.Add(booleanBox);
+                #endregion
+
+                #region number
+                if(item.StartsWith("number"))
+                {
+                    double minValue = 0;
+                    double maxValue = 0;
+                    if (item.EndsWith("Short"))
+                    {
+                        minValue = short.MinValue;
+                        maxValue = short.MaxValue;
+                    }
+                    else
+                    if (item.EndsWith("Float"))
+                    {
+                        minValue = float.MinValue;
+                        maxValue = float.MaxValue;
+                    }
+                    else
+                    if (item.EndsWith("Double"))
+                    {
+                        minValue = double.MinValue;
+                        maxValue = double.MaxValue;
+                    }
+                    else
+                    if (item.EndsWith("Byte"))
+                    {
+                        minValue = byte.MinValue;
+                        maxValue = byte.MaxValue;
+                    }
+                    else
+                    {
+                        minValue = int.MinValue;
+                        maxValue = int.MaxValue;
+                    }
+                    Slider numberBox = new()
+                    {
+                        Height = 25,
+                        Width = 100,
+                        Value = 0,
+                        Minimum = minValue,
+                        Maximum = maxValue,
+                        Style = Application.Current.Resources["NumberBoxStyle"] as Style,
+                        FontSize = 12
+                    };
+                    container.Children.Add(numberBox);
+                }
+                #endregion
+
+                #region string
+                if(item == "String")
+                {
+                    TextBox textBox = new()
+                    {
+                        Width = 200,
+                        Foreground = whiteBrush,
+                        FontSize = 12
+                    };
+                    container.Children.Add(textBox);
+                }
+                #endregion
+
+                #region compound
+                if(item.StartsWith("Compound"))
+                {
+                    #region 判断应该添加什么插入型组件
+                    switch (value)
+                    {
+                        case "EntityGenerator":
+                            IconTextButtons generatorButton = new()
+                            {
+                                Uid = value,
+                                Padding = new Thickness(5),
+                                Style = Application.Current.Resources["IconTextButton"] as Style,
+                                Foreground = blackBrush,
+                                Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png", UriKind.RelativeOrAbsolute))),
+                                PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
+                                FontSize = 12,
+                                ClickMode = ClickMode.Release,
+                                Content = "+",
+                                Tag = parentItem
+                            };
+                            generatorButton.Click += GeneratorButton_Click;
+                            container.Children.Add(generatorButton);
+                            break;
+                    }
+                    #endregion
+                }
+                #endregion
+
+                #region list
+                if(item.StartsWith("List"))
+                {
+                    IconTextButtons addButton = new()
+                    {
+                        Uid = value,
+                        Padding = new Thickness(5),
+                        Style = Application.Current.Resources["IconTextButton"] as Style,
+                        Foreground = blackBrush,
+                        Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png", UriKind.RelativeOrAbsolute))),
+                        PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
+                        FontSize = 12,
+                        ClickMode = ClickMode.Release,
+                        Content = "+",
+                        Tag = parentItem
+                    };
+                    addButton.Click += AddButton_Click;
+                    container.Children.Add(addButton);
+                }
+                #endregion
+            }
+            if (description != null)
+            container.Children.Add(description);
+            #endregion
         }
 
-        public static List<FrameworkElement> SetHeader(ref DockPanel container,ref RichTreeViewItems parentItem,List<string> requestList,List<string> enumList = null)
+        /// <summary>
+        /// 添加子结构
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private static void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            List<FrameworkElement> result = new();
+            IconTextButtons currentButton = sender as IconTextButtons;
+            RichTreeViewItems currentItem = currentButton.FindParent<RichTreeViewItems>();
+            JArray children = JArray.Parse(JObject.Parse(currentItem.Tag.ToString())["children"].ToString());
 
-            #region 封装用于切换子结构的ComboBox
-            ComboBox subStructureSwitchBox = new()
+            #region 遍历子级,添加新的成员
+            foreach (JObject item in children)
             {
-                Uid = "enumBox",
-                Style = Application.Current.Resources["TextComboBoxStyle"] as Style,
-                SelectedIndex = 0,
-                FontSize = 12,
-            };
-            if (enumList != null)
-                subStructureSwitchBox.ItemsSource = enumList;
-            subStructureSwitchBox.SelectionChanged += SubStructureSwitchBox_SelectionChanged;
+
+            }
             #endregion
+        }
 
-            #region 一般的数据控件
-            TextBlock displayBlock = new()
-            {
-                Foreground = whiteBrush,
-                FontSize = 12
-            };
-            TextBlock key = new()
-            {
-                Foreground = whiteBrush,
-                FontSize = 12,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextAlignment = TextAlignment.Center
-            };
+        /// <summary>
+        /// 生成按钮
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void GeneratorButton_Click(object sender, RoutedEventArgs e)
+        {
+            IconTextButtons textButtons = sender as IconTextButtons;
+            RichTreeViewItems parent = textButtons.Tag as RichTreeViewItems;
 
-            double minValue = 0;
-            double maxValue = 0;
-            //if (tags[i] == "TAG_Short")
-            //{
-            //    minValue = short.MinValue;
-            //    maxValue = short.MaxValue;
-            //}
-            //else
-            //if (tags[i] == "TAG_Float")
-            //{
-            //    minValue = float.MinValue;
-            //    maxValue = float.MaxValue;
-            //}
-            //else
-            //if (tags[i] == "TAG_Double")
-            //{
-            //    minValue = double.MinValue;
-            //    maxValue = double.MaxValue;
-            //}
-            //else
-            //if (tags[i] == "TAG_Byte")
-            //{
-            //    minValue = byte.MinValue;
-            //    maxValue = byte.MaxValue;
-            //}
-            //else
-            //{
-            //    minValue = int.MinValue;
-            //    maxValue = int.MaxValue;
-            //}
-            Slider numberBox = new()
+            switch (textButtons.Uid)
             {
-                Margin = new Thickness(5, 0, 0, 0),
-                Height = 25,
-                Width = 100,
-                Value = 0,
-                Minimum = minValue,
-                Maximum = maxValue,
-                Style = Application.Current.Resources["NumberBoxStyle"] as Style,
-                FontSize = 12
-            };
-            TextBox textBox = new()
-            {
-                Foreground = whiteBrush,
-                FontSize = 12
-            };
-            IconTextButtons generatorButton = new()
-            {
-                Margin = new Thickness(5, 0, 0, 0),
-                Padding = new Thickness(5),
-                Style = Application.Current.Resources["IconTextButton"] as Style,
-                Foreground = blackBrush,
-                Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png", UriKind.RelativeOrAbsolute))),
-                PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
-                FontSize = 12
-            };
-            #endregion
+                case "EntityGenerator":
+                    Generators.EntityGenerator.Entity entity = new()
+                    {
+                        Owner = Window.GetWindow(parent)
+                    };
+                    if (entity.ShowDialog().Value)
+                    {
+                        JArray tags = JArray.Parse(JObject.Parse(parent.Tag.ToString())["tag"].ToString());
+                        string tagType = tags[0].ToString();
 
-            #region 子节点、用于切换结构
-            RichTreeViewItems subItem = new()
-            {
-                ConnectingLineFill = grayBrush,
-                Style = Application.Current.Resources["RichTreeViewItems"] as Style
-            };
-            subItem.Expanded += CompoundItemExpanded;
-            #endregion
+                        #region 构建实体节点的Header
+                        DockPanel dockPanel = new()
+                        {
+                            LastChildFill = false
+                        };
+                        Image entityHeader = new()
+                        {
+                            Source = new BitmapImage(new Uri("", UriKind.RelativeOrAbsolute))
+                        };
+                        IconTextButtons deleteButton = new()
+                        {
+                            Padding = new Thickness(3),
+                            Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png", UriKind.RelativeOrAbsolute))),
+                            PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
+                            Style = Application.Current.Resources["IconTextButton"] as Style,
+                            FontSize = 12,
+                            Foreground = whiteBrush,
+                            ClickMode = ClickMode.Release,
+                            Content = "X",
+                        };
+                        deleteButton.Click += EntityDeleteButton_Click;
+                        dockPanel.Children.Add(deleteButton);
+                        dockPanel.Children.Add(entityHeader);
+                        #endregion
 
-            return result;
+                        //添加子节点
+                        RichTreeViewItems subItem = new()
+                        {
+                            ConnectingLineFill = grayBrush,
+                            Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                            Tag = entity.Background.ToString(),
+                            Header = dockPanel
+                        };
+
+                        if (tagType.Contains("List") || parent.Items.Count == 0)
+                            parent.Items.Add(subItem);
+                        else
+                            if (tagType.Contains("Compound"))
+                            parent.Items[0] = subItem;
+                    }
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 删除实体成员
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void EntityDeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            IconTextButtons currentButton = sender as IconTextButtons;
+            RichTreeViewItems parent = currentButton.FindParent<RichTreeViewItems>();
+            RichTreeViewItems grandparent = parent.Parent as RichTreeViewItems;
+            grandparent.Items.Remove(parent);
         }
 
         /// <summary>
@@ -149,17 +358,113 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         /// <param name="e"></param>
         public static void SubStructureSwitchBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ComboBox currentBox = sender as ComboBox;
+            RichTreeViewItems currentItem = currentBox.FindParent<RichTreeViewItems>();
+            JObject subObj = JObject.Parse(currentItem.Tag.ToString());
+            string description = subObj["description"].ToString();
 
-        }
+            #region 处理单个切换和多个切换
+            MatchCollection case1 = Regex.Matches(description, @"(?<=可以是)[a-zA-Z_]+(?=。)");
+            MatchCollection case2 = Regex.Matches(description, @"(?<=如果是)[a-zA-Z_]+(?=。)");
+            JArray children = JArray.Parse(subObj["children"].ToString());
+            ObservableCollection<RichTreeViewItems> subStructureCollection = new();
+            string selectedItem = currentBox.SelectedItem.ToString();
 
-        /// <summary>
-        /// 展开复合节点
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private static void CompoundItemExpanded(object sender, RoutedEventArgs e)
-        {
+            //表示需要子结构
+            if(selectedItem.EndsWith("List") || selectedItem.EndsWith("Compound") || selectedItem.EndsWith("Array"))
+            {
+                #region 隐藏不需要的节点成员控件
+                DockPanel dockPanel = currentItem.Header as DockPanel;
+                foreach (FrameworkElement item in dockPanel.Children)
+                {
+                    if (item.Uid.Length == 0)
+                        item.Visibility = Visibility.Collapsed;
+                }
+                #endregion
 
+                if ((case1.Count > 1 || case2.Count > 1) && children.Count > 1)
+                {
+                    JToken subStructure = JToken.Parse(children[currentBox.SelectedIndex].ToString());
+                    RichTreeViewItems subItem = new()
+                    {
+                        Tag = subStructure.ToString(),
+                        ConnectingLineFill = grayBrush,
+                        Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                    };
+
+                    #region 设置绑定器
+                    Binding componentsBinder = new()
+                    {
+                        Path = new PropertyPath("Tag"),
+                        Mode = BindingMode.OneTime,
+                        RelativeSource = RelativeSource.Self,
+                        Converter = new TagToHeader(),
+                        ConverterParameter = subItem
+                    };
+                    BindingOperations.SetBinding(subItem, HeaderedItemsControl.HeaderProperty, componentsBinder);
+                    #endregion
+
+                    subStructureCollection.Add(subItem);
+                }
+                else
+                {
+                    for (int i = 0; i < children.Count; i++)
+                    {
+                        RichTreeViewItems subItem = new()
+                        {
+                            Tag = children[i].ToString(),
+                            ConnectingLineFill = grayBrush,
+                            Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                        };
+
+                        #region 设置绑定器
+                        Binding componentsBinder = new()
+                        {
+                            Path = new PropertyPath("Tag"),
+                            Mode = BindingMode.OneTime,
+                            RelativeSource = RelativeSource.Self,
+                            Converter = new TagToHeader(),
+                            ConverterParameter = subItem
+                        };
+                        BindingOperations.SetBinding(subItem, HeaderedItemsControl.HeaderProperty, componentsBinder);
+                        #endregion
+
+                        subStructureCollection.Add(subItem);
+                    }
+                }
+
+                #region 更新子结构数据
+                currentItem.SubStructure ??= new Dictionary<string, ObservableCollection<RichTreeViewItems>>();
+                if (!currentItem.SubStructure.ContainsKey(selectedItem))
+                    currentItem.SubStructure.Add(selectedItem, subStructureCollection);
+                else
+                    if(currentItem.SubStructure[selectedItem].Count == 0)
+                    currentItem.SubStructure[selectedItem] = subStructureCollection;
+                currentItem.ItemsSource ??= currentItem.SubStructure[selectedItem];
+                #endregion
+            }
+            else//不需要子结构
+            {
+                #region 显示需要的节点成员控件
+                string NeedDisplyType = selectedItem;
+                DockPanel dockPanel = currentItem.Header as DockPanel;
+                foreach (FrameworkElement item in dockPanel.Children)
+                {
+                    if (item.Uid.Length == 0)
+                    {
+                        if(((NeedDisplyType == "Int" || NeedDisplyType == "Float" || NeedDisplyType == "Double" || NeedDisplyType == "Long" || NeedDisplyType == "Short" || NeedDisplyType == "Byte") && item is Slider) || (NeedDisplyType == "String" && item is TextBox) || (NeedDisplyType == "Boolean" && item is TextToggleButtons))
+                        {
+                            item.Visibility = Visibility.Visible;
+                            break;
+                        }
+                    }
+                }
+                #endregion
+                currentItem.ItemsSource = null;
+                currentItem.Items.Clear();
+            }
+
+            #endregion
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -69,5 +70,23 @@ namespace cbhk_environment.CustomControls
 
         public static readonly DependencyProperty ConnectingLineFillProperty =
             DependencyProperty.Register("ConnectingLineFill", typeof(Brush), typeof(RichTreeViewItems), new PropertyMetadata(default(Brush)));
+
+        public Dictionary<string,ObservableCollection<RichTreeViewItems>> SubStructure
+        {
+            get { return (Dictionary<string, ObservableCollection<RichTreeViewItems>>)GetValue(SubStructureProperty); }
+            set { SetValue(SubStructureProperty, value); }
+        }
+
+        public static readonly DependencyProperty SubStructureProperty =
+            DependencyProperty.Register("SubStructure", typeof(Dictionary<string, ObservableCollection<RichTreeViewItems>>), typeof(RichTreeViewItems), new PropertyMetadata(default(Dictionary<string, ObservableCollection<RichTreeViewItems>>)));
+
+        public TreeViewRun TextState
+        {
+            get { return (TreeViewRun)GetValue(TextStateProperty); }
+            set { SetValue(TextStateProperty, value); }
+        }
+
+        public static readonly DependencyProperty TextStateProperty =
+            DependencyProperty.Register("TextState", typeof(TreeViewRun), typeof(RichTreeViewItems), new PropertyMetadata(default(TreeViewRun)));
     }
 }
