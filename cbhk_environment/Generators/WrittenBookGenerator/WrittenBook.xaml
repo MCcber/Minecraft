@@ -11,10 +11,10 @@
     xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="成书生成器"
-    Width="402"
-    Height="706"
-    MinWidth="402"
-    MinHeight="706"
+    Width="400"
+    Height="695"
+    MinWidth="400"
+    MinHeight="695"
     ContextMenu="{x:Null}"
     Icon="/cbhk_environment;component/resources/common/images/spawnerIcons/IconWrittenBook.png"
     ResizeMode="CanMinimize"
@@ -40,20 +40,20 @@
             CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local_window:CommonWindow}}" />
     </Window.InputBindings>
 
-    <Grid>
+    <Grid Background="#2F2F2F">
         <Grid.RowDefinitions>
+            <RowDefinition Height="55" />
+            <RowDefinition Height="5*" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="15*" />
         </Grid.RowDefinitions>
         <DockPanel
             Grid.Row="0"
-            Height="25"
-            HorizontalAlignment="Left"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Center">
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="30"
+                Height="30"
+                Margin="2,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -65,9 +65,9 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="30"
+                Height="30"
+                Margin="2,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
@@ -77,287 +77,164 @@
                 Style="{DynamicResource IconTextButton}"
                 ToolTip="F5:运行"
                 ToolTipService.InitialShowDelay="0" />
+            <CustomControls:IconTextButtons
+                Width="40"
+                Height="40"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource ButtonNormal}"
+                BorderThickness="1"
+                ClickMode="Press"
+                Command="{Binding BoldTextCommand}"
+                Foreground="Black"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="设置选定文本粗体"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000">
+                <TextBlock FontWeight="Bold" Text="B" />
+            </CustomControls:IconTextButtons>
+            <CustomControls:IconTextButtons
+                Width="40"
+                Height="40"
+                Padding="0,0,2,0"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource ButtonNormal}"
+                ClickMode="Press"
+                Command="{Binding ItalicTextCommand}"
+                Foreground="Black"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="设置选定文本斜体"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000">
+                <TextBlock FontStyle="Italic" Text="i" />
+            </CustomControls:IconTextButtons>
+            <CustomControls:IconTextButtons
+                Width="40"
+                Height="40"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource ButtonNormal}"
+                ClickMode="Press"
+                Command="{Binding UnderlinedTextCommand}"
+                Foreground="Black"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="设置选定文本下划线"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000">
+                <TextBlock Text="U">
+                    <TextBlock.TextDecorations>
+                        <TextDecoration />
+                    </TextBlock.TextDecorations>
+                </TextBlock>
+            </CustomControls:IconTextButtons>
+            <CustomControls:IconTextButtons
+                Width="40"
+                Height="40"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource ButtonNormal}"
+                ClickMode="Press"
+                Command="{Binding StrikethroughTextCommand}"
+                Foreground="Black"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="设置选定文本删除线"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000">
+                <TextBlock Text="S">
+                    <TextBlock.TextDecorations>
+                        <TextDecoration PenOffset="-5" />
+                    </TextBlock.TextDecorations>
+                </TextBlock>
+            </CustomControls:IconTextButtons>
+            <CustomControls:IconTextButtons
+                Width="40"
+                Height="40"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{StaticResource ButtonNormal}"
+                ClickMode="Press"
+                Command="{Binding ObfuscateTextCommand}"
+                Content="O"
+                Foreground="Black"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}"
+                ToolTip="设置选定文本混淆文字"
+                ToolTipService.InitialShowDelay="0"
+                ToolTipService.ShowDuration="1000" />
+            <Grid
+                Width="36"
+                Height="36"
+                HorizontalAlignment="Left">
+                <TextBlock
+                    VerticalAlignment="Center"
+                    Panel.ZIndex="1"
+                    Foreground="White"
+                    IsHitTestVisible="False"
+                    Text="Color"
+                    TextAlignment="Center" />
+                <CustomControls:IconTextButtons
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Panel.ZIndex="0"
+                    Background="{StaticResource ButtonNormal}"
+                    ClickMode="Press"
+                    Command="{Binding ResetTextCommand}"
+                    Content="R"
+                    Foreground="Black"
+                    PressedBackground="{StaticResource ButtonPressed}"
+                    Style="{DynamicResource IconTextButton}"
+                    ToolTip="重置选定文本样式"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1000" />
+                <ColorPicker:ColorPickers
+                    Width="55"
+                    Height="50"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Panel.ZIndex="0"
+                    Background="Black"
+                    SelectColor="{Binding SelectionColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTip="设置选定文本颜色"
+                    ToolTipService.InitialShowDelay="0"
+                    ToolTipService.ShowDuration="1000">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="PropertyChanged">
+                            <behavior:CallMethodAction MethodName="SetSelectionColor" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="ColorPickerLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                </ColorPicker:ColorPickers>
+            </Grid>
         </DockPanel>
         <Viewbox
             Grid.Row="1"
             Width="360"
-            Height="600"
+            Height="800"
             HorizontalAlignment="Center"
             VerticalAlignment="Top">
-            <StackPanel Margin="0">
-                <!--<Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="5*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>-->
-                <StackPanel
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Top"
-                    Orientation="Horizontal"
-                    Visibility="{Binding DisplayStylePanel, Mode=OneWay}">
-                    <CustomControls:IconTextButtons
-                        Width="55"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="{StaticResource ButtonNormal}"
-                        BorderThickness="1"
-                        ClickMode="Press"
-                        Command="{Binding BoldTextCommand}"
-                        Foreground="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{DynamicResource IconTextButton}"
-                        ToolTip="设置选定文本粗体"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock FontWeight="Bold" Text="B" />
-                    </CustomControls:IconTextButtons>
-                    <CustomControls:IconTextButtons
-                        Width="55"
-                        Height="50"
-                        Padding="0,0,2,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="{StaticResource ButtonNormal}"
-                        ClickMode="Press"
-                        Command="{Binding ItalicTextCommand}"
-                        Foreground="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{DynamicResource IconTextButton}"
-                        ToolTip="设置选定文本斜体"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock FontStyle="Italic" Text="i" />
-                    </CustomControls:IconTextButtons>
-                    <CustomControls:IconTextButtons
-                        Width="55"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="{StaticResource ButtonNormal}"
-                        ClickMode="Press"
-                        Command="{Binding UnderlinedTextCommand}"
-                        Foreground="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{DynamicResource IconTextButton}"
-                        ToolTip="设置选定文本下划线"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock Text="U">
-                            <TextBlock.TextDecorations>
-                                <TextDecoration />
-                            </TextBlock.TextDecorations>
-                        </TextBlock>
-                    </CustomControls:IconTextButtons>
-                    <CustomControls:IconTextButtons
-                        Width="55"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="{StaticResource ButtonNormal}"
-                        ClickMode="Press"
-                        Command="{Binding StrikethroughTextCommand}"
-                        Foreground="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{DynamicResource IconTextButton}"
-                        ToolTip="设置选定文本删除线"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock Text="S">
-                            <TextBlock.TextDecorations>
-                                <TextDecoration PenOffset="-5" />
-                            </TextBlock.TextDecorations>
-                        </TextBlock>
-                    </CustomControls:IconTextButtons>
-                    <CustomControls:IconTextButtons
-                        Width="55"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="{StaticResource ButtonNormal}"
-                        ClickMode="Press"
-                        Command="{Binding ObfuscateTextCommand}"
-                        Content="O"
-                        Foreground="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{DynamicResource IconTextButton}"
-                        ToolTip="设置选定文本混淆文字"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000" />
-                    <CustomControls:IconTextButtons
-                        Width="55"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="{StaticResource ButtonNormal}"
-                        ClickMode="Press"
-                        Command="{Binding ResetTextCommand}"
-                        Content="R"
-                        Foreground="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{DynamicResource IconTextButton}"
-                        ToolTip="重置选定文本样式"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000" />
-                    <ColorPicker:ColorPickers
-                        Width="55"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Black"
-                        SelectColor="{Binding SelectionColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="设置选定文本颜色"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <behavior:Interaction.Triggers>
-                            <behavior:EventTrigger EventName="PropertyChanged">
-                                <behavior:CallMethodAction MethodName="SetSelectionColor" TargetObject="{Binding}" />
-                            </behavior:EventTrigger>
-                            <behavior:EventTrigger EventName="Loaded">
-                                <behavior:CallMethodAction MethodName="ColorPickerLoaded" TargetObject="{Binding}" />
-                            </behavior:EventTrigger>
-                        </behavior:Interaction.Triggers>
-                    </ColorPicker:ColorPickers>
-                </StackPanel>
-                <ContentControl
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Height="500">
-                    <behavior:Interaction.Triggers>
-                        <behavior:EventTrigger EventName="Loaded">
-                            <behavior:CallMethodAction MethodName="LoadedEditPage" TargetObject="{Binding}" />
-                        </behavior:EventTrigger>
-                    </behavior:Interaction.Triggers>
-                </ContentControl>
-                <!--<StackPanel
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    Orientation="Horizontal"
-                    Visibility="{Binding DisplayStylePanel, Mode=OneWay}">
-                    <Button
-                        Width="50"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        BorderThickness="1"
-                        ClickMode="Press"
-                        Command="{Binding BoldTextCommand}"
-                        Foreground="White"
-                        ToolTip="设置选定文本粗体"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock FontWeight="Bold" Text="B" />
-                    </Button>
-                    <Button
-                        Width="50"
-                        Height="50"
-                        Padding="0,0,2,0"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        ClickMode="Press"
-                        Command="{Binding ItalicTextCommand}"
-                        Foreground="White"
-                        ToolTip="设置选定文本斜体"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock FontStyle="Italic" Text="i" />
-                    </Button>
-                    <Button
-                        Width="50"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        ClickMode="Press"
-                        Command="{Binding UnderlinedTextCommand}"
-                        Foreground="White"
-                        ToolTip="设置选定文本下划线"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock Text="U">
-                            <TextBlock.TextDecorations>
-                                <TextDecoration />
-                            </TextBlock.TextDecorations>
-                        </TextBlock>
-                    </Button>
-                    <Button
-                        Width="50"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        ClickMode="Press"
-                        Command="{Binding StrikethroughTextCommand}"
-                        Foreground="White"
-                        ToolTip="设置选定文本删除线"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <TextBlock Text="S">
-                            <TextBlock.TextDecorations>
-                                <TextDecoration PenOffset="-5" />
-                            </TextBlock.TextDecorations>
-                        </TextBlock>
-                    </Button>
-                    <Button
-                        Width="50"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        ClickMode="Press"
-                        Command="{Binding ObfuscateTextCommand}"
-                        Content="O"
-                        Foreground="White"
-                        ToolTip="设置选定文本混淆文字"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000" />
-                    <Button
-                        Width="50"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        ClickMode="Press"
-                        Command="{Binding ResetTextCommand}"
-                        Content="R"
-                        Foreground="White"
-                        ToolTip="重置选定文本样式"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000" />
-                    <ColorPicker:ColorPickers
-                        Uid="Right"
-                        Width="50"
-                        Height="50"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Top"
-                        Background="Black"
-                        SelectColor="{Binding SelectionColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        ToolTip="设置选定文本颜色"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="1000">
-                        <behavior:Interaction.Triggers>
-                            <behavior:EventTrigger EventName="PropertyChanged">
-                                <behavior:CallMethodAction MethodName="SetSelectionColor" TargetObject="{Binding}" />
-                            </behavior:EventTrigger>
-                            <behavior:EventTrigger EventName="Loaded">
-                                <behavior:CallMethodAction MethodName="ColorPickerLoaded" TargetObject="{Binding}" />
-                            </behavior:EventTrigger>
-                        </behavior:Interaction.Triggers>
-                    </ColorPicker:ColorPickers>
-                </StackPanel>-->
-            </StackPanel>
+            <ContentControl
+                Grid.Row="1"
+                Grid.Column="0"
+                Height="500">
+                <behavior:Interaction.Triggers>
+                    <behavior:EventTrigger EventName="Loaded">
+                        <behavior:CallMethodAction MethodName="LoadedEditPage" TargetObject="{Binding}" />
+                    </behavior:EventTrigger>
+                </behavior:Interaction.Triggers>
+            </ContentControl>
         </Viewbox>
         <CustomControls:IconTextButtons
-            Grid.Row="1"
+            Grid.Row="2"
             Width="360"
             Height="75"
-            Padding="0,0,0,10"
-            VerticalAlignment="Bottom"
+            VerticalAlignment="Center"
             Panel.ZIndex="1"
             Background="{StaticResource ButtonNormal}"
             Content="署名"
@@ -376,13 +253,14 @@
         <CustomControls:IconTextButtons
             Grid.Row="1"
             Width="360"
-            Height="40"
-            Margin="0,0,0,50"
+            Height="60"
+            Margin="0,0,0,-50"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Background="{StaticResource ButtonNormal}"
             BorderThickness="0"
             Content="署名并关闭"
+            FontSize="25"
             Foreground="Black"
             PressedBackground="{StaticResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}"
@@ -399,13 +277,14 @@
         <CustomControls:IconTextButtons
             Grid.Row="1"
             Width="360"
-            Height="40"
-            Margin="0,0,0,15"
+            Height="60"
+            Margin="0,0,0,-100"
             HorizontalAlignment="Center"
             VerticalAlignment="Bottom"
             Background="{StaticResource ButtonNormal}"
             BorderThickness="0"
             Content="取消"
+            FontSize="25"
             Foreground="Black"
             PressedBackground="{StaticResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}"

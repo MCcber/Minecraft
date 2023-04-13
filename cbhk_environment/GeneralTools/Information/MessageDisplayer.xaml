@@ -49,7 +49,6 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             HorizontalScrollBarVisibility="Disabled"
-            Style="{DynamicResource DefaultScrollViewer}"
             VerticalScrollBarVisibility="Auto">
             <TextBlock
                 HorizontalAlignment="Left"

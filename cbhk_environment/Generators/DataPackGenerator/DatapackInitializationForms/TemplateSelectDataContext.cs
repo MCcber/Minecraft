@@ -2,13 +2,12 @@
 using cbhk_environment.Generators.DataPackGenerator.Components;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MSScriptControl;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -59,28 +58,6 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
 
         #region 模板存放路径
         public static string TemplateDataFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\DataPack\\data\\templates\\presets";
-        #endregion
-
-        #region js脚本执行者
-        string js_file = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js";
-        static string language = "javascript";
-        public static ScriptControlClass json_parser = new ScriptControlClass()
-        {
-            Language = language
-        };
-        public static object JsonScript(string JScript)
-        {
-            object Result = null;
-            try
-            {
-                Result = json_parser.Eval(JScript);
-            }
-            catch (Exception ex)
-            {
-                return ex.Source + "\n" + ex.Message;
-            }
-            return Result;
-        }
         #endregion
 
         #region 近期使用的模板存放路径
@@ -502,22 +479,21 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         /// <param name="e"></param>
         public void RecentTemplateListLoaded(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(RecentTemplateDataFilePath) && File.Exists(js_file) && RecentTemplateList.Count == 0)
+            if (Directory.Exists(RecentTemplateDataFilePath) && RecentTemplateList.Count == 0)
             {
                 string[] recentTemplateDataList = Directory.GetFiles(RecentTemplateDataFilePath,"*.*",SearchOption.AllDirectories);
-                JsonScript(js_file);
                 foreach (string recentTemplateData in recentTemplateDataList)
                 {
                     string recentTemplateString = File.ReadAllText(recentTemplateData);
-                    JsonScript("var data =" + recentTemplateString);
+                    JObject recentTemplateObj = JObject.Parse(recentTemplateString);
 
-                    string templateName = JsonScript("data.TemplateName").ToString();
-                    string fileType = JsonScript("data.FileType").ToString();
-                    string nameSpace = JsonScript("data.FileNameSpace").ToString();
-                    string filePath = JsonScript("data.FilePath").ToString();
-                    string iconPath = AppDomain.CurrentDomain.BaseDirectory + JsonScript("data.IconPath").ToString();
+                    string templateName = recentTemplateObj["TemplateName"].ToString();
+                    string fileType = recentTemplateObj["FileType"].ToString();
+                    string nameSpace = recentTemplateObj["FileNameSpace"].ToString();
+                    string filePath = recentTemplateObj["FilePath"].ToString();
+                    string iconPath = AppDomain.CurrentDomain.BaseDirectory + recentTemplateObj["IconPath"].ToString();
 
-                    RecentTemplateItems recentTemplateItems = new RecentTemplateItems(filePath, fileType, templateName, iconPath, nameSpace)
+                    RecentTemplateItems recentTemplateItems = new(filePath, fileType, templateName, iconPath, nameSpace)
                     {
                         initializationDatacontext = this
                     };

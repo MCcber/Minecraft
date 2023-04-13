@@ -7,6 +7,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace cbhk_environment.Generators.SpawnerGenerator
@@ -35,8 +37,10 @@ namespace cbhk_environment.Generators.SpawnerGenerator
 
         #region 返回和运行指令
         public RelayCommand<CommonWindow> ReturnCommand { get; set; }
-        public RelayCommand RunCommand { get; set; }
         #endregion
+
+        //复制结果
+        RelayCommand CopyResult { get; set; }
 
         //本生成器的图标路径
         string icon_path = "pack://application:,,,/cbhk_environment;component/resources/common/images/spawnerIcons/IconSpawner.png";
@@ -45,13 +49,23 @@ namespace cbhk_environment.Generators.SpawnerGenerator
         {
             #region 绑定指令
             ReturnCommand = new RelayCommand<CommonWindow>(return_command);
-            RunCommand = new RelayCommand(run_command);
+            CopyResult = new RelayCommand(CopyResultCommand);
             #endregion
 
             #region 初始化刷怪笼树结构
             string spawnerStructure = File.ReadAllText(treeViewStructureFilePath);
             SpawnerStructureItems = GeneralTools.TreeViewComponentsHelper.TreeViewConveter.Handler(spawnerStructure);
             #endregion
+        }
+
+        /// <summary>
+        /// 复制结果
+        /// </summary>
+        private void CopyResultCommand()
+        {
+            //TextRange textRange = new(resultDocument.ContentStart, resultDocument.ContentEnd);
+            //string result = "/setblock ~ ~ ~ spawner " + textRange.Text;
+            //Clipboard.SetText(result);
         }
 
         /// <summary>
@@ -66,17 +80,6 @@ namespace cbhk_environment.Generators.SpawnerGenerator
             Spawner.cbhk.Topmost = false;
             Spawner.cbhk.ShowInTaskbar = true;
             win.Close();
-        }
-
-        /// <summary>
-        /// 生成结果
-        /// </summary>
-        private void run_command()
-        {
-            string result = "/setblock ~ ~ ~ spawner {}";
-            Displayer displayer = Displayer.GetContentDisplayer();
-            displayer.GeneratorResult(result,"刷怪笼",icon_path);
-            displayer.Show();
         }
     }
 }

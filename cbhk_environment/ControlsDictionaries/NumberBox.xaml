@@ -21,12 +21,12 @@
                 <Setter Property="Padding" Value="0" />
             </Style>
         </Style.Resources>
-        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="false" />
+        <Setter Property="Stylus.IsPressAndHoldEnabled" Value="True" />
         <Setter Property="SmallChange" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Slider}">
-                    <Grid>
+                    <Grid HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
                         <Grid.RowDefinitions>
                             <!--<RowDefinition Height="*" MinHeight="15" />
                             <RowDefinition Height="*" MinHeight="15" />-->
@@ -36,16 +36,16 @@
                         <Grid.ColumnDefinitions>
                             <!--<ColumnDefinition Width="10*" MinWidth="40" />
                             <ColumnDefinition Width="4*" MinWidth="40" />-->
-                            <ColumnDefinition Width="10*" />
-                            <ColumnDefinition Width="4*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="25" />
                         </Grid.ColumnDefinitions>
                         <TextBox
+                            Grid.Row="0"
                             Grid.RowSpan="2"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
-                            Margin="0"
-                            Padding="0"
-                            VerticalAlignment="Stretch"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalContentAlignment="Left"
                             VerticalContentAlignment="Center"
                             BorderBrush="Black"
                             BorderThickness="1"
@@ -65,12 +65,16 @@
                             Background="{StaticResource ButtonNormal}"
                             BorderThickness="0"
                             Command="{x:Static Slider.IncreaseSmall}"
-                            RenderOptions.BitmapScalingMode="HighQuality"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                             RenderOptions.ClearTypeHint="Enabled"
                             SnapsToDevicePixels="True"
                             UseLayoutRounding="True">
-                            <!--<Path Data="M4,0 L0,4 8,4 Z" Fill="Black" />-->
-                            <Image RenderTransformOrigin="0.5,0.5" Source="/cbhk_environment;component/resources/common/images/AccordionArrow.png">
+                            <Image
+                                Width="12"
+                                Height="12"
+                                VerticalAlignment="Center"
+                                RenderTransformOrigin="0.5,0.5"
+                                Source="/cbhk_environment;component/resources/common/images/AccordionArrow.png">
                                 <Image.RenderTransform>
                                     <RotateTransform Angle="180" />
                                 </Image.RenderTransform>
@@ -83,12 +87,15 @@
                             Background="{StaticResource ButtonNormal}"
                             BorderThickness="0"
                             Command="{x:Static Slider.DecreaseSmall}"
-                            RenderOptions.BitmapScalingMode="HighQuality"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                             RenderOptions.ClearTypeHint="Enabled"
                             SnapsToDevicePixels="True"
                             UseLayoutRounding="True">
-                            <!--<Path Data="M0,0 L4,4 8,0 Z" Fill="Black" />-->
-                            <Image Source="/cbhk_environment;component/resources/common/images/AccordionArrow.png" />
+                            <Image
+                                Width="12"
+                                Height="12"
+                                VerticalAlignment="Center"
+                                Source="/cbhk_environment;component/resources/common/images/AccordionArrow.png" />
                         </RepeatButton>
                         <Border x:Name="TrackBackground" Visibility="Collapsed">
                             <Rectangle x:Name="PART_SelectionRange" Visibility="Collapsed" />

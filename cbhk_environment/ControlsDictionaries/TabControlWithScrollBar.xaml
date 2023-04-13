@@ -25,7 +25,7 @@
                         </Grid.RowDefinitions>
                         <ScrollViewer
                             HorizontalScrollBarVisibility="Auto"
-                            Style="{DynamicResource DefaultScrollViewer}"
+                            
                             VerticalScrollBarVisibility="Auto">
                             <TabPanel
                                 x:Name="HeaderPanel"

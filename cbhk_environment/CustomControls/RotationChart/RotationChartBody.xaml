@@ -45,7 +45,7 @@
             <Grid Grid.Column="1">
                 <ScrollViewer
                     HorizontalScrollBarVisibility="Auto"
-                    Style="{DynamicResource DefaultScrollViewer}"
+                    
                     VerticalScrollBarVisibility="Disabled">
                     <DockPanel
                         x:Name="SwitchButtonPanel"

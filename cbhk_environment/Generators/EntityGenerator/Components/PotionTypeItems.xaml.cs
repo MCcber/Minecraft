@@ -20,9 +20,9 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 if (EffectIdString.Length > 0)
                 {
                     string Duration = EffectDuration.Value.ToString();
-                    Duration = Duration.Contains('.') ? Duration.Substring(0, Duration.IndexOf('.')) : Duration;
+                    Duration = Duration.Contains('.') ? Duration[..Duration.IndexOf('.')] : Duration;
                     string Level = EffectLevel.Value.ToString();
-                    Level = Level.Contains('.') ? Level.Substring(0, Level.IndexOf('.')) : Level;
+                    Level = Level.Contains('.') ? Level[..Level.IndexOf('.')] : Level;
                     string result = "{Id:" + EffectIdString + "b,Duration:" + Duration + ",Amplifier:" + Level + "b,Ambient:0b,ShowParticles:0b},";
                     return result;
                 }

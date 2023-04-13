@@ -13,10 +13,10 @@ using Point = System.Windows.Point;
 using Hardcodet.Wpf.TaskbarNotification;
 using cbhk_environment.ControlsDataContexts;
 using System.Collections.ObjectModel;
-using MSScriptControl;
 using Image = System.Windows.Controls.Image;
 using System.Text.RegularExpressions;
 using cbhk_environment.CustomControls;
+using Newtonsoft.Json.Linq;
 
 namespace cbhk_environment
 {
@@ -61,94 +61,73 @@ namespace cbhk_environment
 
         public TaskbarIcon taskbar_icon;
 
-        #region js脚本执行者
-        private static string language = "javascript";
-        public static ScriptControlClass json_parser = new()
-        {
-            Language = language
-        };
-        public static object JsonScript(string JScript)
-        {
-            object Result = null;
-            try
-            {
-                Result = json_parser.Eval(JScript);
-            }
-            catch (Exception ex)
-            {
-                return ex.Source + "\n" + ex.Message;
-            }
-            return Result;
-        }
-        #endregion
-
         #region 所有数据源对象
         //配方生成器图片源
-        public static ObservableCollection<Image> RecipeImageList = new ObservableCollection<Image> { };
+        public static ObservableCollection<Image> RecipeImageList = new ();
         //属性数据源
-        public static ObservableCollection<string> AttributeSource = new ObservableCollection<string> { };
+        public static ObservableCollection<string> AttributeSource = new ();
         //属性生效槽位数据源
-        public static ObservableCollection<string> AttributeSlotSource = new ObservableCollection<string> { };
+        public static ObservableCollection<string> AttributeSlotSource = new ();
         //属性值类型数据源
-        public static ObservableCollection<string> AttributeValueTypeSource = new ObservableCollection<string> { };
+        public static ObservableCollection<string> AttributeValueTypeSource = new();
         //物品id数据源
-        public static ObservableCollection<IconComboBoxItem> ItemIdSource = new ObservableCollection<IconComboBoxItem> { };
+        public static ObservableCollection<IconComboBoxItem> ItemIdSource = new();
         //方块id数据源
-        public static ObservableCollection<IconComboBoxItem> BlockIDSource = new ObservableCollection<IconComboBoxItem> { };
+        public static ObservableCollection<IconComboBoxItem> BlockIDSource = new ();
         //附魔id数据源
-        public static ObservableCollection<string> EnchantmentIdSource = new ObservableCollection<string> { };
+        public static ObservableCollection<string> EnchantmentIdSource = new ();
         //保存id与name
-        public static Dictionary<string, BitmapImage> EntityDataBase = new Dictionary<string, BitmapImage> { };
+        public static Dictionary<string, BitmapImage> EntityDataBase = new ();
         //物品id数据源
-        public static ObservableCollection<IconComboBoxItem> EntityIdSource = new ObservableCollection<IconComboBoxItem> { };
+        public static ObservableCollection<IconComboBoxItem> EntityIdSource = new();
         //保存药水id与name
-        public static Dictionary<string, string> MobEffectDataBase = new Dictionary<string, string> { };
+        public static Dictionary<string, string> MobEffectDataBase = new ();
         //药水id数据源
-        public static ObservableCollection<IconComboBoxItem> MobEffectIdSource = new ObservableCollection<IconComboBoxItem> { };
+        public static ObservableCollection<IconComboBoxItem> MobEffectIdSource = new ();
         //保存物品id与name
-        public static Dictionary<string, BitmapImage> ItemDataBase = new Dictionary<string, BitmapImage> { };
+        public static Dictionary<string, BitmapImage> ItemDataBase = new ();
         //保存方块id与name
-        public static Dictionary<string, BitmapImage> BlockDataBase = new Dictionary<string, BitmapImage> { };
+        public static Dictionary<string, BitmapImage> BlockDataBase = new ();
         //保存附魔id与name
-        public static Dictionary<string, string> EnchantmentDataBase = new Dictionary<string, string> { };
+        public static Dictionary<string, string> EnchantmentDataBase = new ();
         //保存属性id与name
-        public static Dictionary<string, string> AttribuiteDataBase = new Dictionary<string, string> { };
+        public static Dictionary<string, string> AttribuiteDataBase = new ();
         //保存属性的生效槽位
-        public static Dictionary<string, string> AttributeSlotDataBase = new Dictionary<string, string> { };
+        public static Dictionary<string, string> AttributeSlotDataBase = new ();
         //保存属性值类型
-        public static Dictionary<string, string> AttributeValueTypeDatabase = new Dictionary<string, string> { };
+        public static Dictionary<string, string> AttributeValueTypeDatabase = new ();
         //保存隐藏信息id与name
-        public static Dictionary<string, string> HideInfomationDataBase = new Dictionary<string, string> { };
+        public static Dictionary<string, string> HideInfomationDataBase = new ();
         //信息隐藏标记
-        public static ObservableCollection<string> HideFlagsSource = new ObservableCollection<string> { };
+        public static ObservableCollection<string> HideFlagsSource = new ();
 
         //标签生成器的过滤类型数据源
-        public static ObservableCollection<string> TypeItemSource = new ObservableCollection<string> { };
+        public static ObservableCollection<string> TypeItemSource = new ();
 
         //标签生成器的复选框列表
-        public static ObservableCollection<RichCheckBoxs> TagSpawnerItemCheckBoxList = new ObservableCollection<RichCheckBoxs> { };
-        public static ObservableCollection<RichCheckBoxs> BlockCheckBoxList = new ObservableCollection<RichCheckBoxs> { };
-        public static ObservableCollection<RichCheckBoxs> TagSpawnerBiomeCheckBoxList = new ObservableCollection<RichCheckBoxs> { };
-        public static ObservableCollection<RichCheckBoxs> EntityCheckBoxList = new ObservableCollection<RichCheckBoxs> { };
+        public static ObservableCollection<RichCheckBoxs> TagSpawnerItemCheckBoxList = new ();
+        public static ObservableCollection<RichCheckBoxs> BlockCheckBoxList = new () { };
+        public static ObservableCollection<RichCheckBoxs> TagSpawnerBiomeCheckBoxList = new () { };
+        public static ObservableCollection<RichCheckBoxs> EntityCheckBoxList = new () { };
 
         //粒子列表数据源
-        public static ObservableCollection<string> ParticleDataBase = new ObservableCollection<string> { };
+        public static ObservableCollection<string> ParticleDataBase = new() { };
 
         //音效列表数据源
-        public static ObservableCollection<string> SoundDataBase = new ObservableCollection<string> { };
+        public static ObservableCollection<string> SoundDataBase = new () { };
 
         //音效列表id名称字典
-        public static Dictionary<string,string> SoundIdNameSource = new Dictionary<string,string> { };
+        public static Dictionary<string,string> SoundIdNameSource = new() { };
 
         //记分板判据类型数据源
-        public static ObservableCollection<string> ScoreboardTypeDataBase = new ObservableCollection<string> { };
+        public static ObservableCollection<string> ScoreboardTypeDataBase = new() { };
 
         //队伍颜色列表
-        public static ObservableCollection<string> TeamColorDataBase = new ObservableCollection<string> { };
+        public static ObservableCollection<string> TeamColorDataBase = new() { };
         #endregion
 
         //用户数据
-        Dictionary<string, string> UserData = new Dictionary<string, string> { };
+        Dictionary<string, string> UserData = new(){ };
 
         public MainWindow(Dictionary<string,string> user_info)
         {
@@ -178,22 +157,18 @@ namespace cbhk_environment
         {
             #region 获取所有物品的id和对应的中文
             SolidColorBrush white_brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json") &&
-               File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && ItemDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json") && ItemDataBase.Count == 0)
             {
                 string items_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json");
-                string js_file = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js");
-
-                JsonScript(js_file);
+                JArray itemArray = JArray.Parse(items_json);
                 string item_id;
                 string item_name;
 
-                JsonScript("parseJSON(" + items_json + ");");
-                int item_count = int.Parse(JsonScript("data.length").ToString());
+                int item_count = itemArray.Count;
                 for (int i = 0; i < item_count; i++)
                 {
-                    item_id = JsonScript("getJSON('[" + i + "].id');").ToString();
-                    item_name = JsonScript("getJSON('[" + i + "].name');").ToString();
+                    item_id = itemArray[i]["id"].ToString();
+                    item_name = itemArray[i]["name"].ToString();
                     BitmapImage image = null;
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png"))
                     {
@@ -203,7 +178,7 @@ namespace cbhk_environment
                         RenderOptions.SetClearTypeHint(image,ClearTypeHint.Enabled);
 
                         #region 给配方生成器提供数据
-                        Image recipeImage = new Image()
+                        Image recipeImage = new()
                         {
                             Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.Absolute)),
                             ToolTip = item_id + " " + item_name,
@@ -243,26 +218,25 @@ namespace cbhk_environment
             #endregion
 
             #region 获取所有方块的id和对应中文
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\blocks.json") &&
-                File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && BlockDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\blocks.json") && BlockDataBase.Count == 0)
             {
                 string blocks_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\blocks.json");
+                JArray blockArray = JArray.Parse(blocks_json);
                 string block_id;
                 string block_name;
 
-                JsonScript("parseJSON(" + blocks_json + ");");
-                int block_count = int.Parse(JsonScript("getLength();").ToString());
+                int block_count = blockArray.Count;
                 for (int i = 0; i < block_count; i++)
                 {
-                    block_id = JsonScript("getJSON('[" + i + "].id');").ToString();
-                    block_name = JsonScript("getJSON('[" + i + "].name');").ToString();
+                    block_id = blockArray[i]["id"].ToString();
+                    block_name = blockArray[i]["name"].ToString();
                     BitmapImage image = null;
-                    if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\block_and_block_images\\" + block_id + ".png"))
+                    if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png"))
                     {
                         image = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png", UriKind.Relative));
                         RenderOptions.SetBitmapScalingMode(image,BitmapScalingMode.HighQuality);
                         RenderOptions.SetClearTypeHint(image,ClearTypeHint.Enabled);
-                        BlockIDSource.Add(new IconComboBoxItem() { ComboBoxItemText = block_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\block_and_block_images\\" + block_id + ".png", UriKind.Absolute)) });
+                        BlockIDSource.Add(new IconComboBoxItem() { ComboBoxItemText = block_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png", UriKind.Absolute)) });
                         RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
                         RenderOptions.SetClearTypeHint(image, ClearTypeHint.Enabled);
                     }
@@ -276,7 +250,7 @@ namespace cbhk_environment
                         Margin = new Thickness(10, 0, 0, 0),
                         FontSize = 15,
                         Foreground = white_brush,
-                        Tag = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\block_and_block_images\\" + block_id + ".png",
+                        Tag = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png",
                         HeaderHeight = 20,
                         HeaderWidth = 20,
                         ContentImage = null,
@@ -290,24 +264,21 @@ namespace cbhk_environment
             #endregion
 
             #region 获取所有附魔id和描述
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\enchantments.json") &&
-                File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && EnchantmentDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\enchantments.json") && EnchantmentDataBase.Count == 0)
             {
                 string enchantments_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\enchantments.json");
-
+                JArray enchantmentArray = JArray.Parse(enchantments_json);
                 ObservableCollection<string> itemDataGroups = new ObservableCollection<string>();
                 string enchantment_id = "";
                 string enchantment_name = "";
                 string enchantment_num = "";
 
-                JsonScript("parseJSON(" + enchantments_json + ");");
-
-                int enchantment_count = int.Parse(JsonScript("getLength();").ToString());
+                int enchantment_count = enchantmentArray.Count;
                 for (int i = 0; i < enchantment_count; i++)
                 {
-                    enchantment_id = JsonScript("getJSON('[" + i + "].id');").ToString();
-                    enchantment_name = JsonScript("getJSON('[" + i + "].name');").ToString();
-                    enchantment_num = JsonScript("getJSON('[" + i + "].num');").ToString();
+                    enchantment_id = enchantmentArray[i]["id"].ToString();
+                    enchantment_name = enchantmentArray[i]["name"].ToString();
+                    enchantment_num = enchantmentArray[i]["num"].ToString();
                     EnchantmentDataBase.Add(enchantment_id, enchantment_name + enchantment_num);
                     itemDataGroups.Add(enchantment_name);
                 }
@@ -316,23 +287,20 @@ namespace cbhk_environment
             #endregion
 
             #region 获取所有药水效果和描述
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\mob_effects.json") &&
-                File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && MobEffectDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\mob_effects.json") && MobEffectDataBase.Count == 0)
             {
                 string potion_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\mob_effects.json");
-
+                JArray potionArray = JArray.Parse(potion_json);
                 string potion_id = "";
                 string potion_name = "";
                 string potion_num = "";
 
-                JsonScript("parseJSON(" + potion_json + ");");
-
-                int effect_count = int.Parse(JsonScript("getLength();").ToString());
+                int effect_count = potionArray.Count;
                 for (int i = 0; i < effect_count; i++)
                 {
-                    potion_id = JsonScript("getJSON('[" + i + "].id');").ToString();
-                    potion_name = JsonScript("getJSON('[" + i + "].name');").ToString();
-                    potion_num = JsonScript("getJSON('[" + i + "].num');").ToString();
+                    potion_id = potionArray[i]["id"].ToString();
+                    potion_name = potionArray[i]["name"].ToString();
+                    potion_num = potionArray[i]["num"].ToString();
 
                     MobEffectDataBase.Add(potion_id, potion_name + potion_num);
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\mob_effects_images\\" + potion_id + ".png"))
@@ -412,20 +380,19 @@ namespace cbhk_environment
             #endregion
 
             #region 获取所有实体的id和对应的中文
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entities.json") &&
-               File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && EntityDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entities.json") && EntityDataBase.Count == 0)
             {
                 string entities_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entities.json");
+                JArray entityArray = JArray.Parse(entities_json);
                 string entity_id = "";
                 string entity_name = "";
                 BitmapImage image = null;
 
-                JsonScript("parseJSON(" + entities_json + ");");
-                int item_count = int.Parse(JsonScript("getLength();").ToString());
-                for (int i = 0; i < item_count; i++)
+                int entityCount = entityArray.Count;
+                for (int i = 0; i < entityCount; i++)
                 {
-                    entity_id = JsonScript("getJSON('[" + i + "].id');").ToString();
-                    entity_name = JsonScript("getJSON('[" + i + "].name');").ToString();
+                    entity_id = entityArray[i]["id"].ToString();
+                    entity_name = entityArray[i]["name"].ToString();
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + entity_id + "_spawn_egg.png"))
                     {
                         image = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + entity_id + "_spawn_egg.png", UriKind.Absolute));
@@ -469,33 +436,33 @@ namespace cbhk_environment
             #endregion
 
             #region 获取所有粒子id
-            if(File.Exists(AppDomain.CurrentDomain.BaseDirectory+ "resources\\data_sources\\particles.json") && File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && ParticleDataBase.Count == 0)
+            if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\particles.json") && ParticleDataBase.Count == 0)
             {
                 string particle_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\particles.json");
+                JArray particleArray = JArray.Parse(particle_json);
                 string particle_id = "";
-                JsonScript("parseJSON(" + particle_json + ");");
-                int item_count = int.Parse(JsonScript("getLength();").ToString());
-                for (int i = 0; i < item_count; i++)
+
+                int particleount = particleArray.Count;
+                for (int i = 0; i < particleount; i++)
                 {
-                    particle_id = JsonScript("getJSON('[" + i + "]');").ToString();
+                    particle_id = particleArray[i].ToString();
                     ParticleDataBase.Add(particle_id);
                 }
             }
             #endregion
 
             #region 获取所有音效id
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\sounds.json") && File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && SoundDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\sounds.json") && SoundDataBase.Count == 0)
             {
                 string sound_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\sounds.json");
+                JArray soundArray = JArray.Parse(sound_json);
                 string sound_id = "";
                 string sound_name = "";
-                JsonScript("parseJSON(" + sound_json + ");");
-                int item_count = int.Parse(JsonScript("getLength();").ToString());
-                for (int i = 0; i < item_count; i++)
+                int soundCount = soundArray.Count;
+                for (int i = 0; i < soundCount; i++)
                 {
-                    sound_id = JsonScript("getJSON('[" + i + "].id');").ToString();
-                    sound_name = JsonScript("getJSON('[" + i + "].name');").ToString();
-
+                    sound_id = soundArray[i]["id"].ToString();
+                    sound_name = soundArray[i]["name"].ToString();
                     SoundIdNameSource.Add(sound_id, sound_name);
                     SoundDataBase.Add(sound_id);
                 }
@@ -514,18 +481,18 @@ namespace cbhk_environment
             #endregion
 
             #region 获取所有记分板判据类型
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\scoreboardType.json") && File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && ScoreboardTypeDataBase.Count == 0)
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\scoreboardType.json") && ScoreboardTypeDataBase.Count == 0)
             {
                 string scoreboardType_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\scoreboardType.json");
+                JArray scoreboardTypeArray = JArray.Parse(scoreboardType_json);
                 string scoreboard_type;
-                JsonScript("parseJSON(" + scoreboardType_json + ");");
-                int item_count = int.Parse(JsonScript("getLength();").ToString());
+                int scoreboardTypeCount = scoreboardTypeArray.Count;
                 //按正则提取记分板的类型分支成员
-                Regex GetTypeItems = new Regex(@"(?<=\{)[^}]*(?=\})");
-                for (int i = 0; i < item_count; i++)
+                Regex GetTypeItems = new(@"(?<=\{)[^}]*(?=\})");
+                for (int i = 0; i < scoreboardTypeCount; i++)
                 {
-                    scoreboard_type = JsonScript("getJSON('[" + i + "]');").ToString();
-                    if(scoreboard_type.Contains("{"))
+                    scoreboard_type = scoreboardTypeArray[i].ToString();
+                    if (scoreboard_type.Contains('{'))
                     {
                         string item = GetTypeItems.Match(scoreboard_type).ToString();
                         string type_head = GetTypeItems.Replace(scoreboard_type, "").Replace("{", "").Replace("}", "");

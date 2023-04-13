@@ -245,16 +245,16 @@
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
                 <Setter Property="Template" Value="{StaticResource HorizontalScrollBar}" />
-                <Setter Property="Height" Value="10" />
+                <Setter Property="Height" Value="15" />
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
                 <Setter Property="Template" Value="{StaticResource VerticalScrollBar}" />
-                <Setter Property="Width" Value="10" />
+                <Setter Property="Width" Value="15" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="DefaultScrollViewer" TargetType="{x:Type ScrollViewer}">
+    <Style x:Key="{x:Type ScrollViewer}" TargetType="{x:Type ScrollViewer}">
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />

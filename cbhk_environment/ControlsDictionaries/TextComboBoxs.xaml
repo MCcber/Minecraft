@@ -36,7 +36,7 @@
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Focusable" Value="false" />
-        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="ClickMode" Value="Release" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -62,6 +62,12 @@
                                 Fill="White" />
                         </Border>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="templateRoot" Property="Background" Value="#2F2F2F" />
+                            <Setter TargetName="splitBorder" Property="Background" Value="#2F2F2F" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                     <!--<ControlTemplate.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -177,7 +183,7 @@
                         <ScrollViewer
                             x:Name="DropDownScrollViewer"
                             Width="{TemplateBinding Width}"
-                            Style="{DynamicResource DefaultScrollViewer}"
+                            
                             VirtualizingPanel.ScrollUnit="Pixel">
                             <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas
@@ -234,6 +240,10 @@
             </Border>
         </Grid>
         <ControlTemplate.Triggers>
+            <!--<Trigger SourceName="PART_Popup" Property="IsOpen" Value="True">
+                <Setter Property="Background" Value="Gray" />
+                <Setter Property="Background" Value="Gray" />
+            </Trigger>-->
             <Trigger Property="IsEnabled" Value="false">
                 <Setter TargetName="border" Property="Opacity" Value="0.56" />
             </Trigger>
@@ -285,7 +295,7 @@
                         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                         BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                         BorderThickness="1">
-                        <ScrollViewer x:Name="DropDownScrollViewer" Style="{DynamicResource DefaultScrollViewer}">
+                        <ScrollViewer x:Name="DropDownScrollViewer" >
                             <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas
                                     x:Name="canvas"
@@ -359,6 +369,7 @@
         <Setter Property="IsEditable" Value="True" />
         <Setter Property="Foreground" Value="White" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="ItemTemplate" Value="{StaticResource DisplayTemplate}" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />

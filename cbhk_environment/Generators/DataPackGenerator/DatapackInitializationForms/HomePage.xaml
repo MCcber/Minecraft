@@ -106,7 +106,6 @@
                     MaxHeight="420"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    Style="{DynamicResource DefaultScrollViewer}"
                     Visibility="{Binding RecentItemSearchPanelVisibility, Mode=OneWay}">
                     <ItemsControl
                         MaxHeight="420"

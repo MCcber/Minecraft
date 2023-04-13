@@ -1,6 +1,7 @@
 ﻿using cbhk_environment.CustomControls;
-using cbhk_environment.GeneralTools.ScrollViewerHelper;
+using cbhk_environment.GeneralTools;
 using ICSharpCode.AvalonEdit;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -208,7 +209,7 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
         {
             string content;
             string jsonData = "";
-            using (StreamReader streamReader = new StreamReader(path))
+            using (StreamReader streamReader = new(path))
             {
                 content = streamReader.ReadToEnd();
                 ContentType contentType = GetTargetContentType(content);
@@ -230,17 +231,16 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
             //过滤器对象
             RichParagraph filterParagraph = new RichParagraph();
             //载入目标路径的元数据文件
-            //string jsonData = File.ReadAllText(content,System.Text.Encoding.UTF8);
-            datapack_datacontext.JsonScript("var data =" + jsonData);
+            JObject jsonObj = JObject.Parse(jsonData);
 
             #region 提取版本数据
-            object VersionObj = datapack_datacontext.JsonScript("data.pack.pack_format");
+            JToken VersionObj = jsonObj.SelectToken("pack.pack_format");
             #endregion
 
             #region 判断该包是否有简介和过滤器
-            object DescriptionObj = datapack_datacontext.JsonScript("data.pack.description");
-            object FilterObj = datapack_datacontext.JsonScript("data.filter");
-            object BlockObj = datapack_datacontext.JsonScript("data.filter.block");
+            object DescriptionObj = jsonObj.SelectToken("pack.description");
+            JToken FilterObj = jsonObj.SelectToken("filter");
+            JToken BlockObj = jsonObj.SelectToken("filter.block");
             #endregion
 
             //把数字版本号转为游戏版本号(该参数为必要参数)
@@ -251,19 +251,20 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                 //检查简介内容
                 if (DescriptionObj != null)
                 {
-                    bool.TryParse(datapack_datacontext.JsonScript("CurrentIsArray('.pack.description');").ToString(),out descriptionIsArray);
+                    JToken descriptionArray = jsonObj.SelectToken("pack.description");
+                    descriptionIsArray = descriptionArray.GetType() == typeof(JArray);
                     if (descriptionIsArray)
-                        descriptionCount = int.Parse(datapack_datacontext.JsonScript("data.pack.description.length").ToString());
+                        descriptionCount = (descriptionArray as JArray).Count;
                 }
 
                 //检查过滤器是否有成员
                 if (FilterObj != null && BlockObj != null)
-                    int.TryParse(datapack_datacontext.JsonScript("data.filter.block.length").ToString(), out blockCount);
+                    blockCount = (BlockObj as JArray).Count;
 
                 string action = "";
                 string value = "";
-                object actionObj = null;
-                object valueObj = null;
+                JToken actionObj = null;
+                JToken valueObj = null;
                 string component = "";
 
                 #region 处理描述
@@ -273,28 +274,28 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                     for (int i = 0; i < descriptionCount; i++)
                     {
                         #region 处理文本组件的各种属性
-                        object textObj = datapack_datacontext.JsonScript("data.pack.description[" + i + "].text");
+                        JToken textObj = jsonObj.SelectToken("pack.description[" + i + "].text");
                         string text = textObj != null ? "\"text\":\"" + textObj.ToString() +"\"," :"";
-                        object colorObj = datapack_datacontext.JsonScript("data.pack.description[" + i + "].color");
+                        JToken colorObj = jsonObj.SelectToken("pack.description[" + i + "].color");
                         string color = colorObj != null ? "\"color\":\"" + colorObj.ToString() + "\"," : "";
 
-                        object HaveBold = datapack_datacontext.JsonScript("data.pack.description[" + i + "].bold");
+                        JToken HaveBold = jsonObj.SelectToken("pack.description[" + i + "].bold");
                         string Bold = HaveBold != null ? "\"bold\":"+HaveBold.ToString()+"," : "";
-                        object HaveItalic = datapack_datacontext.JsonScript("data.pack.description[" + i + "].italic");
+                        JToken HaveItalic = jsonObj.SelectToken("pack.description[" + i + "].italic");
                         string Italic = HaveItalic != null ? "\"italic\":"+HaveItalic.ToString()+"," : "";
-                        object HaveUnderlined = datapack_datacontext.JsonScript("data.pack.description[" + i + "].underlined");
+                        JToken HaveUnderlined = jsonObj.SelectToken("pack.description[" + i + "].underlined");
                         string Underlined = HaveUnderlined != null ? "\"underlined\":" + HaveUnderlined.ToString() + "," : "";
-                        object HaveStrikethrough = datapack_datacontext.JsonScript("data.pack.description[" + i + "].strikethrough");
+                        JToken HaveStrikethrough = jsonObj.SelectToken("pack.description[" + i + "].strikethrough");
                         string Strikethrough = HaveStrikethrough != null ? "\"strikethrough\":" + HaveUnderlined.ToString() + "," : "";
-                        object HaveObfuscated = datapack_datacontext.JsonScript("data.pack.description[" + i + "].obfuscated");
+                        JToken HaveObfuscated = jsonObj.SelectToken("pack.description[" + i + "].obfuscated");
                         string Obfuscated = HaveObfuscated != null ? "\"obfuscated\":" + HaveObfuscated.ToString() + "," : "";
 
                         string ClickEvent = "";
-                        object HaveClickEvent = datapack_datacontext.JsonScript("data.pack.description[" + i + "].clickEvent");
+                        JToken HaveClickEvent = jsonObj.SelectToken("pack.description[" + i + "].clickEvent");
                         if(HaveClickEvent != null)
                         {
-                            actionObj = datapack_datacontext.JsonScript("data.pack.description[" + i + "].clickEvent.action");
-                            valueObj = datapack_datacontext.JsonScript("data.pack.description[" + i + "].clickEvent.value");
+                            actionObj = jsonObj.SelectToken("pack.description[" + i + "].clickEvent.action");
+                            valueObj = jsonObj.SelectToken("pack.description[" + i + "].clickEvent.value");
                             if(actionObj != null)
                                 action = "\"action\":\""+ actionObj.ToString()+"\",";
                             if(valueObj != null)
@@ -302,11 +303,11 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                             ClickEvent = "\"clickEvent\":{" + action + value + "},";
                         }
                         string HoverEvent = "";
-                        object HaveHoverEvent = datapack_datacontext.JsonScript("data.pack.description[" + i + "].hoverEvent");
+                        JToken HaveHoverEvent = jsonObj.SelectToken("pack.description[" + i + "].hoverEvent");
                         if(HaveHoverEvent != null)
                         {
-                            actionObj = datapack_datacontext.JsonScript("data.pack.description[" + i + "].hoverEvent.action");
-                            valueObj = datapack_datacontext.JsonScript("data.pack.description[" + i + "].hoverEvent.value");
+                            actionObj = jsonObj.SelectToken("pack.description[" + i + "].hoverEvent.action");
+                            valueObj = jsonObj.SelectToken("pack.description[" + i + "].hoverEvent.value");
                             if (actionObj != null)
                                 action = "\"action\":\"" + actionObj.ToString() + "\",";
                             if (valueObj != null)
@@ -314,7 +315,7 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                             HoverEvent = "\"hoverEvent\":" + HaveHoverEvent.ToString() + ",";
                         }
 
-                        object HaveInsertion = datapack_datacontext.JsonScript("data.pack.description[" + i + "].insertion");
+                        object HaveInsertion = jsonObj.SelectToken("pack.description[" + i + "].insertion");
                         string Insertion = HaveInsertion != null ? "\"insertion\":" + HaveInsertion.ToString() + "," : "";
                         #endregion
 
@@ -330,28 +331,28 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                 {
                     result.DescriptionType = "Object";
                     #region 处理文本组件的各种属性
-                    object textObj = datapack_datacontext.JsonScript("data.pack.description.text");
+                    JToken textObj = jsonObj.SelectToken("pack.description.text");
                     string text = textObj != null ? "\"text\":\"" + textObj.ToString() + "\"," : "";
-                    object colorObj = datapack_datacontext.JsonScript("data.pack.description.color");
+                    JToken colorObj = jsonObj.SelectToken("pack.description.color");
                     string color = colorObj != null ? "\"color\":\"" + colorObj.ToString() + "\"," : "";
 
-                    object HaveBold = datapack_datacontext.JsonScript("data.pack.description.bold");
+                    JToken HaveBold = jsonObj.SelectToken("pack.description.bold");
                     string Bold = HaveBold != null ? "\"bold\":" + HaveBold.ToString() + "," : "";
-                    object HaveItalic = datapack_datacontext.JsonScript("data.pack.description.italic");
+                    JToken HaveItalic = jsonObj.SelectToken("pack.description.italic");
                     string Italic = HaveItalic != null ? "\"italic\":" + HaveItalic.ToString() + "," : "";
-                    object HaveUnderlined = datapack_datacontext.JsonScript("data.pack.description.underlined");
+                    JToken HaveUnderlined = jsonObj.SelectToken("pack.description.underlined");
                     string Underlined = HaveUnderlined != null ? "\"underlined\":" + HaveUnderlined.ToString() + "," : "";
-                    object HaveStrikethrough = datapack_datacontext.JsonScript("data.pack.description.strikethrough");
+                    JToken HaveStrikethrough = jsonObj.SelectToken("pack.description.strikethrough");
                     string Strikethrough = HaveStrikethrough != null ? "\"strikethrough\":" + HaveUnderlined.ToString() + "," : "";
-                    object HaveObfuscated = datapack_datacontext.JsonScript("data.pack.description.obfuscated");
+                    JToken HaveObfuscated = jsonObj.SelectToken("pack.description.obfuscated");
                     string Obfuscated = HaveObfuscated != null ? "\"obfuscated\":" + HaveObfuscated.ToString() + "," : "";
 
                     string ClickEvent = "";
-                    object HaveClickEvent = datapack_datacontext.JsonScript("data.pack.description.clickEvent");
+                    JToken HaveClickEvent = jsonObj.SelectToken("pack.description.clickEvent");
                     if (HaveClickEvent != null)
                     {
-                        actionObj = datapack_datacontext.JsonScript("data.pack.description.clickEvent.action");
-                        valueObj = datapack_datacontext.JsonScript("data.pack.description.clickEvent.value");
+                        actionObj = jsonObj.SelectToken("pack.description.clickEvent.action");
+                        valueObj = jsonObj.SelectToken("pack.description.clickEvent.value");
                         if (actionObj != null)
                             action = "\"action\":\"" + actionObj.ToString() + "\",";
                         if (valueObj != null)
@@ -359,11 +360,11 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                         ClickEvent = "\"clickEvent\":{" + action + value + "},";
                     }
                     string HoverEvent = "";
-                    object HaveHoverEvent = datapack_datacontext.JsonScript("data.pack.description.hoverEvent");
+                    JToken HaveHoverEvent = jsonObj.SelectToken("pack.description.hoverEvent");
                     if (HaveHoverEvent != null)
                     {
-                        actionObj = datapack_datacontext.JsonScript("data.pack.description.hoverEvent.action");
-                        valueObj = datapack_datacontext.JsonScript("data.pack.description.hoverEvent.value");
+                        actionObj = jsonObj.SelectToken("pack.description.hoverEvent.action");
+                        valueObj = jsonObj.SelectToken("pack.description.hoverEvent.value");
                         if (actionObj != null)
                             action = "\"action\":\"" + actionObj.ToString() + "\",";
                         if (valueObj != null)
@@ -371,7 +372,7 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                         HoverEvent = "\"hoverEvent\":" + HaveHoverEvent.ToString() + ",";
                     }
 
-                    object HaveInsertion = datapack_datacontext.JsonScript("data.pack.description.insertion");
+                    JToken HaveInsertion = jsonObj.SelectToken("pack.description.insertion");
                     string Insertion = HaveInsertion != null ? "\"insertion\":" + HaveInsertion.ToString() + "," : "";
                     #endregion
 
@@ -384,22 +385,22 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                 else//描述类型为字符串，数值或布尔
                 {
                     result.DescriptionType = "String";
-                    bool.TryParse(datapack_datacontext.JsonScript("data.pack.description").ToString(),out bool IsBool);
-                    int.TryParse(datapack_datacontext.JsonScript("data.pack.description").ToString(), out int IsInt);
+                    bool.TryParse(jsonObj.SelectToken("pack.description").ToString(),out bool IsBool);
+                    int.TryParse(jsonObj.SelectToken("pack.description").ToString(), out int IsInt);
                     if (IsBool)
                         result.DescriptionType = "Bool";
                     else
                         if (IsInt > 0)
                         result.DescriptionType = "Int";
-                    DescriptionObj = datapack_datacontext.JsonScript("data.pack.description").ToString();
+                    DescriptionObj = jsonObj.SelectToken("pack.description").ToString();
                 }
                 #endregion
 
                 #region 处理过滤器
                 for (int i = 0; i < blockCount; i++)
                 {
-                    object filterNameSpace = datapack_datacontext.JsonScript("data.pack.filter.block[" + i + "].namespace");
-                    object filterPath = datapack_datacontext.JsonScript("data.pack.filter.block[" + i + "].path");
+                    JToken filterNameSpace = jsonObj.SelectToken("pack.filter.block[" + i + "].namespace");
+                    JToken filterPath = jsonObj.SelectToken("pack.filter.block[" + i + "].path");
                     string filterItem = filterNameSpace != null?"{\"namespace\":\""+filterNameSpace.ToString()+(filterPath != null? "\",\"path\":\"" + filterPath + "\"":"")+"},":"";
                     filterParagraph.Inlines.Add(new RichRun()
                     {
@@ -577,14 +578,11 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
                         Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1A1A")),
                         BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3D3D3D")),
                         BorderThickness = new Thickness(0),
-                        FontFamily = new FontFamily("Minecraft"),
                         FontWeight = FontWeights.Normal,
                         FontSize = 20,
                         WordWrap = true,
                         ShowLineNumbers = true
                     };
-                    VirtualizingPanel.SetIsVirtualizing(textBox, true);
-                    VirtualizingPanel.SetVirtualizationMode(textBox, VirtualizationMode.Recycling);
                     ICSharpCode.AvalonEdit.Search.SearchPanel.Install(textBox);
                     TextEditorOptions editorOptions = new TextEditorOptions
                     {

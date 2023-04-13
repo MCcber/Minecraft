@@ -23,18 +23,13 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         SnapsToDevicePixels="true">
                         <ScrollViewer
-                            x:Name="scrollViewer"
                             Focusable="false"
-                            Style="{DynamicResource DefaultScrollViewer}"
                             VirtualizingPanel.IsVirtualizing="True"
-                            VirtualizingPanel.ScrollUnit="Pixel"
                             VirtualizingPanel.VirtualizationMode="Recycling">
                             <ItemsPresenter
                                 x:Name="itemPresenter"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
-                                RenderOptions.ClearTypeHint="Enabled"
-                                SnapsToDevicePixels="True"
-                                UseLayoutRounding="True" />
+                                RenderOptions.BitmapScalingMode="HighQuality"
+                                RenderOptions.ClearTypeHint="Enabled" />
                         </ScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>

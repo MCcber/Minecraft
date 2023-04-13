@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <ScrollViewer
         HorizontalScrollBarVisibility="Auto"
-        Style="{DynamicResource DefaultScrollViewer}"
+        
         VerticalScrollBarVisibility="Auto">
         <StackPanel>
             <CustomControls:RadiusToggleButtons

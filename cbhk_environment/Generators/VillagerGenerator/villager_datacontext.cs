@@ -43,6 +43,9 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 selectedVersion = value;
+                if ((CanEditBrain || CanEditGossips) && selectedVersion == "1.13-")
+                    CanEditBrain = CanEditGossips = false;
+                CanTouchBrain = CanTouchGossips = selectedVersion != "1.13-";
             }
         }
 
@@ -100,6 +103,32 @@ namespace cbhk_environment.Generators.VillagerGenerator
                 else
                     transactionItems.All(item => { item.HideDiscountData(false); return true; });
                 OnlyEditItem = !CanEditBrain && !CanEditGossips ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+        #endregion
+
+        #region 是否可以点击言论
+        private bool canTouchGossips = true;
+        public bool CanTouchGossips
+        {
+            get { return canTouchGossips; }
+            set
+            {
+                canTouchGossips = value;
+                OnPropertyChanged();
+            }
+        }
+        #endregion
+
+        #region 是否可以点击记忆
+        private bool canTouchBrain = true;
+        public bool CanTouchBrain
+        {
+            get { return canTouchBrain; }
+            set
+            {
+                canTouchBrain = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -605,6 +634,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
 
         //背包引用
         ListView Bag = null;
+
         public villager_datacontext()
         {
             #region 链接指令

@@ -82,8 +82,7 @@
                     MaxHeight="260"
                     DataContext="{StaticResource TemplateDataContext}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    Style="{DynamicResource DefaultScrollViewer}">
+                    ScrollViewer.VerticalScrollBarVisibility="Auto">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="TemplateListViewerLoaded" TargetObject="{Binding}" />

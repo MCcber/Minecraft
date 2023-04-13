@@ -391,7 +391,6 @@
                     <ScrollViewer
                         Background="#2F2F2F"
                         Cursor="Arrow"
-                        Style="{DynamicResource DefaultScrollViewer}"
                         VerticalScrollBarVisibility="Auto">
                         <Viewbox VerticalAlignment="Top" Panel.ZIndex="0">
                             <Grid

@@ -1,9 +1,9 @@
 ﻿using cbhk_environment.CustomControls;
-using cbhk_environment.GeneralTools.ScrollViewerHelper;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,7 +31,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         /// </summary>
         private static SolidColorBrush blackBrush = new((Color)ColorConverter.ConvertFromString("#000000"));
 
-        public static void SetHeader(ref DockPanel container,ref RichTreeViewItems parentItem,List<string> requestList, ObservableCollection<string> enumList = null)
+        public static void SetHeader(ref DockPanel container,List<string> requestList, ObservableCollection<string> enumList = null)
         {
             #region 一般的数据控件
             IconTextButtons description = null;
@@ -63,7 +63,6 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                 #endregion
 
                 #region 封装用于切换子结构的ComboBox
-
                 if (enumList != null && enumList.Count > 1 && !AddedEnum)
                 {
                     AddedEnum = true;
@@ -75,8 +74,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                         VerticalContentAlignment = VerticalAlignment.Center,
                         SelectedIndex = 0,
                         FontSize = 15,
-                        Width = 100,
-                        Tag = parentItem
+                        Width = 100
                     };
                     subStructureSwitchBox.SelectionChanged += SubStructureSwitchBox_SelectionChanged;
                     container.Children.Add(subStructureSwitchBox);
@@ -215,8 +213,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                                 PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
                                 FontSize = 12,
                                 ClickMode = ClickMode.Release,
-                                Content = "+",
-                                Tag = parentItem
+                                Content = "+"
                             };
                             generatorButton.Click += GeneratorButton_Click;
                             container.Children.Add(generatorButton);
@@ -239,8 +236,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                         PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
                         FontSize = 12,
                         ClickMode = ClickMode.Release,
-                        Content = "+",
-                        Tag = parentItem
+                        Content = "+"
                     };
                     addButton.Click += AddButton_Click;
                     container.Children.Add(addButton);
@@ -262,14 +258,99 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         {
             IconTextButtons currentButton = sender as IconTextButtons;
             RichTreeViewItems currentItem = currentButton.FindParent<RichTreeViewItems>();
-            JArray children = JArray.Parse(JObject.Parse(currentItem.Tag.ToString())["children"].ToString());
+            string currentJson = currentItem.Tag.ToString();
+            JArray children = JArray.Parse(JObject.Parse(currentJson)["children"].ToString());
 
             #region 遍历子级,添加新的成员
-            foreach (JObject item in children)
-            {
 
-            }
+            #region 作为列表成员的父级显示节点
+            RichTreeViewItems subObj = new()
+            {
+                ConnectingLineFill = grayBrush,
+                Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                TextState = new TreeViewRun(),
+            };
+            DockPanel dockPanel = new();
+            IconTextButtons deleteButton = new()
+            {
+                Padding = new Thickness(5),
+                Style = currentButton.Style,
+                Foreground = blackBrush,
+                Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png", UriKind.RelativeOrAbsolute))),
+                PressedBackground = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png", UriKind.RelativeOrAbsolute))),
+                FontSize = 12,
+                ClickMode = ClickMode.Release,
+                Content = "-"
+            };
+            string headText = JObject.Parse(currentJson)["key"].ToString();
+            if (headText.EndsWith('s'))
+                headText = headText.TrimEnd('s');
+            else
+                headText = (headText.StartsWith('a') || headText.StartsWith('e') || headText.StartsWith('i') || headText.StartsWith('o') || headText.StartsWith('u') ? "an " : "a ") + headText;
+            TextBlock objHead = new()
+            {
+                Text = headText,
+                Foreground = whiteBrush,
+                FontSize = 12,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center
+            };
+            deleteButton.Click += DeleteListItemButton_Click;
+            dockPanel.Children.Add(deleteButton);
+            dockPanel.Children.Add(objHead);
+            subObj.Header = dockPanel;
             #endregion
+
+            foreach (JObject item in children.Cast<JObject>())
+            {
+                #region 新建子结构
+                RichTreeViewItems subItem = new()
+                {
+                    ConnectingLineFill = grayBrush,
+                    Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                    Tag = item.ToString(),
+                    TextState = new TreeViewRun(),
+                };
+
+                JArray subChildren = JArray.Parse(JObject.Parse(item.ToString())["children"].ToString());
+                if (subChildren.Count > 0)
+                {
+                    subItem.Items.Add(new TreeViewItem() { Uid = "null" });
+                    subItem.Expanded += TreeViewConveter.CompoundItemExpanded;
+                }
+
+                #region 绑定器
+                Binding componentsBinder = new()
+                {
+                    Path = new PropertyPath("Tag"),
+                    Mode = BindingMode.OneTime,
+                    RelativeSource = RelativeSource.Self,
+                    Converter = new TagToHeader(),
+                    ConverterParameter = subItem
+                };
+                #endregion
+
+                //绑定组件转换器
+                BindingOperations.SetBinding(subItem, HeaderedItemsControl.HeaderProperty, componentsBinder);
+                subObj.Items.Add(subItem);
+                #endregion
+            }
+            currentItem.Items.Add(subObj);
+            #endregion
+        }
+
+        /// <summary>
+        /// 删除列表成员
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void DeleteListItemButton_Click(object sender, RoutedEventArgs e)
+        {
+            IconTextButtons deleteButton = sender as IconTextButtons;
+            RichTreeViewItems richTreeViewItems = deleteButton.FindParent<RichTreeViewItems>();
+            RichTreeViewItems listNode = richTreeViewItems.Parent as RichTreeViewItems;
+            listNode.Items.Remove(richTreeViewItems);
         }
 
         /// <summary>
@@ -280,7 +361,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         private static void GeneratorButton_Click(object sender, RoutedEventArgs e)
         {
             IconTextButtons textButtons = sender as IconTextButtons;
-            RichTreeViewItems parent = textButtons.Tag as RichTreeViewItems;
+            RichTreeViewItems parent = textButtons.FindParent<RichTreeViewItems>();
 
             switch (textButtons.Uid)
             {
@@ -314,7 +395,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                             ClickMode = ClickMode.Release,
                             Content = "X",
                         };
-                        deleteButton.Click += EntityDeleteButton_Click;
+                        deleteButton.Click += DeleteButton_Click;
                         dockPanel.Children.Add(deleteButton);
                         dockPanel.Children.Add(entityHeader);
                         #endregion
@@ -339,11 +420,11 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         }
 
         /// <summary>
-        /// 删除实体成员
+        /// 删除普通成员
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void EntityDeleteButton_Click(object sender, RoutedEventArgs e)
+        private static void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
             IconTextButtons currentButton = sender as IconTextButtons;
             RichTreeViewItems parent = currentButton.FindParent<RichTreeViewItems>();

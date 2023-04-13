@@ -4,10 +4,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 
 namespace cbhk_environment.GenerateResultDisplayer
 {
@@ -20,7 +18,7 @@ namespace cbhk_environment.GenerateResultDisplayer
         /// <summary>
         /// 进程锁
         /// </summary>
-        private static object obj = new object();
+        private static object obj = new();
 
         /// <summary>
         /// 单例模式,用于显示生成结果

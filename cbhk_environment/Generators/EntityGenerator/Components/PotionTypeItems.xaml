@@ -27,6 +27,7 @@
             <ComboBox
                 x:Name="EffectID"
                 Width="140"
+                Height="25"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Loaded="MobEffectIdLoaded"
@@ -42,6 +43,7 @@
             <Slider
                 x:Name="EffectDuration"
                 Width="120"
+                Height="25"
                 HorizontalAlignment="Left"
                 Background="Transparent"
                 BorderBrush="Black"
@@ -61,6 +63,7 @@
             <Slider
                 x:Name="EffectLevel"
                 Width="80"
+                Height="25"
                 HorizontalAlignment="Left"
                 Background="Transparent"
                 BorderThickness="0"

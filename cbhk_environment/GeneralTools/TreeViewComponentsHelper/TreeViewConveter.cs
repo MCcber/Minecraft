@@ -81,7 +81,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                 JArray tagList = JArray.Parse(firstLayerObj["tag"].ToString());
                 string firstTag = tagList[0].ToString();
                 JArray children = JArray.Parse(firstLayerObj["children"].ToString());
-                if (tagList.Count > 1 && (firstTag.Contains("Compound") || firstTag.Contains("Array")) || (firstTag.Contains("List") && children.Count > 0))
+                if (tagList.Count > 1 && (firstTag.Contains("Compound") || firstTag.Contains("Array")))
                 {
                     rootItem.Items.Add(new TreeViewItem() { Uid = "null" });
                     rootItem.Expanded += CompoundItemExpanded;
@@ -96,7 +96,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void CompoundItemExpanded(object sender, RoutedEventArgs e)
+        public static void CompoundItemExpanded(object sender, RoutedEventArgs e)
         {
             #region 清空用于展开的空白子级
             RichTreeViewItems currentItem = sender as RichTreeViewItems;
@@ -133,7 +133,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                     JArray subChildren = JArray.Parse(subObj["children"].ToString());
                     JArray subTagList = JArray.Parse(subObj["tag"].ToString());
                     string subFirstTag = subTagList[0].ToString();
-                    if (subChildren.Count > 0 && (subFirstTag.Contains("List") || subFirstTag.Contains("Array") || subFirstTag.Contains("Compound")))
+                    if (subChildren.Count > 0 && (subFirstTag.Contains("Array") || subFirstTag.Contains("Compound")))
                     {
                         subItem.Items.Add(new TreeViewItem() { Uid = "null" });
                         subItem.Expanded += CompoundItemExpanded;

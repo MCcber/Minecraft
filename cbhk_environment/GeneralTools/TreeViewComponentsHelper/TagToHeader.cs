@@ -81,7 +81,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
                 case "Compound":
                     JToken dependency = currentValue["dependency"];
                     JArray children = JArray.Parse(currentValue["children"].ToString());
-                    if(children.Count == 0)
+                    if(children.Count == 0 || firstTag == "List")
                     requests.Add(firstTag + (dependency != null ? "-"+ dependency.ToString() : ""));
                     break;
             }
@@ -98,7 +98,7 @@ namespace cbhk_environment.GeneralTools.TreeViewComponentsHelper
             #endregion
 
             #region 调用组件构造器
-            ReturnTargetComponents.SetHeader(ref dockPanel,ref parentItem,requests,enumList);
+            ReturnTargetComponents.SetHeader(ref dockPanel,requests,enumList);
             #endregion
 
             return dockPanel;

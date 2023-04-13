@@ -52,21 +52,9 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
-                HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center"
-                Background="{StaticResource RightArrow}"
-                BorderThickness="0"
-                Command="{Binding RunCommand}"
-                FontSize="15"
-                Style="{DynamicResource IconTextButton}"
-                ToolTip="F5:运行"
-                ToolTipService.InitialShowDelay="0" />
-            <CustomControls:IconTextButtons
                 Width="60"
                 Background="{DynamicResource ButtonNormal}"
+                Command="{Binding}"
                 Content="复制结果"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />

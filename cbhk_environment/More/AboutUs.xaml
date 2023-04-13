@@ -98,7 +98,6 @@
         HorizontalAlignment="Center"
         VerticalAlignment="Top"
         HorizontalScrollBarVisibility="Disabled"
-        Style="{DynamicResource DefaultScrollViewer}"
         VerticalScrollBarVisibility="Disabled">
         <Viewbox>
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">

@@ -93,7 +93,7 @@
                 Width="100"
                 HorizontalAlignment="Left"
                 FontSize="20"
-                SelectedIndex="0"
+                SelectedIndex="1"
                 SelectedItem="{Binding SelectedVersion}"
                 Style="{DynamicResource TextComboBoxStyle}">
                 <behavior:Interaction.Triggers>
@@ -167,7 +167,7 @@
                     Background="#555956"
                     DockPanel.Dock="Top"
                     HorizontalScrollBarVisibility="Disabled"
-                    Style="{DynamicResource DefaultScrollViewer}"
+                    
                     VerticalScrollBarVisibility="Auto">
                     <ItemsControl Background="Transparent" ItemsSource="{Binding transactionItems}">
                         <ItemsControl.ItemsPanel>
@@ -273,6 +273,7 @@
                         Content="开启言论"
                         FontSize="15"
                         IsChecked="{Binding CanEditGossips, Mode=TwoWay}"
+                        IsHitTestVisible="{Binding CanTouchGossips, Mode=OneWay}"
                         Style="{DynamicResource TextToggleButtonsStyle}" />
                     <CustomControls:TextToggleButtons
                         Height="30"
@@ -284,6 +285,7 @@
                         Content="开启记忆"
                         FontSize="15"
                         IsChecked="{Binding CanEditBrain, Mode=TwoWay}"
+                        IsHitTestVisible="{Binding CanTouchBrain, Mode=OneWay}"
                         Style="{DynamicResource TextToggleButtonsStyle}" />
                 </DockPanel>
                 <!--  记忆，言论  -->
@@ -303,7 +305,7 @@
                         MaxHeight="275"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        Style="{DynamicResource DefaultScrollViewer}">
+                        >
                         <behavior:Interaction.Triggers>
                             <behavior:EventTrigger EventName="Loaded">
                                 <behavior:CallMethodAction MethodName="GossipViewerLoaded" TargetObject="{Binding}" />
@@ -354,7 +356,7 @@
                                 Grid.Row="1"
                                 Margin="0,5"
                                 HorizontalScrollBarVisibility="Disabled"
-                                Style="{DynamicResource DefaultScrollViewer}"
+                                
                                 VerticalScrollBarVisibility="Auto">
                                 <behavior:Interaction.Triggers>
                                     <behavior:EventTrigger EventName="Loaded">
@@ -394,7 +396,7 @@
                             Text="记忆" />
                         <ScrollViewer
                             Grid.Row="1"
-                            Style="{DynamicResource DefaultScrollViewer}"
+                            
                             VerticalScrollBarVisibility="Disabled">
                             <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                 <TextBlock

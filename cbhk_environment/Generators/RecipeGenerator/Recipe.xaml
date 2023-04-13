@@ -91,7 +91,7 @@
             </Grid.ColumnDefinitions>
             <ScrollViewer
                 Grid.Column="0"
-                Style="{DynamicResource DefaultScrollViewer}"
+                
                 VerticalScrollBarVisibility="Auto">
                 <StackPanel Orientation="Vertical">
                     <behavior:Interaction.Triggers>

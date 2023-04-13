@@ -1,4 +1,5 @@
-﻿using cbhk_environment.GeneralTools.ScrollViewerHelper;
+﻿using cbhk_environment.GeneralTools;
+using cbhk_environment.GeneralTools.ScrollViewerHelper;
 using System;
 using System.Windows;
 using System.Windows.Controls;

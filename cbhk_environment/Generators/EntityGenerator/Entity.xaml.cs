@@ -1,6 +1,4 @@
-﻿
-
-namespace cbhk_environment.Generators.EntityGenerator
+﻿namespace cbhk_environment.Generators.EntityGenerator
 {
     /// <summary>
     /// Entity.xaml 的交互逻辑

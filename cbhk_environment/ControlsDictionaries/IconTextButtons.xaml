@@ -3,8 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls">
 
-    <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDEDEDE" />
-
     <Style x:Key="IconTextButton" TargetType="{x:Type CustomControls:IconTextButtons}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="BorderBrush" Value="Transparent" />
@@ -69,6 +67,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="border" Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=PressedBackground}" />
+                            <Setter TargetName="contentPresenter" Property="Margin" Value="5,8,5,5" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -78,12 +77,6 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="border" Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=PressedBackground}" />
                         </MultiTrigger>
-                        <!--<Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=PressedBackground}" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="border" Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=PressedBackground}" />
-                        </Trigger>-->
                         <EventTrigger RoutedEvent="MouseEnter">
                             <BeginStoryboard>
                                 <Storyboard>

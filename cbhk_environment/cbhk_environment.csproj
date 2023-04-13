@@ -25,7 +25,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <OutputPath>bin\x86\Debug\</OutputPath>
@@ -74,15 +74,6 @@
       <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-    <COMReference Include="MSScriptControl">
-      <WrapperTool>tlbimp</WrapperTool>
-      <VersionMinor>0</VersionMinor>
-      <VersionMajor>1</VersionMajor>
-      <Guid>0e59f1d2-1fbe-11d0-8ff2-00a0d10038bc</Guid>
-      <Lcid>0</Lcid>
-      <Isolated>false</Isolated>
-      <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +158,7 @@
     <Resource Include="resources\common\images\RadiusToggleButtonOffLocked.png" />
     <Resource Include="resources\common\images\RadiusToggleButtonOn.png" />
     <Resource Include="resources\common\images\RadiusToggleButtonOnLocked.png" />
+    <Resource Include="resources\common\images\Save.png" />
     <Resource Include="resources\common\images\SliderBar.png" />
     <Resource Include="resources\common\images\SliderButton.png" />
     <Resource Include="resources\common\images\SliderButtonLocked.png" />
@@ -289,5 +281,6 @@
   <ItemGroup>
     <None Remove="resources\cbhk_form\images\Error.png" />
     <None Remove="resources\cbhk_form\images\Info.png" />
+    <None Remove="resources\common\images\Save.png" />
   </ItemGroup>
 </Project>

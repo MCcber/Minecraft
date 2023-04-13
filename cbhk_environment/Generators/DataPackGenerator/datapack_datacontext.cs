@@ -1,11 +1,10 @@
 ﻿using cbhk_environment.CustomControls;
-using cbhk_environment.GeneralTools.ScrollViewerHelper;
+using cbhk_environment.GeneralTools;
 using cbhk_environment.Generators.DataPackGenerator.Components;
 using cbhk_environment.Generators.DataPackGenerator.DatapackInitializationForms;
-using cbhk_environment.WindowDictionaries;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MSScriptControl;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,11 +12,9 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Windows.AI.MachineLearning;
 using WK.Libraries.BetterFolderBrowserNS;
 
 namespace cbhk_environment.Generators.DataPackGenerator
@@ -207,28 +204,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         }
         #endregion
 
-        #region js脚本执行者
-        string js_file = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js";
-        static string language = "javascript";
-        public static ScriptControlClass json_parser = new ScriptControlClass()
-        {
-            Language = language
-        };
-        public static object JsonScript(string JScript)
-        {
-            object Result = null;
-            try
-            {
-                Result = json_parser.Eval(JScript);
-            }
-            catch (Exception ex)
-            {
-                return ex.Source + "\n" + ex.Message;
-            }
-            return Result;
-        }
-        #endregion
-
         #region 覆盖生成
         private bool overLying;
         public bool OverLying
@@ -260,14 +235,12 @@ namespace cbhk_environment.Generators.DataPackGenerator
                 if(File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js") && 
                     grammaticalRadical.Count == 0)
                 {
-                    JsonScript(js_file);
+                    JArray grammaticalArray = JArray.Parse(grammaticalJson);
+                    int grammaticalCount = grammaticalArray.Count;
 
-                    JsonScript("var data = " + grammaticalJson);
-                    int.TryParse(JsonScript("data.length").ToString(), out int item_count);
-
-                    for (int i = 0; i < item_count; i++)
+                    for (int i = 0; i < grammaticalCount; i++)
                     {
-                        string radicalString = JsonScript("data[" + i + "].radical").ToString();
+                        string radicalString = grammaticalArray[i]["radical"].ToString();
                         //存储指令部首和对应的索引
                         grammaticalRadical.Add(radicalString, i);
                     }
@@ -508,24 +481,23 @@ namespace cbhk_environment.Generators.DataPackGenerator
                 FunctionTypeList.Add("所有功能类型");
             #endregion
 
-            if (Directory.Exists(TemplateMetaDataFilePath) && File.Exists(js_file) && TemplateList.Count == 0)
+            if (Directory.Exists(TemplateMetaDataFilePath) && TemplateList.Count == 0)
             {
                 string js_file = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\json_reader.js");
                 List<string> templateList = Directory.GetFiles(TemplateMetaDataFilePath).ToList();
-                JsonScript(js_file);
                 //白色刷子
                 SolidColorBrush whiteBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
                 foreach (string template in templateList)
                 {
                     string templateData = File.ReadAllText(template);
-                    JsonScript("var data =" + templateData);
+                    JObject templateObj = JObject.Parse(templateData);
 
                     string FileName = Path.GetFileNameWithoutExtension(template);
-                    string Description = JsonScript("data.Description").ToString();
-                    string TemplateName = JsonScript("data.Name").ToString();
-                    string FileType = JsonScript("data.FileType").ToString();
-                    string FunctionType = JsonScript("data.FunctionType").ToString();
-                    string fileNameSpace = JsonScript("data.NameSpace").ToString();
+                    string Description = templateObj["Description"].ToString();
+                    string TemplateName = templateObj["Name"].ToString();
+                    string FileType = templateObj["FileType"].ToString();
+                    string FunctionType = templateObj["FunctionType"].ToString();
+                    string fileNameSpace = templateObj["NameSpace"].ToString();
 
                     #region 载入文件类型和功能类型
                     if (!FileTypeList.Contains(FileType))
@@ -850,7 +822,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
 
             string CurrentContentFilePath = item.FilePath.Text;
 
-            if (File.Exists(CurrentContentFilePath) && File.Exists(js_file))
+            if (File.Exists(CurrentContentFilePath))
             {
                 //读取内容文件
                 string FilePath = File.ReadAllText(CurrentContentFilePath);

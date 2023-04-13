@@ -62,7 +62,7 @@
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="IsTabStop" Value="false" />
         <Setter Property="Focusable" Value="false" />
-        <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="ClickMode" Value="Release" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -78,7 +78,6 @@
                             Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}"
                             Margin="0"
                             HorizontalAlignment="Right"
-                            Background="Transparent"
                             BorderBrush="Black"
                             BorderThickness="1">
                             <Path
@@ -89,6 +88,12 @@
                                 Fill="White" />
                         </Border>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="templateRoot" Property="Background" Value="#2F2F2F" />
+                            <Setter TargetName="splitBorder" Property="Background" Value="#2F2F2F" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                     <!--<ControlTemplate.Triggers>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
@@ -199,8 +204,7 @@
                         <ScrollViewer
                             x:Name="DropDownScrollViewer"
                             Width="{TemplateBinding Width}"
-                            Height="200"
-                            Style="{DynamicResource DefaultScrollViewer}">
+                            Height="200">
                             <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas
                                     x:Name="canvas"
@@ -236,22 +240,23 @@
                 Margin="{TemplateBinding BorderThickness}"
                 Background="Transparent">
                 <Image
-                    Width="30"
-                    Height="{TemplateBinding Height}"
+                    Width="Auto"
+                    Height="Auto"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
                     RenderOptions.BitmapScalingMode="NearestNeighbor"
                     RenderOptions.ClearTypeHint="Enabled"
                     SnapsToDevicePixels="True"
-                    Source="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay, Path=SelectedItem, Converter={StaticResource IconComboBoxImageConverter}}"
-                    UseLayoutRounding="True" />
+                    Source="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay, Path=SelectedItem, Converter={StaticResource IconComboBoxImageConverter}}" />
                 <TextBox
                     x:Name="EditableTextBox"
                     Margin="{TemplateBinding Padding}"
-                    Padding="5,5,0,0"
                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                     Background="{StaticResource TextEditBox}"
                     BorderThickness="0"
                     DataContext="{StaticResource SearcherDataContext}"
+                    FontSize="{TemplateBinding FontSize}"
                     Foreground="White"
                     IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
                     RenderOptions.BitmapScalingMode="NearestNeighbor"
@@ -319,7 +324,7 @@
                         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                         BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                         BorderThickness="1">
-                        <ScrollViewer x:Name="DropDownScrollViewer" Style="{DynamicResource DefaultScrollViewer}">
+                        <ScrollViewer x:Name="DropDownScrollViewer">
                             <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas
                                     x:Name="canvas"
@@ -395,6 +400,7 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="6,3,5,3" />
         <Setter Property="ItemTemplate" Value="{StaticResource DisplayTemplate}" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />

@@ -1838,7 +1838,6 @@
                             Height="180"
                             Margin="5,0"
                             HorizontalScrollBarVisibility="Auto"
-                            Style="{DynamicResource DefaultScrollViewer}"
                             VerticalScrollBarVisibility="Auto">
                             <ScrollViewer.Background>
                                 <ImageBrush ImageSource="/cbhk_environment;component/resources/common/images/Frame.png" />

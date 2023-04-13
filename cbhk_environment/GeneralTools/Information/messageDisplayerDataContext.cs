@@ -37,9 +37,6 @@ namespace cbhk_environment.GeneralTools.Information
             No = new RelayCommand<Window>(NoCommand);
             errorIcon = new BitmapImage(new Uri(errorIconPath, UriKind.RelativeOrAbsolute));
             infoIcon = new BitmapImage(new Uri(infoIconPath, UriKind.RelativeOrAbsolute));
-            //MessageTitle = type == MessageBoxType.Error ? "错误" : "警告";
-            //MessageIcon = type == MessageBoxType.Error ? errorIcon : infoIcon;
-            //DisplayInfomation = content;
         }
 
         private void NoCommand(Window window)

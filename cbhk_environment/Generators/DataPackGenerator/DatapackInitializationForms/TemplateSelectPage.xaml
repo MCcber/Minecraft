@@ -71,7 +71,7 @@ xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
                 Margin="0,10,0,0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                Style="{DynamicResource DefaultScrollViewer}">
+                >
                 <behavior:Interaction.Triggers>
                     <behavior:EventTrigger EventName="Loaded">
                         <behavior:CallMethodAction MethodName="RecentTemplateListLoaded" TargetObject="{Binding}" />
@@ -216,7 +216,7 @@ xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
                 DataContext="{StaticResource templateDatacontext}"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                Style="{DynamicResource DefaultScrollViewer}">
+                >
                 <behavior:Interaction.Triggers>
                     <behavior:EventTrigger EventName="Loaded">
                         <behavior:CallMethodAction MethodName="TemplateListViewerLoaded" TargetObject="{Binding}" />

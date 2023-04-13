@@ -17,7 +17,7 @@
         <ScrollViewer
             Background="Transparent"
             HorizontalScrollBarVisibility="Visible"
-            Style="{DynamicResource DefaultScrollViewer}"
+            
             VerticalScrollBarVisibility="Hidden">
             <Canvas
                 x:Name="mainCanvas"

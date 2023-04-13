@@ -114,7 +114,7 @@ namespace cbhk_environment.Generators.TagGenerator
                         if (tagItemTemplate.DisplayText.Trim().Length > 0)
                         {
                             string itemString = tagItemTemplate.DisplayText.Trim()[..tagItemTemplate.DisplayText.Trim().IndexOf(' ')];
-                            tagItemTemplate.BeChecked = SelectedAll;
+                            tagItemTemplate.BeChecked = selectedAll;
 
                             if (tagItemTemplate.BeChecked.Value)
                             {
@@ -274,8 +274,8 @@ namespace cbhk_environment.Generators.TagGenerator
         /// </summary>
         private void run_command()
         {
-            string result = string.Join("\r\n",BlocksAndItems).TrimEnd(',') + "\r\n" + string.Join("\r\n",Entities).TrimEnd(',');
-            result = "{\r\n  \"replace\": " + Replace.ToString().ToLower() + ",\r\n\"values\": [\r\n" + result.TrimEnd(',') + "\r\n]\r\n}";
+            string result = string.Join("\r\n",BlocksAndItems) + "\r\n" + string.Join("\r\n",Entities).TrimEnd(',');
+            result = "{\r\n  \"replace\": " + Replace.ToString().ToLower() + ",\r\n\"values\": [\r\n" + result.TrimEnd('\n').TrimEnd('\r').TrimEnd(',') + "\r\n]\r\n}";
             SaveFileDialog saveFileDialog = new()
             {
                 AddExtension = true,
