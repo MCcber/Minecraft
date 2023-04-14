@@ -23,10 +23,10 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Foreground="White"
-                Text="药水类型" />
+                Text="类型" />
             <ComboBox
                 x:Name="EffectID"
-                Width="140"
+                Width="150"
                 Height="25"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
@@ -42,7 +42,7 @@
                 Text="持续时间" />
             <Slider
                 x:Name="EffectDuration"
-                Width="120"
+                Width="180"
                 Height="25"
                 HorizontalAlignment="Left"
                 Background="Transparent"

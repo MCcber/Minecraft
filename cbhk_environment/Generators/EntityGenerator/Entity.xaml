@@ -51,8 +51,8 @@
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
             <CustomControls:IconTextButtons
-                Width="20"
-                Height="20"
+                Width="25"
+                Height="25"
                 Margin="2,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
@@ -65,8 +65,8 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="20"
-                Height="20"
+                Width="25"
+                Height="25"
                 Margin="2,0"
                 HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"

@@ -168,7 +168,7 @@
 
     <Grid Panel.ZIndex="1">
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="15*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -185,8 +185,8 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Top">
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
+                Width="25"
+                Height="25"
                 Margin="5,0"
                 HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"
@@ -200,8 +200,8 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
+                Width="25"
+                Height="25"
                 Margin="0,0,0,0"
                 HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"

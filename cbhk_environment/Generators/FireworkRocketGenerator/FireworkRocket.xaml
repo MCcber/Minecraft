@@ -56,8 +56,8 @@
             Grid.ColumnSpan="2"
             Height="30">
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
+                Width="25"
+                Height="25"
                 Margin="5,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
@@ -70,8 +70,8 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
+                Width="25"
+                Height="25"
                 Margin="5,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"

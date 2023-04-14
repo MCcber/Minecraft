@@ -103,7 +103,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Foreground="White"
-                Text="物品ID" />
+                Text="ID" />
             <ComboBox
                 Width="180"
                 Height="25"
@@ -219,7 +219,6 @@
                             VerticalAlignment="Center"
                             Foreground="White"
                             Text="自定义标签" />
-                        <!--  Style="{DynamicResource ResizableTextBoxStyle}"  -->
                         <TextBox
                             Grid.Row="3"
                             Grid.Column="1"

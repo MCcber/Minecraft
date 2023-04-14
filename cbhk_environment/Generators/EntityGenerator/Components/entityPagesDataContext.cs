@@ -15,8 +15,10 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace cbhk_environment.Generators.EntityGenerator.Components
 {
@@ -869,8 +871,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                 HorizontalAlignment = HorizontalAlignment.Center,
                                 VerticalAlignment = VerticalAlignment.Center
                             };
+                            ToolTipService.SetBetweenShowDelay(descriptionText, 0);
+                            ToolTipService.SetInitialShowDelay(descriptionText, 0);
                             Slider numberBox = new()
                             {
+                                Uid = "float",
+                                Name = Request.key,
                                 Minimum = minValue,
                                 Maximum = maxValue,
                                 Value = 0,
@@ -894,34 +900,40 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     {
                         double minValue = 0;
                         double maxValue = 0;
+                        string uid = "";
                         if (Request.type == "TAG_Byte")
                         {
                             minValue = byte.MinValue;
                             maxValue = byte.MaxValue;
+                            uid = "byte";
                         }
                         else
                             if (Request.type == "TAG_Int" || Request.type == "TAG_UUID")
                         {
                             minValue = int.MinValue;
                             maxValue = int.MaxValue;
+                            uid = "int";
                         }
                         else
                             if (Request.type == "TAG_Float")
                         {
                             minValue = float.MinValue;
                             maxValue = float.MaxValue;
+                            uid = "float";
                         }
                         else
                             if (Request.type == "TAG_Double" || Request.type == "TAG_Pos")
                         {
                             minValue = double.MinValue;
                             maxValue = double.MaxValue;
+                            uid = "double";
                         }
                         else
                             if (Request.type == "TAG_Short")
                         {
                             minValue = short.MinValue;
                             maxValue = short.MaxValue;
+                            uid = "short";
                         }
 
                         Slider numberBox1 = new()
@@ -933,6 +945,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         };
                         if (Request.type == "TAG_Pos" || Request.type == "TAG_UUID")
                         {
+                            uid = "double";
                             Slider numberBox2 = new()
                             {
                                 Minimum = minValue,
@@ -993,9 +1006,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                             result.Add(numberGrid);
                         }
                         else
-                        {
                             result.Add(numberBox1);
-                        }
                     }
                     break;
                 case "TAG_String_List":
@@ -1348,7 +1359,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             Accordion accordion = ele as Accordion;
             ScrollViewer scrollViewer = accordion.Content as ScrollViewer;
             Grid grid = scrollViewer.Content as Grid;
-            grid.Children.Cast<TextCheckBoxs>().ToList().ForEach(item => item.IsChecked = !item.IsChecked.Value);
+            //grid.Children.Cast<TextCheckBoxs>().ToList().ForEach(item => item.IsChecked = !item.IsChecked.Value);
         }
 
         /// <summary>
@@ -1359,7 +1370,39 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             Accordion accordion = ele as Accordion;
             ScrollViewer scrollViewer = accordion.Content as ScrollViewer;
             Grid grid = scrollViewer.Content as Grid;
-            grid.Children.Cast<TextCheckBoxs>().ToList().ForEach(item => item.IsChecked = true);
+            //grid.Children.Cast<TextCheckBoxs>().ToList().ForEach(item => item.IsChecked = true);
+        }
+
+        /// <summary>
+        /// 点击顶级菜单后父视图滚动到此
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Accordion_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            ScrollViewer scrollViewer = accordion.FindParent<ScrollViewer>();
+            ScrollToSomeWhere.Scroll(accordion,scrollViewer);
+        }
+
+        /// <summary>
+        /// 滚动到底时滚动其父级ScrollViewer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scrollViewer = sender as ScrollViewer;
+            if(scrollViewer.VerticalOffset == scrollViewer.ScrollableHeight || scrollViewer.VerticalOffset == 0)
+            {
+                ScrollViewer parent = scrollViewer.FindParent<ScrollViewer>();
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                {
+                    RoutedEvent = UIElement.MouseWheelEvent,
+                    Source = sender
+                };
+                parent.RaiseEvent(eventArg);
+            }
         }
 
         /// <summary>
