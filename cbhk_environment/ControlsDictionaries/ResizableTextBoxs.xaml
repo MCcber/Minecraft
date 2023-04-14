@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-
-xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local_context="clr-namespace:cbhk_environment.ControlsDataContexts">
 
     <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3" />
@@ -18,7 +17,7 @@ xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
         <Setter Property="BorderBrush" Value="{StaticResource TextBox.Static.Border}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CaretBrush" Value="Green" />
+        <Setter Property="CaretBrush" Value="White" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -42,12 +41,9 @@ xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
                             <ScrollViewer
                                 x:Name="PART_ContentHost"
                                 Focusable="false"
-                                RenderOptions.BitmapScalingMode="NearestNeighbor"
                                 RenderOptions.ClearTypeHint="Enabled"
                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                SnapsToDevicePixels="True"
-                                Style="{StaticResource DefaultScrollViewer}"
                                 UseLayoutRounding="True" />
                             <Grid
                                 x:Name="resizeGripGrid"
