@@ -18,14 +18,16 @@ namespace cbhk_environment.CustomControls
         public List<char> Obfuscates;
         //开启混淆
         public bool IsObfuscated = false;
+
         /// <summary>
         /// 迭代结果
         /// </summary>
-        StringBuilder ObfuscatesResult = new StringBuilder() { };
+        readonly StringBuilder ObfuscatesResult = new();
+
         /// <summary>
         /// 迭代器
         /// </summary>
-        Random random = new Random();
+        readonly Random random = new();
 
         #region UID
         private string uid = "";
@@ -40,16 +42,17 @@ namespace cbhk_environment.CustomControls
         #endregion
 
         //用于判断的下划线
-        TextDecoration underlined_style = System.Windows.TextDecorations.Baseline.First();
+        readonly TextDecoration underlined_style = System.Windows.TextDecorations.Baseline.First();
+
         //用于判断的删除线
-        TextDecoration strikethrough_style = System.Windows.TextDecorations.Strikethrough.First();
+        readonly TextDecoration strikethrough_style = System.Windows.TextDecorations.Strikethrough.First();
 
         /// <summary>
         /// 当前混淆最长长度
         /// </summary>
-        double MaxContentLength = 0;
+        double MaxContentLength;
 
-        public System.Windows.Forms.Timer ObfuscateTimer = new System.Windows.Forms.Timer()
+        public System.Windows.Forms.Timer ObfuscateTimer = new()
         {
             Interval = 10,
             Enabled = false
@@ -185,8 +188,6 @@ namespace cbhk_environment.CustomControls
         /// </summary>
         public RichRun()
         {
-            if (Text.Trim() != "")
-                Text = Text;
             Obfuscates = written_book_datacontext.obfuscates;
             ObfuscateTimer.Tick += ObfuscateTick;
             MouseEnter += ObfuscateTextMouseEnter;

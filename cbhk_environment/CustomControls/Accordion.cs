@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -117,5 +118,14 @@ namespace cbhk_environment.CustomControls
 
         public static readonly DependencyProperty FreshNameProperty =
             DependencyProperty.Register("FreshName", typeof(string), typeof(Accordion), new PropertyMetadata(default(string)));
+
+        public ObservableCollection<string> Result
+        {
+            get { return (ObservableCollection<string>)GetValue(ResultProperty); }
+            set { SetValue(ResultProperty, value); }
+        }
+
+        public static readonly DependencyProperty ResultProperty =
+            DependencyProperty.Register("Result", typeof(ObservableCollection<string>), typeof(Accordion), new PropertyMetadata(default(ObservableCollection<string>)));
     }
 }
