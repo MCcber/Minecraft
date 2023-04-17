@@ -51,9 +51,8 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Center">
             <CustomControls:IconTextButtons
-                Width="30"
-                Height="30"
-                Margin="2,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -65,9 +64,8 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="30"
-                Height="30"
-                Margin="2,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"

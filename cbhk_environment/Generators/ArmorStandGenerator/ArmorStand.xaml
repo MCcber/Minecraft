@@ -52,7 +52,6 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="5,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -66,7 +65,6 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="5,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
@@ -1801,16 +1799,16 @@
                         </Viewbox>
                     </Border>
                     <StackPanel>
-                        <DockPanel>
+                        <DockPanel Margin="0,0,0,5">
                             <CustomControls:TextCheckBoxs
                                 Margin="10,0"
                                 HorizontalAlignment="Left"
                                 ClickMode="Release"
                                 FontSize="15"
                                 Foreground="White"
-                                HeaderHeight="25"
+                                HeaderHeight="20"
                                 HeaderText="全选"
-                                HeaderWidth="25"
+                                HeaderWidth="20"
                                 Style="{DynamicResource TextCheckBox}">
                                 <behavior:Interaction.Triggers>
                                     <behavior:EventTrigger EventName="Click">
@@ -1823,9 +1821,9 @@
                                 ClickMode="Release"
                                 FontSize="15"
                                 Foreground="White"
-                                HeaderHeight="25"
+                                HeaderHeight="20"
                                 HeaderText="反选"
-                                HeaderWidth="25"
+                                HeaderWidth="20"
                                 Style="{DynamicResource TextCheckBox}">
                                 <behavior:Interaction.Triggers>
                                     <behavior:EventTrigger EventName="Click">

@@ -58,7 +58,6 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="5,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -72,7 +71,6 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="5,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
@@ -382,9 +380,7 @@
                         Foreground="White"
                         Text="颜色板" />
                     <ColorPicker:ColorPickers
-                        Width="100"
-                        Margin="0,0,5,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Stretch"
                         Background="{Binding RelativeSource={RelativeSource Mode=Self}, Path=SelectColor, Mode=OneWay}"
                         SelectColor="{Binding SelectedColor, Mode=TwoWay}">
                         <behavior:Interaction.Triggers>
@@ -393,34 +389,49 @@
                             </behavior:EventTrigger>
                         </behavior:Interaction.Triggers>
                     </ColorPicker:ColorPickers>
+                </DockPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
                     <TextBlock
-                        Margin="0,0,5,0"
+                        Grid.Row="0"
+                        Grid.Column="0"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="15"
                         Foreground="White"
                         Text="飞行时长"
                         TextAlignment="Center" />
                     <Slider
+                        Grid.Row="0"
+                        Grid.Column="1"
                         Height="30"
-                        Margin="0,0,2,0"
                         HorizontalAlignment="Stretch"
                         FontSize="20"
                         Maximum="127"
                         Minimum="-128"
                         Style="{DynamicResource NumberBoxStyle}"
                         Value="{Binding Duration, Mode=TwoWay}" />
-                </DockPanel>
-                <DockPanel Margin="0,5,0,0">
                     <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="0"
                         Margin="2,0"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="15"
                         Foreground="White"
                         Text="Life" />
                     <Slider
-                        Width="150"
+                        Grid.Row="1"
+                        Grid.Column="1"
                         Height="30"
-                        Margin="2,0"
                         HorizontalAlignment="Stretch"
                         FontSize="20"
                         Maximum="2147483647"
@@ -428,20 +439,24 @@
                         Style="{DynamicResource NumberBoxStyle}"
                         Value="{Binding Life, Mode=TwoWay}" />
                     <TextBlock
+                        Grid.Row="2"
+                        Grid.Column="0"
+                        HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="15"
                         Foreground="White"
                         Text="LifeTime" />
                     <Slider
+                        Grid.Row="2"
+                        Grid.Column="1"
                         Height="30"
-                        Margin="2,0"
                         HorizontalAlignment="Stretch"
                         FontSize="20"
                         Maximum="2147483647"
                         Minimum="-2147483648"
                         Style="{DynamicResource NumberBoxStyle}"
                         Value="{Binding LifeTime, Mode=TwoWay}" />
-                </DockPanel>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
     </Grid>

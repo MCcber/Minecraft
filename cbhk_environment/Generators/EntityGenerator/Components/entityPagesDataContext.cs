@@ -12,13 +12,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Xml.Linq;
+using Windows.Devices.Lights;
+using Windows.Media.Protection.PlayReady;
 
 namespace cbhk_environment.Generators.EntityGenerator.Components
 {
@@ -673,6 +675,10 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         #endregion
 
         #region 字段与引用
+        //特指结果集合
+        public ObservableCollection<NBTDataStructure> SpecialTagsResult { get; set; } = new();
+        //实体、活体、生物结果集合
+        public ObservableCollection<NBTDataStructure> CommonResult { get; set; } = new();
         //白色画刷
         SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
         //黑色画刷
@@ -688,6 +694,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         Dictionary<string,Grid> specialDataDictionary = new();
         //特殊标签面板
         ScrollViewer SpecialViewer = null;
+        //存储作为多开和外部工具时最终的结果
+        private string Result { get; set; }
         #endregion
 
         public entityPagesDataContext()
@@ -709,19 +717,83 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             #endregion
         }
 
-        private void run_command()
+        /// <summary>
+        /// 最终结算
+        /// </summary>
+        /// <param name="MultipleMode"></param>
+        private void FinalSettlement(object MultipleOrExtern)
         {
-            string result;
-            result = "";
-
+            Result = string.Join(",", SpecialTagsResult.Select(item =>
+            {
+                if (item.HaveCurrentType == Visibility.Visible)
+                    return item.Result;
+                else
+                    return "";
+            })) + "," + string.Join(",", CommonResult.Select(item =>
+            {
+                if (item.HaveCurrentType == Visibility.Visible)
+                    return item.Result;
+                else
+                    return "";
+            }));
             if (Summon)
-                result = result.Trim() != "" ? "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~ {" + result.TrimEnd(',') + "}" : "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~";
+            Result = Result.Trim() != "" ? "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~ {" + Result.TrimEnd(',') + "}" : "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~";
             else
             {
                 if (SelectedVersion == "1.12-")
-                    result = "give @p minecraft:spawner_egg 1 0 {EntityTag:{id:\"minecraft:" + SelectedEntityIdString + "\" " + (result.Length > 0 ? "," + result.TrimEnd(',') : "") + "}}";
+                    Result = "give @p minecraft:spawner_egg 1 0 {EntityTag:{id:\"minecraft:" + SelectedEntityIdString + "\" " + (Result.Length > 0 ? "," + Result.TrimEnd(',') : "") + "}}";
                 else
-                    result = "give @p minecraft:pig_spawner_egg{EntityTag:{id:\"minecraft:" + SelectedEntityIdString + "\"" + (result.Length > 0 ? "," + result.TrimEnd(',') : "") + "}} 1";
+                    Result = "give @p minecraft:pig_spawner_egg{EntityTag:{id:\"minecraft:" + SelectedEntityIdString + "\"" + (Result.Length > 0 ? "," + Result.TrimEnd(',') : "") + "}} 1";
+            }
+
+            if(bool.Parse(MultipleOrExtern.ToString()))
+            {
+                Displayer displayer = Displayer.GetContentDisplayer();
+                displayer.GeneratorResult(Result, "实体", icon_path);
+                displayer.Topmost = true;
+                displayer.Show();
+                displayer.Topmost = false;
+            }
+        }
+
+        /// <summary>
+        /// 获取结果
+        /// </summary>
+        /// <param name="MultipleMode"></param>
+        public void GetResult(bool MultipleOrExtern = false)
+        {
+            Thread settlement = new(new ParameterizedThreadStart(FinalSettlement));
+            settlement.Start(MultipleOrExtern);
+        }
+
+        /// <summary>
+        /// 运行生成
+        /// </summary>
+        private void run_command()
+        {
+            string result;
+            result = string.Join(",", SpecialTagsResult.Select(item =>
+            {
+                if (item.HaveCurrentType == Visibility.Visible && item.Result.Length > 0)
+                    return item.Result;
+                else
+                    return "";
+            })) + "," + string.Join(",", CommonResult.Select(item =>
+            {
+                if (item.HaveCurrentType == Visibility.Visible && item.Result.Length > 0)
+                    return item.Result;
+                else
+                    return "";
+            }));
+            result = result.Trim(',');
+            if (Summon)
+                result = result.Trim() != "" ? "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~ {" + result + "}" : "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~";
+            else
+            {
+                if (SelectedVersion == "1.12-")
+                    result = "give @p minecraft:spawner_egg 1 0 {EntityTag:{id:\"minecraft:" + SelectedEntityIdString + "\" " + (result.Length > 0 ? "," + result : "") + "}}";
+                else
+                    result = "give @p minecraft:pig_spawner_egg{EntityTag:{id:\"minecraft:" + SelectedEntityIdString + "\"" + (result.Length > 0 ? "," + result : "") + "}} 1";
             }
 
             Displayer displayer = Displayer.GetContentDisplayer();
@@ -749,7 +821,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private List<FrameworkElement> ComponentsGenerator(ComponentData Request)
         {
             List<FrameworkElement> result = new();
-
             TextBlock displayText = new()
             {
                 Text = Request.description,
@@ -758,13 +829,15 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 VerticalAlignment = VerticalAlignment.Center
             };
             if (Request.toolTip.Length > 0)
+            {
                 displayText.ToolTip = Request.toolTip;
-
-            ToolTipService.SetInitialShowDelay(displayText, 0);
-            ToolTipService.SetBetweenShowDelay(displayText, 0);
+                ToolTipService.SetInitialShowDelay(displayText, 0);
+                ToolTipService.SetBetweenShowDelay(displayText, 0);
+            }
 
             result.Add(displayText);
-            switch (Request.type)
+            ComponentEvents componentEvents = new();
+            switch (Request.dataType)
             {
                 case "TAG_BlockState":
                     {
@@ -832,7 +905,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                         ModifyName = "添加",
                                         FreshName = "清空",
                                         ModifyForeground = blackBrush,
-                                        FreshForeground = blackBrush
+                                        FreshForeground = blackBrush,
+                                        Tag = new NBTDataStructure() { Result = "",HaveCurrentType = Visibility.Collapsed,DataType = Request.dataType, NBTGroup = Request.nbtType }
                                     };
                                     StackPanel itemPanel = new();
                                     itemAccordion.Content = itemPanel;
@@ -846,7 +920,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 case "TAG_Float_Array":
                     {
                         JArray children = JArray.Parse(Request.children);
-                        Grid floatGrid = new();
+                        Grid floatGrid = new() { Uid = Request.dataType, Name = Request.key, Tag = new NBTDataStructure() { Result = "",HaveCurrentType = Visibility.Collapsed,DataType = Request.dataType,NBTGroup = Request.nbtType } };
                         for (int i = 0; i < children.Count; i++)
                         {
                             floatGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
@@ -862,7 +936,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                 minValue = float.Parse(range[0].ToString());
                                 maxValue = float.Parse(range[1].ToString());
                             }
-
                             TextBlock descriptionText = new()
                             {
                                 Text = description,
@@ -871,22 +944,30 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                 HorizontalAlignment = HorizontalAlignment.Center,
                                 VerticalAlignment = VerticalAlignment.Center
                             };
-                            ToolTipService.SetBetweenShowDelay(descriptionText, 0);
-                            ToolTipService.SetInitialShowDelay(descriptionText, 0);
+                            if(toolTip.Length > 0)
+                            {
+                                descriptionText.ToolTip = toolTip;
+                                ToolTipService.SetInitialShowDelay(descriptionText, 0);
+                                ToolTipService.SetBetweenShowDelay(descriptionText, 0);
+                            }
                             Slider numberBox = new()
                             {
-                                Uid = "float",
-                                Name = Request.key,
                                 Minimum = minValue,
                                 Maximum = maxValue,
                                 Value = 0,
                                 Style = Application.Current.Resources["NumberBoxStyle"] as Style,
                             };
+
+                            if (floatGrid.Children.Count == 0)
+                                numberBox.Uid = "0";
+                            else
+                                numberBox.Uid = "1";
                             floatGrid.Children.Add(descriptionText);
                             floatGrid.Children.Add(numberBox);
                             Grid.SetColumn(descriptionText,floatGrid.ColumnDefinitions.Count - 2);
                             Grid.SetColumn(numberBox,floatGrid.ColumnDefinitions.Count - 1);
                         }
+                        floatGrid.GotFocus += componentEvents.ValueChangedHandler;
                         result.Add(floatGrid);
                     }
                     break;
@@ -900,80 +981,86 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     {
                         double minValue = 0;
                         double maxValue = 0;
-                        string uid = "";
-                        if (Request.type == "TAG_Byte")
+                        if (Request.dataType == "TAG_Byte")
                         {
                             minValue = byte.MinValue;
                             maxValue = byte.MaxValue;
-                            uid = "byte";
                         }
                         else
-                            if (Request.type == "TAG_Int" || Request.type == "TAG_UUID")
+                            if (Request.dataType == "TAG_Int" || Request.dataType == "TAG_UUID")
                         {
                             minValue = int.MinValue;
                             maxValue = int.MaxValue;
-                            uid = "int";
                         }
                         else
-                            if (Request.type == "TAG_Float")
+                            if (Request.dataType == "TAG_Float")
                         {
                             minValue = float.MinValue;
                             maxValue = float.MaxValue;
-                            uid = "float";
                         }
                         else
-                            if (Request.type == "TAG_Double" || Request.type == "TAG_Pos")
+                            if (Request.dataType == "TAG_Double" || Request.dataType == "TAG_Pos")
                         {
                             minValue = double.MinValue;
                             maxValue = double.MaxValue;
-                            uid = "double";
                         }
                         else
-                            if (Request.type == "TAG_Short")
+                            if (Request.dataType == "TAG_Short")
                         {
                             minValue = short.MinValue;
                             maxValue = short.MaxValue;
-                            uid = "short";
                         }
 
                         Slider numberBox1 = new()
                         {
+                            Name = Request.key,
+                            Uid = Request.dataType,
                             Minimum = minValue,
                             Maximum = maxValue,
                             Value = 0,
                             Style = Application.Current.Resources["NumberBoxStyle"] as Style,
+                            Tag = new NBTDataStructure() { Result = "", HaveCurrentType = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                         };
-                        if (Request.type == "TAG_Pos" || Request.type == "TAG_UUID")
+                        numberBox1.GotFocus += componentEvents.ValueChangedHandler;
+                        if (Request.dataType == "TAG_Pos" || Request.dataType == "TAG_UUID")
                         {
-                            uid = "double";
                             Slider numberBox2 = new()
                             {
+                                Name = Request.key,
+                                Uid = Request.dataType,
                                 Minimum = minValue,
                                 Maximum = maxValue,
                                 Value = 0,
-                                Style = Application.Current.Resources["NumberBoxStyle"] as Style,
+                                Style = Application.Current.Resources["NumberBoxStyle"] as Style
                             };
                             Slider numberBox3 = new()
                             {
+                                Name = Request.key,
+                                Uid = Request.dataType,
                                 Minimum = minValue,
                                 Maximum = maxValue,
                                 Value = 0,
-                                Style = Application.Current.Resources["NumberBoxStyle"] as Style,
+                                Style = Application.Current.Resources["NumberBoxStyle"] as Style
                             };
                             Slider numberBox4 = new()
                             {
+                                Name = Request.key,
+                                Uid = Request.dataType,
                                 Minimum = minValue,
                                 Maximum = maxValue,
                                 Value = 0,
                                 Style = Application.Current.Resources["NumberBoxStyle"] as Style,
                             };
+                            numberBox2.GotFocus += componentEvents.ValueChangedHandler;
+                            numberBox3.GotFocus += componentEvents.ValueChangedHandler;
+                            numberBox4.GotFocus += componentEvents.ValueChangedHandler;
                             TextToggleButtons enableButton = new()
                             {
                                 Style = Application.Current.Resources["TextToggleButtonsStyle"] as Style,
                                 Padding = new Thickness(5),
                                 Content = "启用"
                             };
-                            Grid numberGrid = new();
+                            Grid numberGrid = new() { Tag = new NBTDataStructure() { Result = "",HaveCurrentType = Visibility.Collapsed,DataType = Request.dataType,NBTGroup = Request.nbtType } };
                             numberGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
                             numberGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
                             numberGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(1, GridUnitType.Star) });
@@ -985,7 +1072,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                             Grid.SetColumn(numberBox1, 0);
                             Grid.SetColumn(numberBox2, 1);
                             Grid.SetColumn(numberBox3, 2);
-                            if (Request.type == "TAG_UUID")
+                            if (Request.dataType == "TAG_UUID")
                             {
                                 IconTextButtons randomButton = new()
                                 {
@@ -1013,49 +1100,44 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 case "TAG_String":
                 case "TAG_Long":
                     {
-                        TextBox stringBox = new() { Foreground = whiteBrush };
-                        if (Request.type == "TAG_String_List")
+                        TextBox stringBox = new() { Foreground = whiteBrush, Uid = Request.dataType, Name = Request.key,Tag = new NBTDataStructure() { Result = "",HaveCurrentType = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType } };
+                        stringBox.GotFocus += componentEvents.ValueChangedHandler;
+                        if(Request.dataType == "TAG_String_List")
                         {
-
-                        }
-                        else
-                            if (Request.type == "TAG_String")
-                        {
-
-                        }
-                        else
-                        {
-
+                            string NewToolTip = Request.toolTip + "(以;分割成员)";
+                            displayText.ToolTip = NewToolTip;
                         }
                         result.Add(stringBox);
                     }
                     break;
                 case "TAG_Boolean":
                     {
-                        Grid booleanGrid = new();
-                        booleanGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                        booleanGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                        TextToggleButtons trueButton = new()
+                        TextCheckBoxs textCheckBoxs = new()
                         {
-                            Style = Application.Current.Resources["TextToggleButtonsStyle"] as Style,
-                            Content = "是",
-                            Padding = new Thickness(5)
+                            Uid = Request.dataType,
+                            Name = Request.key,
+                            Foreground = whiteBrush,
+                            VerticalContentAlignment = VerticalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center,
+                            HorizontalAlignment = HorizontalAlignment.Left,
+                            HeaderWidth = 20,
+                            HeaderHeight = 20,
+                            Style = Application.Current.Resources["TextCheckBox"] as Style,
+                            Content = Request.description,
+                            Tag = new NBTDataStructure() { Result = "",HaveCurrentType = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                         };
-                        TextToggleButtons falseButton = new()
+                        if (Request.toolTip.Length > 0)
                         {
-                            Style = Application.Current.Resources["TextToggleButtonsStyle"] as Style,
-                            Content = "否",
-                            Padding = new Thickness(5)
-                        };
-                        booleanGrid.Children.Add(trueButton);
-                        booleanGrid.Children.Add(falseButton);
-                        Grid.SetColumn(trueButton, 0);
-                        Grid.SetColumn(falseButton, 1);
-                        result.Add(booleanGrid);
+                            textCheckBoxs.ToolTip = Request.toolTip;
+                            ToolTipService.SetBetweenShowDelay(textCheckBoxs,0);
+                            ToolTipService.SetInitialShowDelay(textCheckBoxs, 0);
+                        }
+                        result.Remove(displayText);
+                        textCheckBoxs.GotFocus += componentEvents.ValueChangedHandler;
+                        result.Add(textCheckBoxs);
                     }
                     break;
             }
-
             return result;
         }
 
@@ -1093,7 +1175,10 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void UpdateUILayOut()
         {
             string data = File.ReadAllText(SpecialNBTStructureFilePath);
-            JArray array = JArray.Parse(data); 
+            JArray array = JArray.Parse(data);
+            //清空特指数据
+            SpecialTagsResult.Clear();
+
             for (int i = 0; i < array.Count; i++)
             {
                 JToken currentToken = array[i];
@@ -1138,6 +1223,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                 Grid.SetColumn(components[j], 0);
                                 Grid.SetColumnSpan(components[j], 2);
                             }
+                            if (components[j] is TextCheckBoxs)
+                            {
+                                newGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                                LeftIndex = true;
+                                Grid.SetColumnSpan(components[j], 2);
+                            }
                         }
                         #endregion
                         specialDataDictionary.Add(SelectedEntityIdString, newGrid);
@@ -1179,13 +1270,11 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             Accordion accordion = sender as Accordion;
             string currentUID = accordion.Uid;
             ScrollViewer accordionContent = accordion.Content as ScrollViewer;
-            Accordion parentAccordion = accordion.FindParent<Accordion>();
-            bool IsSubAccordion = false;
             Grid subGrid = accordion.Content as Grid;
             subGrid ??= accordionContent.Content as Grid;
-
             if (subGrid.Children.Count > 0) return;
-
+            Accordion parentAccordion = accordion.FindParent<Accordion>();
+            bool IsSubAccordion = false;
             //分辨当前是实体、生物还是活体,都不是则为其它共通标签
             IsSubAccordion = parentAccordion != null;
 
@@ -1223,7 +1312,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     IsNumber = IsNumber && currentUID == "number";
                     if (dataType.ToLower().Contains(currentUID) || IsNumber)
                     {
-                        List<FrameworkElement> result = JsonToComponentConverter(commonItem);
+                        List<FrameworkElement> result = JsonToComponentConverter(commonItem, commonString);
                         components.AddRange(result);
                     }
                 }
@@ -1248,6 +1337,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     Grid.SetColumn(item, 0);
                     Grid.SetColumnSpan(item, 2);
                 }
+                if (item is TextCheckBoxs)
+                {
+                    subGrid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
+                    LeftIndex = true;
+                    Grid.SetColumnSpan(item, 2);
+                }
             }
             #endregion
         }
@@ -1257,7 +1352,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         /// </summary>
         /// <param name="grid"></param>
         /// <param name="nbtStructure"></param>
-        private List<FrameworkElement> JsonToComponentConverter(JObject nbtStructure)
+        private List<FrameworkElement> JsonToComponentConverter(JObject nbtStructure,string NBTType = "")
         {
             string tag = JArray.Parse(nbtStructure["tag"].ToString())[0].ToString();
             string key = nbtStructure["key"].ToString();
@@ -1270,11 +1365,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 
             ComponentData componentData = new()
             {
-                type = tag,
+                dataType = tag,
                 key = key,
                 toolTip = toolTip,
                 description = description,
-                dependency = dependency
+                dependency = dependency,
+                nbtType = NBTType
             };
             if (children != null)
                 componentData.children = children.ToString();
@@ -1452,7 +1548,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
     public class ComponentData
     {
         public string children { get; set; }
-        public string type { get; set; }
+        public string dataType { get; set; }
+        public string nbtType { get; set; }
         public string key { get; set; }
         public string description { get; set; }
         public string toolTip { get; set; }

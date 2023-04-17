@@ -18,7 +18,7 @@ using System.Windows.Input;
 
 namespace cbhk_environment.Generators.TagGenerator
 {
-    public class tag_datacontext: ObservableObject
+    public partial class tag_datacontext: ObservableObject
     {
         #region 生成与返回
         public RelayCommand RunCommand { get; set; }
@@ -94,6 +94,7 @@ namespace cbhk_environment.Generators.TagGenerator
                 selectedItem = value;
             }
         }
+        private int LastSelectedIndex = 0;
         #endregion
 
         #region 全选或反选
@@ -180,6 +181,9 @@ namespace cbhk_environment.Generators.TagGenerator
 
         //对象数据源
         CollectionViewSource TagViewSource = null;
+
+        [GeneratedRegex("[a-zA-z_]+")]
+        private static partial Regex GetDisplayText();
 
         public tag_datacontext()
         {
@@ -300,12 +304,25 @@ namespace cbhk_environment.Generators.TagGenerator
         /// <param name="e"></param>
         public void ListBoxClick(object sender, MouseButtonEventArgs e)
         {
+            if (e.OriginalSource is not Border)
+            {
+                LastSelectedIndex = TagZone.SelectedIndex;
+                SelectedItem = null;
+            }
+            else
+                if(SelectedItem == null)
+                SelectedItem = TagZone.Items[LastSelectedIndex] as TagItemTemplate;
             if (SelectedItem != null)
             {
                 ReverseValue(SelectedItem);
             }
         }
 
+        /// <summary>
+        /// 背包视图载入事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void ListViewLoaded(object sender, RoutedEventArgs e)
         {
             TagZone = sender as ListView;
@@ -332,7 +349,7 @@ namespace cbhk_environment.Generators.TagGenerator
                 if (displayText.Trim().Length > 0)
                 {
                     itemString = displayText.Trim()[..displayText.Trim().IndexOf(' ')];
-                    if (Regex.IsMatch(displayText.Trim(), "[a-zA-z_]+"))
+                    if (GetDisplayText().IsMatch(displayText.Trim()))
                     {
                         iconCheckBoxs.IsChecked = !iconCheckBoxs.IsChecked.Value;
                         if (iconCheckBoxs.IsChecked.Value)

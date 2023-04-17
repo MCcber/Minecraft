@@ -49,9 +49,8 @@
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Row="0" Grid.Column="0">
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -63,9 +62,8 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
@@ -111,6 +109,7 @@
             <TextBox
                 Width="200"
                 HorizontalAlignment="Left"
+                VerticalContentAlignment="Center"
                 FontSize="15"
                 Foreground="White"
                 Text="{Binding CurrentItem.Header, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

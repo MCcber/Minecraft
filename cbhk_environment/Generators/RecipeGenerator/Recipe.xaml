@@ -56,9 +56,8 @@
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Row="0" Grid.Column="0">
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -70,9 +69,8 @@
                 ToolTip="ESC:返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="25"
+                Height="25"
                 HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
@@ -89,10 +87,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="10*" />
             </Grid.ColumnDefinitions>
-            <ScrollViewer
-                Grid.Column="0"
-                
-                VerticalScrollBarVisibility="Auto">
+            <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
                 <StackPanel Orientation="Vertical">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">

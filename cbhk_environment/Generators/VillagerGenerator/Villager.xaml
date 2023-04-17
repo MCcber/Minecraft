@@ -55,9 +55,8 @@
             Grid.Column="0"
             Background="Transparent">
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource LeftArrow}"
@@ -69,9 +68,8 @@
                 ToolTip="返回主页"
                 ToolTipService.InitialShowDelay="0" />
             <CustomControls:IconTextButtons
-                Width="16"
-                Height="16"
-                Margin="5,0"
+                Width="25"
+                Height="25"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
@@ -167,7 +165,6 @@
                     Background="#555956"
                     DockPanel.Dock="Top"
                     HorizontalScrollBarVisibility="Disabled"
-                    
                     VerticalScrollBarVisibility="Auto">
                     <ItemsControl Background="Transparent" ItemsSource="{Binding transactionItems}">
                         <ItemsControl.ItemsPanel>
@@ -304,8 +301,7 @@
                         Grid.Column="0"
                         MaxHeight="275"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        >
+                        ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <behavior:Interaction.Triggers>
                             <behavior:EventTrigger EventName="Loaded">
                                 <behavior:CallMethodAction MethodName="GossipViewerLoaded" TargetObject="{Binding}" />
@@ -356,7 +352,7 @@
                                 Grid.Row="1"
                                 Margin="0,5"
                                 HorizontalScrollBarVisibility="Disabled"
-                                
+
                                 VerticalScrollBarVisibility="Auto">
                                 <behavior:Interaction.Triggers>
                                     <behavior:EventTrigger EventName="Loaded">
@@ -394,10 +390,7 @@
                             FontWeight="Bold"
                             Foreground="White"
                             Text="记忆" />
-                        <ScrollViewer
-                            Grid.Row="1"
-                            
-                            VerticalScrollBarVisibility="Disabled">
+                        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled">
                             <StackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                 <TextBlock
                                     Margin="20,0,0,0"
