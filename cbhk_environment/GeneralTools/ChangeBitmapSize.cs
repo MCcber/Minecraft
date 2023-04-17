@@ -16,7 +16,7 @@ namespace cbhk_environment.GeneralTools
         /// <returns>放大后的图形</returns>
         public static Bitmap Magnifier(Bitmap srcbitmap, int multiple)
         {
-            Bitmap bitmap = new Bitmap(srcbitmap.Size.Width * multiple, srcbitmap.Size.Height * multiple);
+            Bitmap bitmap = new(srcbitmap.Size.Width * multiple, srcbitmap.Size.Height * multiple);
             if (multiple <= 0) { multiple = 0; return srcbitmap; }
             BitmapData srcbitmapdata = srcbitmap.LockBits(new Rectangle(new Point(0, 0), srcbitmap.Size), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             BitmapData bitmapdata = bitmap.LockBits(new Rectangle(new Point(0, 0), bitmap.Size), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);

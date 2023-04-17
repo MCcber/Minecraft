@@ -11,7 +11,7 @@ namespace cbhk_environment.GeneralTools
         /// <typeparam name="T"></typeparam>
         /// <param name="depObj"></param>
         /// <returns></returns>
-        public static T FindChild<T>(this DependencyObject depObj) where T : DependencyObject
+        public static T FindChild<T>(this DependencyObject depObj,string targetUid = "") where T : DependencyObject
         {
             if (depObj == null) return null;
 
@@ -19,8 +19,8 @@ namespace cbhk_environment.GeneralTools
             {
                 var child = VisualTreeHelper.GetChild(depObj, i);
 
-                var result = (child as T) ?? FindChild<T>(child);
-                if (result != null) return result;
+                var result = (child as T) ?? FindChild<T>(child, targetUid);
+                if (result != null && (targetUid.Length == 0 || (result as FrameworkElement).Uid == targetUid)) return result;
             }
             return null;
         }
@@ -31,7 +31,7 @@ namespace cbhk_environment.GeneralTools
         /// <typeparam name="T"></typeparam>
         /// <param name="element"></param>
         /// <returns></returns>
-        public static T FindParent<T>(this DependencyObject element) where T : DependencyObject
+        public static T FindParent<T>(this DependencyObject element, string targetUid = "") where T : DependencyObject
         {
             DependencyObject parent = VisualTreeHelper.GetParent(element);
             if (parent != null)
@@ -42,8 +42,8 @@ namespace cbhk_environment.GeneralTools
                 }
                 else
                 {
-                    parent = FindParent<T>(parent);
-                    if (parent is not null and T)
+                    parent = FindParent<T>(parent, targetUid);
+                    if (parent is not null and T && (targetUid.Length == 0 || (parent as FrameworkElement).Uid == targetUid))
                     {
                         return (T)parent;
                     }

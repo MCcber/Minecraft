@@ -15,7 +15,7 @@ namespace cbhk_environment.GeneralTools
         /// <returns></returns>
         public static bool SetMeStart(bool onOff)
         {
-            bool isOk = false;
+            bool isOk;
             string appName = Process.GetCurrentProcess().MainModule.ModuleName;
             string appPath = Process.GetCurrentProcess().MainModule.FileName;
             isOk = SetAutoStart(onOff, appName, appPath);
@@ -121,7 +121,7 @@ namespace cbhk_environment.GeneralTools
             }
             catch (Exception ex)
             {
-                string ss = ex.Message;
+                //string ss = ex.Message;
                 return false;
                 //throw;
             }
@@ -145,7 +145,7 @@ namespace cbhk_environment.GeneralTools
                 if (!Directory.Exists(directory)) Directory.CreateDirectory(directory);                         //目录不存在则创建
                 //添加引用 Com 中搜索 Windows Script Host Object Model
                 string shortcutPath = Path.Combine(directory, string.Format("{0}.lnk", shortcutName));          //合成路径
-                WshShell shell = new WshShell();
+                WshShell shell = new();
                 IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);    //创建快捷方式对象
                 shortcut.TargetPath = targetPath;                                                               //指定目标路径
                 shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);                                  //设置起始位置
