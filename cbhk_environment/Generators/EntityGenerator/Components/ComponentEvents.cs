@@ -74,7 +74,9 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         propertyPath = new PropertyPath("SpecialTagsResult[" + currentIndex + "]");
                     }
                     valueBinder.Path = propertyPath;
+                    var currentTag = grid.Tag;
                     BindingOperations.SetBinding(grid, FrameworkElement.TagProperty, valueBinder);
+                    grid.Tag = currentTag;
                 }
             }
             #endregion
@@ -109,7 +111,9 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         propertyPath = new PropertyPath("SpecialTagsResult[" + currentIndex + "]");
                     }
                     valueBinder.Path = propertyPath;
+                    var currentTag = slider.Tag;
                     BindingOperations.SetBinding(slider, FrameworkElement.TagProperty, valueBinder);
+                    slider.Tag = currentTag;
                 }
             }
             #endregion
@@ -190,7 +194,9 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     }
 
                     valueBinder.Path = propertyPath;
+                    var currentTag = textCheckBoxs.Tag;
                     BindingOperations.SetBinding(textCheckBoxs, FrameworkElement.TagProperty, valueBinder);
+                    textCheckBoxs.Tag = currentTag;
                 }
             }
             #endregion
