@@ -18,6 +18,7 @@ namespace cbhk_environment.ControlsDataContexts
                 Grid grid = (Grid)sender;
                 grid.CaptureMouse();
 
+                if (grid.TemplatedParent == null) return;
                 prevWidth = (grid.TemplatedParent as TextBox).ActualWidth;
                 prevHeight = (grid.TemplatedParent as TextBox).ActualHeight;
 
