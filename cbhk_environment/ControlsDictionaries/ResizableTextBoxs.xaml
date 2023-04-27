@@ -4,9 +4,6 @@
     xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local_context="clr-namespace:cbhk_environment.ControlsDataContexts">
 
-    <SolidColorBrush x:Key="TextBox.Static.Border" Color="#FFABAdB3" />
-    <SolidColorBrush x:Key="TextBox.MouseOver.Border" Color="#FF7EB4EA" />
-    <SolidColorBrush x:Key="TextBox.Focus.Border" Color="#FF569DE5" />
     <SolidColorBrush x:Key="ResizeGripBackgroundColorBrush" Color="Transparent" />
     <ImageBrush x:Key="BoxBackground" ImageSource="/cbhk_environment;component/resources/common/images/TextEditBox.png" />
 
@@ -14,8 +11,7 @@
 
     <Style x:Key="ResizableTextBoxStyle" TargetType="{x:Type TextBox}">
         <Setter Property="Background" Value="{StaticResource BoxBackground}" />
-        <Setter Property="BorderBrush" Value="{StaticResource TextBox.Static.Border}" />
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Property="BorderBrush" Value="Black" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CaretBrush" Value="White" />
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -41,6 +37,7 @@
                             <ScrollViewer
                                 x:Name="PART_ContentHost"
                                 Focusable="false"
+                                Foreground="{TemplateBinding Foreground}"
                                 RenderOptions.ClearTypeHint="Enabled"
                                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                 ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -83,12 +80,6 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="border" Property="Opacity" Value="0.56" />
-                        </Trigger>
-                        <Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource TextBox.MouseOver.Border}" />
-                        </Trigger>
-                        <Trigger Property="IsKeyboardFocused" Value="true">
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource TextBox.Focus.Border}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

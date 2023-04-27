@@ -14,7 +14,12 @@ namespace cbhk_environment.GenerateResultDisplayer
     /// </summary>
     public partial class Displayer
     {
-        SolidColorBrush tranparentBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent"));
+        SolidColorBrush tranparentBrush = new((Color)ColorConverter.ConvertFromString("Transparent"));
+        SolidColorBrush blackBrush = new((Color)ColorConverter.ConvertFromString("#000000"));
+        string buttonNormalImage = "pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png";
+        string buttonPressedImage = "pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png";
+        ImageBrush buttonNormalBrush = null;
+        ImageBrush buttonPressedBrush = null;
         /// <summary>
         /// 进程锁
         /// </summary>
@@ -26,6 +31,11 @@ namespace cbhk_environment.GenerateResultDisplayer
         private Displayer()
         {
             InitializeComponent();
+
+            #region 初始化字段
+            buttonNormalBrush = new ImageBrush(new BitmapImage(new Uri(buttonNormalImage, UriKind.RelativeOrAbsolute)));
+            buttonPressedBrush = new ImageBrush(new BitmapImage(new Uri(buttonPressedImage, UriKind.RelativeOrAbsolute)));
+            #endregion
         }
 
         /// <summary>
@@ -71,11 +81,26 @@ namespace cbhk_environment.GenerateResultDisplayer
             }
             #endregion
 
+            #region 创建复制生成结果的按钮
+            IconTextButtons copyResultButton = new()
+            {
+                Style = Application.Current.Resources["IconTextButton"] as Style,
+                Content = "复制结果",
+                Margin = new Thickness(0,0,5,0),
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Padding = new Thickness(5),
+                Foreground = blackBrush,
+                Background = buttonNormalBrush,
+                PressedBackground = buttonPressedBrush
+            };
+            #endregion
+
             #region 处理新加入的数据
             //如果不存在相同标签页
-            if(!ExistSamePage)
+            if (!ExistSamePage)
             {
-                FlowDocument flowDocument = new() { LineHeight = 1 };
+                EnabledFlowDocument flowDocument = new() { LineHeight = 1 };
 
                 #region 显示生成器图标
                 Paragraph firstParagraph = new() { FontSize = 25, TextAlignment = TextAlignment.Center };
@@ -89,7 +114,10 @@ namespace cbhk_environment.GenerateResultDisplayer
                 firstParagraph.Inlines.Add(new Run(" ------------"));
                 #endregion
 
-                Paragraph paragraph = new(new Run(spawn_result));
+                copyResultButton.Click += (a,b) => { Clipboard.SetText(spawn_result); };
+                Paragraph paragraph = new();
+                paragraph.Inlines.Add(copyResultButton);
+                paragraph.Inlines.Add(new Run(spawn_result));
                 flowDocument.Blocks.Add(firstParagraph);
                 flowDocument.Blocks.Add(paragraph);
                 RichTextBox result_box = new()
@@ -132,6 +160,8 @@ namespace cbhk_environment.GenerateResultDisplayer
                 #endregion
 
                 Paragraph newParagraph = new();
+                copyResultButton.Click += (a,b) => { Clipboard.SetText(spawn_result); };
+                newParagraph.Inlines.Add(copyResultButton);
                 newParagraph.Inlines.Add(new Run(spawn_result));
                 richTextBox.Document.Blocks.InsertBefore(firstParagraph,splitParagraph);
                 richTextBox.Document.Blocks.InsertBefore(splitParagraph, newParagraph);

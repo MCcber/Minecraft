@@ -7,6 +7,8 @@ using System.IO;
 using System.Windows.Data;
 using System;
 using System.Globalization;
+using cbhk_environment.GeneralTools;
+using System.Collections.ObjectModel;
 
 namespace cbhk_environment.CustomControls
 {
@@ -104,8 +106,14 @@ namespace cbhk_environment.CustomControls
         public void CloseRichTabItemsClick(object sender, RoutedEventArgs e)
         {
             RichTabItems item = (sender as Button).TemplatedParent as RichTabItems;
-            TabControl parent = item.Parent as TabControl;
+            TabControl parent = item.FindParent<TabControl>();
+            if(parent.ItemsSource == null)
             parent.Items.Remove(item);
+            else
+            {
+                ObservableCollection<RichTabItems> richTabItems = parent.ItemsSource as ObservableCollection<RichTabItems>;
+                richTabItems.Remove(item);
+            }
         }
 
         #region 处理拖拽互换位置
@@ -113,7 +121,7 @@ namespace cbhk_environment.CustomControls
         {
             Draging = true;
             current_item = sender as RichTabItems;
-            TabControl current_parent = current_item.Parent as TabControl;
+            TabControl current_parent = current_item.FindParent<TabControl>();
             current_index = current_parent.Items.IndexOf(current_item);
         }
 
@@ -131,7 +139,7 @@ namespace cbhk_environment.CustomControls
                 string currentItemHeaderText = current_item.Header.ToString();
                 if (select_index != current_index && select_index != -1 && current_index != -1)
                 {
-                    TabControl current_parent = (sender as RichTabItems).Parent as TabControl;
+                    TabControl current_parent = (sender as RichTabItems).FindParent<TabControl>();
                     if (select_item != null && current_item != null && current_index != -1 && select_index != -1)
                     {
                         RichTabItems new_select_item = new()
@@ -159,10 +167,21 @@ namespace cbhk_environment.CustomControls
                         new_select_item.MouseEnter += TabItem_MouseEnter;
                         new_current_item.MouseEnter += TabItem_MouseEnter;
 
-                        current_parent.Items.RemoveAt(select_index);
-                        current_parent.Items.Insert(select_index, new_current_item);
-                        current_parent.Items.RemoveAt(current_index);
-                        current_parent.Items.Insert(current_index, new_select_item);
+                        if(current_parent.ItemsSource == null)
+                        {
+                            current_parent.Items.RemoveAt(select_index);
+                            current_parent.Items.Insert(select_index, new_current_item);
+                            current_parent.Items.RemoveAt(current_index);
+                            current_parent.Items.Insert(current_index, new_select_item);
+                        }
+                        else
+                        {
+                            ObservableCollection<RichTabItems> richTabItems = current_parent.ItemsSource as ObservableCollection<RichTabItems>;
+                            richTabItems.RemoveAt(select_index);
+                            richTabItems.Insert(select_index,new_current_item);
+                            richTabItems.RemoveAt(current_index);
+                            richTabItems.Insert(current_index, new_select_item);
+                        }
                         current_parent.SelectedIndex = select_index;
                     }
                 }
@@ -180,8 +199,14 @@ namespace cbhk_environment.CustomControls
             {
                 RichTabItems current_item = sender as RichTabItems;
                 select_item = current_item;
-                TabControl current_parent = current_item.Parent as TabControl;
+                TabControl current_parent = current_item.FindParent<TabControl>();
+                if(current_parent.ItemsSource == null)
                 select_index = current_parent.Items.IndexOf(current_item);
+                else
+                {
+                    ObservableCollection<RichTabItems> richTabItems = current_parent.ItemsSource as ObservableCollection<RichTabItems>;
+                    select_index = richTabItems.IndexOf(current_item);
+                }
             }
 
             Grid grid = Template.FindName("templateRoot", this) as Grid;

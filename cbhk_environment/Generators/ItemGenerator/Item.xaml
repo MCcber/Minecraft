@@ -217,15 +217,18 @@
                             VerticalAlignment="Center"
                             Foreground="White"
                             Text="自定义标签" />
+                        <!--  Style="{DynamicResource ResizableTextBoxStyle}"  -->
                         <TextBox
                             Grid.Row="3"
                             Grid.Column="1"
+                            MinWidth="250"
+                            MinHeight="25"
+                            MaxWidth="526"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             BorderBrush="Black"
-                            FontSize="15"
+                            FontSize="20"
                             Foreground="White"
-                            Style="{DynamicResource ResizableTextBoxStyle}"
                             Text="{Binding CustomTag, Mode=TwoWay}" />
                         <CustomControls:IconCheckBoxs
                             Grid.Row="4"

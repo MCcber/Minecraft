@@ -310,7 +310,7 @@ namespace cbhk_environment.Generators.TagGenerator
                 SelectedItem = null;
             }
             else
-                if(SelectedItem == null)
+                if(SelectedItem == null && LastSelectedIndex > 0 && LastSelectedIndex < TagZone.Items.Count)
                 SelectedItem = TagZone.Items[LastSelectedIndex] as TagItemTemplate;
             if (SelectedItem != null)
             {

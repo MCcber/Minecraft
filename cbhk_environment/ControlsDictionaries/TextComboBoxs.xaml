@@ -9,6 +9,8 @@
     <ImageBrush x:Key="TextEditBox" ImageSource="/cbhk_environment;component/resources/common/images/TextEditBox.png" />
     <ImageBrush x:Key="Frame" ImageSource="/cbhk_environment;component/resources/common/images/Frame.png" />
 
+    <ControlDataContexts:ConvertComboBoxItem x:Key="ConvertComboBoxItemConverter" />
+
     <!--<Style x:Key="ComboBoxEditableTextBox" TargetType="{x:Type TextBox}">
         <Setter Property="OverridesDefaultStyle" Value="true" />
         <Setter Property="AllowDrop" Value="true" />
@@ -183,7 +185,6 @@
                         <ScrollViewer
                             x:Name="DropDownScrollViewer"
                             Width="{TemplateBinding Width}"
-                            
                             VirtualizingPanel.ScrollUnit="Pixel">
                             <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas
@@ -222,7 +223,7 @@
                 <TextBox
                     x:Name="EditableTextBox"
                     Margin="{TemplateBinding Padding}"
-                    Padding="5,0,0,0"
+                    Padding="2,0,0,0"
                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                     BorderThickness="0"
@@ -230,7 +231,7 @@
                     DataContext="{StaticResource TextSearcherDataContext}"
                     Foreground="White"
                     IsReadOnly="{Binding IsReadOnly, RelativeSource={RelativeSource TemplatedParent}}"
-                    Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay, Path=SelectedItem}">
+                    Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=OneWay, Path=SelectedItem, Converter={StaticResource ConvertComboBoxItemConverter}}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="KeyUp">
                             <behavior:CallMethodAction MethodName="ItemSearcher" TargetObject="{Binding}" />
@@ -295,7 +296,7 @@
                         Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                         BorderBrush="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}"
                         BorderThickness="1">
-                        <ScrollViewer x:Name="DropDownScrollViewer" >
+                        <ScrollViewer x:Name="DropDownScrollViewer">
                             <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
                                 <Canvas
                                     x:Name="canvas"

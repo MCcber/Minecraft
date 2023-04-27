@@ -32,88 +32,36 @@
                             x:Name="border"
                             Width="{TemplateBinding ToggleWidth}"
                             Height="{TemplateBinding ToggleHeight}"
+                            Margin="0,-5,0,0"
                             BorderThickness="0"
                             RenderOptions.BitmapScalingMode="NearestNeighbor"
                             RenderOptions.ClearTypeHint="Enabled"
                             SnapsToDevicePixels="True"
-                            UseLayoutRounding="True">
-                            <!--<Path
-                                x:Name="CheckShape"
-                                Width="15"
-                                Height="15"
-                                Margin="0,0,15,0"
-                                VerticalAlignment="Center"
-                                Fill="#2F2F2F">
-                                <Path.Data>
-                                    <EllipseGeometry
-                                        Center="6 7"
-                                        RadiusX="8"
-                                        RadiusY="8" />
-                                </Path.Data>
-                            </Path>-->
-                        </Border>
+                            UseLayoutRounding="True" />
                         <TextBlock
                             x:Name="UnCheckText"
-                            Margin="5,0,0,2"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            FontSize="15"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            FontSize="{TemplateBinding FontSize}"
                             Foreground="{TemplateBinding Foreground}"
                             Text="{TemplateBinding UnSelectedToggleText}"
-                            TextAlignment="Left"
+                            TextAlignment="Center"
                             TextTrimming="CharacterEllipsis"
                             Visibility="Visible" />
                         <TextBlock
                             x:Name="CheckText"
-                            Margin="5,0,0,2"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            FontSize="15"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            FontSize="{TemplateBinding FontSize}"
                             Foreground="{TemplateBinding Foreground}"
                             Text="{TemplateBinding SelectedToggleText}"
-                            TextAlignment="Left"
+                            TextAlignment="Center"
                             TextTrimming="CharacterEllipsis"
                             Visibility="Collapsed" />
                         <ContentPresenter x:Name="contentPresenter" />
                     </DockPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <!--<Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation
-                                            Storyboard.TargetName="CheckShape"
-                                            Storyboard.TargetProperty="Margin"
-                                            From="0 0 15 0"
-                                            To="0 0 -20 0"
-                                            Duration="0:0:0.2" />
-                                        <ColorAnimation
-                                            Storyboard.TargetName="CheckShape"
-                                            Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)"
-                                            From="#2F2F2F"
-                                            To="LightGray"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <ThicknessAnimation
-                                            Storyboard.TargetName="CheckShape"
-                                            Storyboard.TargetProperty="Margin"
-                                            From="0 0 -20 0"
-                                            To="0 0 15 0"
-                                            Duration="0:0:0.2" />
-                                        <ColorAnimation
-                                            Storyboard.TargetName="CheckShape"
-                                            Storyboard.TargetProperty="(Path.Fill).(SolidColorBrush.Color)"
-                                            From="LightGray"
-                                            To="#2F2F2F"
-                                            Duration="0:0:0.2" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>-->
                             <Setter TargetName="CheckText" Property="Visibility" Value="Visible" />
                             <Setter TargetName="UnCheckText" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="border" Property="Background" Value="{StaticResource RadiusToggleButtonOn}" />
@@ -123,19 +71,6 @@
                             <Setter TargetName="UnCheckText" Property="Visibility" Value="Visible" />
                             <Setter TargetName="border" Property="Background" Value="{StaticResource RadiusToggleButtonOff}" />
                         </Trigger>
-                        <!--<Trigger Property="IsMouseOver" Value="true">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource Button.MouseOver.Background}" />
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.MouseOver.Border}" />
-                        </Trigger>-->
-                        <!--<Trigger Property="IsPressed" Value="true">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Pressed.Background}" />
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Disabled.Background}" />
-                            <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}" />
-                            <Setter TargetName="contentPresenter" Property="TextElement.Foreground" Value="{StaticResource Button.Disabled.Foreground}" />
-                        </Trigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

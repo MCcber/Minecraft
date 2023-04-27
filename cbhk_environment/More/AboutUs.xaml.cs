@@ -27,7 +27,7 @@ namespace cbhk_environment.More
             StackPanel stackPanel = dockPanel.Parent as StackPanel;
             int parentIndex = stackPanel.Children.IndexOf(dockPanel) - 1;
             int LinkIndex = parentIndex * ColumnCount + dockPanel.Children.IndexOf(btn);
-            Process.Start(LinkTargetList[LinkIndex]);
+            Process.Start("explorer.exe", LinkTargetList[LinkIndex]);
         }
     }
 }
