@@ -16,11 +16,14 @@
     </UserControl.Resources>
 
     <DockPanel LastChildFill="False">
-        <Image
+        <Border
             x:Name="DisplayEntity"
-            Width="25"
             Height="25"
-            Margin="5,0,0,0" />
+            Margin="5,0,0,0"
+            BorderBrush="#FFE5B663"
+            BorderThickness="1">
+            <Image Width="25" Height="25" />
+        </Border>
         <CustomControls:RadiusToggleButtons
             x:Name="ReferencemMode"
             Height="25"
@@ -40,9 +43,9 @@
             x:Name="ReferenceIndex"
             Width="110"
             Height="25"
-            Maximum="2147483647"
-            Minimum="-2147483648"
-            Style="{DynamicResource NumberBoxStyle}" />
+            Minimum="0"
+            Style="{DynamicResource NumberBoxStyle}"
+            Value="0" />
         <TextBlock
             VerticalAlignment="Center"
             Foreground="White"
@@ -50,10 +53,20 @@
         <CustomControls:IconTextButtons
             Height="25"
             Margin="5,0,0,0"
-            Padding="5"
+            Padding="5,0,5,0"
             Background="{StaticResource ButtonNormal}"
             Click="ReferenceSaveClick"
             Content="引用存档"
+            NeedMouseOverStyle="False"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Height="25"
+            Margin="5,0,0,0"
+            Padding="5,0,5,0"
+            Background="{StaticResource ButtonNormal}"
+            Click="CloseButtons_Click"
+            Content="X"
             NeedMouseOverStyle="False"
             PressedBackground="{StaticResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />

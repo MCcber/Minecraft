@@ -251,6 +251,7 @@
                 <TextBox
                     x:Name="EditableTextBox"
                     Margin="{TemplateBinding Padding}"
+                    Padding="2,0,0,0"
                     HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                     VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                     Background="{StaticResource TextEditBox}"

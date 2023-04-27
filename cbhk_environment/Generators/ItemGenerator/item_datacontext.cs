@@ -5,7 +5,6 @@ using System.Windows;
 using cbhk_environment.CustomControls;
 using System.Windows.Controls;
 using cbhk_environment.Generators.ItemGenerator.Components;
-using System;
 using cbhk_environment.ControlsDataContexts;
 using System.Linq;
 using System.Text.RegularExpressions;

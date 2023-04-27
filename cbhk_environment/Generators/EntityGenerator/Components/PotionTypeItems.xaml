@@ -62,7 +62,7 @@
                 Text="效果等级" />
             <Slider
                 x:Name="EffectLevel"
-                Width="80"
+                Width="120"
                 Height="25"
                 HorizontalAlignment="Left"
                 Background="Transparent"
@@ -84,6 +84,7 @@
                 Content="×"
                 FontSize="20"
                 Foreground="Black"
+                NeedMouseOverStyle="False"
                 PressedBackground="{StaticResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
         </DockPanel>

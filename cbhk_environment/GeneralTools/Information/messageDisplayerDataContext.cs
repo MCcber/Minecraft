@@ -15,9 +15,33 @@ namespace cbhk_environment.GeneralTools.Information
             Infomation
         }
 
-        public string DisplayInfomation { get; set; }
+        private string displayInfomation = "";
+        public string DisplayInfomation
+        {
+            get
+            {
+                return displayInfomation;
+            }
+            set
+            {
+                displayInfomation = value;
+                OnPropertyChanged();
+            }
+        }
 
-        public ImageSource MessageIcon { get; set; }
+        private ImageSource messageIcon = null;
+        public ImageSource MessageIcon
+        {
+            get
+            {
+                return messageIcon;
+            }
+            set
+            {
+                messageIcon = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string MessageTitle { get; set; }
 
@@ -29,8 +53,8 @@ namespace cbhk_environment.GeneralTools.Information
         private string errorIconPath = "pack://application:,,,/cbhk_environment;component/resources/cbhk_form/images/Error.png";
         private string infoIconPath = "pack://application:,,,/cbhk_environment;component/resources/cbhk_form/images/Info.png";
 
-        public static ImageSource errorIcon;
-        public static ImageSource infoIcon;
+        public ImageSource errorIcon;
+        public ImageSource infoIcon;
         public messageDisplayerDataContext()
         {
             Yes = new RelayCommand<Window>(YesCommand);

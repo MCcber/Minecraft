@@ -49,13 +49,11 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="2,0"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
                 BorderThickness="0"
                 Command="{Binding RunCommand}"
-                CommandParameter="{StaticResource BoolFalse}"
                 FontSize="15"
                 Style="{DynamicResource IconTextButton}"
                 ToolTip="F5:运行"
@@ -68,6 +66,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Background="{StaticResource Save}"
+                Command="{Binding SaveCommand}"
                 NeedMouseOverStyle="False"
                 Style="{DynamicResource IconTextButton}" />
             <TextBlock
@@ -95,7 +94,7 @@
                 Foreground="White"
                 Text="ID" />
             <ComboBox
-                Width="125"
+                Width="150"
                 Height="25"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
@@ -124,6 +123,15 @@
                 Foreground="Black"
                 IsChecked="{Binding Give, Mode=TwoWay}"
                 Style="{DynamicResource TextToggleButtonsStyle}" />
+            <CustomControls:TextToggleButtons
+                Padding="5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                BorderThickness="0"
+                Content="同步到文件"
+                Foreground="Black"
+                IsChecked="{Binding SyncToFile, Mode=OneWayToSource}"
+                Style="{DynamicResource TextToggleButtonsStyle}" />
             <CustomControls:IconTextButtons
                 Padding="5"
                 HorizontalAlignment="Left"
@@ -146,28 +154,34 @@
                 Foreground="White"
                 Text="共通标签" />
             <CustomControls:TextCheckBoxs
+                VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="实体"
                 Foreground="White"
                 HeaderHeight="15"
                 HeaderWidth="15"
                 IsChecked="{Binding EntityCommonTagsVisibility, Mode=TwoWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                IsEnabled="{Binding EntityCommonTagsEnabled, Mode=OneWay}"
                 Style="{DynamicResource TextCheckBox}" />
             <CustomControls:TextCheckBoxs
+                VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="活体"
                 Foreground="White"
                 HeaderHeight="15"
                 HeaderWidth="15"
                 IsChecked="{Binding LivingBodyCommonTagsVisibility, Mode=TwoWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                IsEnabled="{Binding LivingBodyCommonTagsEnabled, Mode=OneWay}"
                 Style="{DynamicResource TextCheckBox}" />
             <CustomControls:TextCheckBoxs
+                VerticalAlignment="Center"
                 VerticalContentAlignment="Center"
                 Content="生物"
                 Foreground="White"
                 HeaderHeight="15"
                 HeaderWidth="15"
                 IsChecked="{Binding MobCommonTagsVisibility, Mode=TwoWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                IsEnabled="{Binding MobCommonTagsEnabled, Mode=OneWay}"
                 Style="{DynamicResource TextCheckBox}" />
         </DockPanel>
         <ScrollViewer
@@ -178,8 +192,10 @@
                 <CustomControls:Accordion
                     Uid="SpecialTags"
                     Title="特指"
+                    MaxHeight="200"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="True"
@@ -192,6 +208,7 @@
                         </behavior:EventTrigger>
                     </behavior:Interaction.Triggers>
                     <ScrollViewer
+                        Uid="TEST"
                         MaxHeight="200"
                         Background="#2F2F2F"
                         HorizontalScrollBarVisibility="Disabled"
@@ -214,6 +231,7 @@
                     Title="字符串"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     ModifyVisibility="Collapsed"
@@ -250,6 +268,7 @@
                     Title="数值"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     ModifyVisibility="Collapsed"
@@ -286,6 +305,7 @@
                     Title="是/否"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     Fresh="{Binding ReverseAllBoolNBTs}"
                     FreshForeground="Black"
@@ -322,10 +342,12 @@
                     </ScrollViewer>
                 </CustomControls:Accordion>
                 <CustomControls:Accordion
+                    x:Name="Passengers"
                     Uid="EntityCommonTags"
                     Title="乘客"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     Fresh="{Binding ClearPassenger}"
                     FreshForeground="Black"
@@ -362,6 +384,7 @@
                     Title="状态效果"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     Fresh="{Binding ClearPotions}"
                     FreshForeground="Black"
@@ -399,9 +422,9 @@
                     MaxHeight="200"
                     Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
-                    IsExpanded="True"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
@@ -434,7 +457,7 @@
                             </Grid.RowDefinitions>
                             <behavior:Interaction.Triggers>
                                 <behavior:EventTrigger EventName="Loaded">
-                                    <behavior:CallMethodAction MethodName="MobEffectsLoaded" TargetObject="{Binding}" />
+                                    <behavior:CallMethodAction MethodName="AttributesLoaded" TargetObject="{Binding}" />
                                 </behavior:EventTrigger>
                             </behavior:Interaction.Triggers>
                         </Grid>
@@ -443,15 +466,16 @@
                 <CustomControls:Accordion
                     Uid="BreedableMobExtraFields"
                     Title="可繁殖生物额外字段"
-                    Margin="2,2.5"
+                    Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="False"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
-                    Visibility="Collapsed">
+                    Visibility="{Binding BreedableMobExtraFieldsVisibility, Mode=TwoWay}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
@@ -476,6 +500,7 @@
                                 Title="字符串"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -499,6 +524,7 @@
                                 Title="数值"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -522,10 +548,15 @@
                                 Title="是/否"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
-                                FreshVisibility="Collapsed"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
                                 IsExpanded="False"
-                                ModifyVisibility="Collapsed"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
                                 Style="{DynamicResource AccordionStyle}"
                                 TitleForeground="Black">
                                 <behavior:Interaction.Triggers>
@@ -533,12 +564,23 @@
                                         <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
                                     </behavior:EventTrigger>
                                 </behavior:Interaction.Triggers>
-                                <Grid Background="#2F2F2F">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
                             </CustomControls:Accordion>
                         </StackPanel>
                     </ScrollViewer>
@@ -546,15 +588,16 @@
                 <CustomControls:Accordion
                     Uid="AngryCreatureExtraField"
                     Title="可愤怒生物额外字段"
-                    Margin="2,2.5"
+                    Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="False"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
-                    Visibility="{Binding AngryCreatureExtraFieldVisibility, Mode=OneWay}">
+                    Visibility="{Binding AngryCreatureExtraFieldVisibility, Mode=TwoWay}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
@@ -580,6 +623,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -604,6 +648,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -625,13 +670,17 @@
                             <CustomControls:Accordion
                                 Uid="boolean"
                                 Title="是/否"
-                                Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
-                                FreshVisibility="Collapsed"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
                                 IsExpanded="False"
-                                ModifyVisibility="Collapsed"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
                                 Style="{DynamicResource AccordionStyle}"
                                 TitleForeground="Black">
                                 <behavior:Interaction.Triggers>
@@ -639,12 +688,23 @@
                                         <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
                                     </behavior:EventTrigger>
                                 </behavior:Interaction.Triggers>
-                                <Grid Background="#2F2F2F">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
                             </CustomControls:Accordion>
                         </StackPanel>
                     </ScrollViewer>
@@ -652,15 +712,16 @@
                 <CustomControls:Accordion
                     Uid="TameableMobExtraFields"
                     Title="可驯服生物额外字段"
-                    Margin="2,2.5"
+                    Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="False"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
-                    Visibility="Collapsed">
+                    Visibility="{Binding TameableMobExtraFieldsVisibility, Mode=TwoWay}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
@@ -686,6 +747,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -710,6 +772,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -731,13 +794,17 @@
                             <CustomControls:Accordion
                                 Uid="boolean"
                                 Title="是/否"
-                                Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
-                                FreshVisibility="Collapsed"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
                                 IsExpanded="False"
-                                ModifyVisibility="Collapsed"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
                                 Style="{DynamicResource AccordionStyle}"
                                 TitleForeground="Black">
                                 <behavior:Interaction.Triggers>
@@ -745,12 +812,23 @@
                                         <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
                                     </behavior:EventTrigger>
                                 </behavior:Interaction.Triggers>
-                                <Grid Background="#2F2F2F">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
                             </CustomControls:Accordion>
                         </StackPanel>
                     </ScrollViewer>
@@ -758,15 +836,16 @@
                 <CustomControls:Accordion
                     Uid="CommonTagsForRideableEntities"
                     Title="可骑乘实体共通标签"
-                    Margin="2,2.5"
+                    Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="False"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
-                    Visibility="{Binding CommonTagsForRideableEntitiesVisibility, Mode=OneWay}">
+                    Visibility="{Binding CommonTagsForRideableEntitiesVisibility, Mode=TwoWay}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
@@ -792,6 +871,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -816,6 +896,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -837,13 +918,17 @@
                             <CustomControls:Accordion
                                 Uid="boolean"
                                 Title="是/否"
-                                Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
-                                FreshVisibility="Collapsed"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
                                 IsExpanded="False"
-                                ModifyVisibility="Collapsed"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
                                 Style="{DynamicResource AccordionStyle}"
                                 TitleForeground="Black">
                                 <behavior:Interaction.Triggers>
@@ -851,12 +936,23 @@
                                         <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
                                     </behavior:EventTrigger>
                                 </behavior:Interaction.Triggers>
-                                <Grid Background="#2F2F2F">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
                             </CustomControls:Accordion>
                         </StackPanel>
                     </ScrollViewer>
@@ -864,15 +960,16 @@
                 <CustomControls:Accordion
                     Uid="CommonTagsForZombies"
                     Title="僵尸共通标签"
-                    Margin="2,2.5"
+                    Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="False"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
-                    Visibility="{Binding CommonTagsForZombiesVisibility, Mode=OneWay}">
+                    Visibility="{Binding CommonTagsForZombiesVisibility, Mode=TwoWay}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
@@ -898,6 +995,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -922,6 +1020,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -943,13 +1042,17 @@
                             <CustomControls:Accordion
                                 Uid="boolean"
                                 Title="是/否"
-                                Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
-                                FreshVisibility="Collapsed"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
                                 IsExpanded="False"
-                                ModifyVisibility="Collapsed"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
                                 Style="{DynamicResource AccordionStyle}"
                                 TitleForeground="Black">
                                 <behavior:Interaction.Triggers>
@@ -957,28 +1060,40 @@
                                         <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
                                     </behavior:EventTrigger>
                                 </behavior:Interaction.Triggers>
-                                <Grid Background="#2F2F2F">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                </Grid>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
                             </CustomControls:Accordion>
                         </StackPanel>
                     </ScrollViewer>
                 </CustomControls:Accordion>
                 <CustomControls:Accordion
                     Uid="CommonTagsForMobsSpawnedInRaids"
-                    Title="生成于袭击中的生物的共通标签"
-                    Margin="2,2.5"
+                    Title="生成于袭击中的生物共通标签"
+                    Margin="2,2,2,0"
                     Background="#FFE5B663"
+                    BorderThickness="0"
                     FontSize="15"
                     FreshVisibility="Collapsed"
                     IsExpanded="False"
                     ModifyVisibility="Collapsed"
                     Style="{DynamicResource AccordionStyle}"
                     TitleForeground="Black"
-                    Visibility="{Binding CommonTagsForMobsSpawnedInRaidsVisibility, Mode=OneWay}">
+                    Visibility="{Binding CommonTagsForMobsSpawnedInRaidsVisibility, Mode=TwoWay}">
                     <behavior:Interaction.Triggers>
                         <behavior:EventTrigger EventName="Loaded">
                             <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
@@ -1004,6 +1119,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -1028,6 +1144,7 @@
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -1049,9 +1166,84 @@
                             <CustomControls:Accordion
                                 Uid="boolean"
                                 Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="ArrowProjectileCommonTags"
+                    Title="箭类投掷物共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding ArrowProjectileCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
                                 Grid.Row="8"
                                 Margin="10,2,10,0"
                                 Background="#FFE5B663"
+                                BorderThickness="0"
                                 FontSize="15"
                                 FreshVisibility="Collapsed"
                                 IsExpanded="False"
@@ -1069,6 +1261,814 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                 </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="ContainerEntityCommonTags"
+                    Title="容器实体共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding ContainerEntityCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="FireballProjectileCommonTags"
+                    Title="火球类投掷物共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding FireballProjectileCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="ItemProjectileCommonTags"
+                    Title="物品类投掷物共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding ItemProjectileCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="MineCartCommonTags"
+                    Title="矿车共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding MineCartCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="PotionEffectCommonTags"
+                    Title="药水效果共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding PotionEffectCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
+                            </CustomControls:Accordion>
+                        </StackPanel>
+                    </ScrollViewer>
+                </CustomControls:Accordion>
+                <CustomControls:Accordion
+                    Uid="ProjectileCommonTags"
+                    Title="投掷物共通标签"
+                    Margin="2,2,2,0"
+                    Background="#FFE5B663"
+                    BorderThickness="0"
+                    FontSize="15"
+                    FreshVisibility="Collapsed"
+                    IsExpanded="False"
+                    ModifyVisibility="Collapsed"
+                    Style="{DynamicResource AccordionStyle}"
+                    TitleForeground="Black"
+                    Visibility="{Binding ProjectileCommonTagsVisibility, Mode=TwoWay}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="AccordionVisibilitylLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                        <behavior:EventTrigger EventName="MouseLeftButtonDown">
+                            <behavior:CallMethodAction MethodName="Accordion_MouseLeftButtonDown" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                    <ScrollViewer
+                        MaxHeight="200"
+                        Background="#2F2F2F"
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                        <StackPanel>
+                            <CustomControls:Accordion
+                                Uid="string"
+                                Title="字符串"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="number"
+                                Title="数值"
+                                Grid.Row="8"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                FreshVisibility="Collapsed"
+                                IsExpanded="False"
+                                ModifyVisibility="Collapsed"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <Grid Background="#2F2F2F">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                </Grid>
+                            </CustomControls:Accordion>
+                            <CustomControls:Accordion
+                                Uid="boolean"
+                                Title="是/否"
+                                Margin="10,2,10,0"
+                                Background="#FFE5B663"
+                                BorderThickness="0"
+                                FontSize="15"
+                                Fresh="{Binding ReverseAllBoolNBTs}"
+                                FreshForeground="Black"
+                                FreshName="反选"
+                                IsExpanded="False"
+                                Modify="{Binding SelectAllBoolNBTs}"
+                                ModifyForeground="Black"
+                                ModifyName="全选"
+                                Style="{DynamicResource AccordionStyle}"
+                                TitleForeground="Black">
+                                <behavior:Interaction.Triggers>
+                                    <behavior:EventTrigger EventName="Expanded">
+                                        <behavior:CallMethodAction MethodName="ContentAccordionExpanded" TargetObject="{Binding}" />
+                                    </behavior:EventTrigger>
+                                </behavior:Interaction.Triggers>
+                                <ScrollViewer
+                                    MaxHeight="200"
+                                    Background="#2F2F2F"
+                                    HorizontalScrollBarVisibility="Disabled"
+                                    VerticalScrollBarVisibility="Auto">
+                                    <behavior:Interaction.Triggers>
+                                        <behavior:EventTrigger EventName="PreviewMouseWheel">
+                                            <behavior:CallMethodAction MethodName="ScrollViewer_PreviewMouseWheel" TargetObject="{Binding}" />
+                                        </behavior:EventTrigger>
+                                    </behavior:Interaction.Triggers>
+                                    <Grid Background="#2F2F2F">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                    </Grid>
+                                </ScrollViewer>
                             </CustomControls:Accordion>
                         </StackPanel>
                     </ScrollViewer>

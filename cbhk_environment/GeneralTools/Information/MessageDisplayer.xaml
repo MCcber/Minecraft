@@ -42,7 +42,7 @@
             Grid.Column="0"
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             RenderOptions.ClearTypeHint="Auto"
-            Source="{Binding MessageIcon}" />
+            Source="{Binding MessageIcon, Mode=OneWay}" />
         <ScrollViewer
             Grid.Row="0"
             Grid.Column="1"
@@ -52,7 +52,7 @@
             VerticalScrollBarVisibility="Auto">
             <TextBlock
                 HorizontalAlignment="Left"
-                VerticalAlignment="Top"
+                VerticalAlignment="Center"
                 FontSize="12"
                 Foreground="White"
                 Text="{Binding DisplayInfomation, Mode=OneWay}"
@@ -74,6 +74,7 @@
                 Grid.Column="0"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding Yes}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 Content="确认"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
@@ -81,6 +82,7 @@
                 Grid.Column="1"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding No}"
+                CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                 Content="取消"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
