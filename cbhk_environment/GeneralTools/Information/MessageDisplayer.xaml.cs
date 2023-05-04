@@ -12,7 +12,7 @@
 
         private void CommonWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            DialogResult = false;
+            e.Cancel = true;Hide();
         }
     }
 }

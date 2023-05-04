@@ -72,10 +72,5 @@ namespace cbhk_environment.GeneralTools.Information
         {
             window.DialogResult = true;
         }
-
-        private void CommonWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            NoCommand(sender as Window);
-        }
     }
 }
