@@ -25,13 +25,13 @@ namespace cbhk_environment.CustomControls
         public static readonly DependencyProperty MouseOverBackgroundProperty =
             DependencyProperty.Register("MouseOverBackground", typeof(SolidColorBrush), typeof(TextButtons), new PropertyMetadata(default(SolidColorBrush)));
 
-        public SolidColorBrush MouseLeftDownBackground
+        public Brush MouseLeftDownBackground
         {
-            get { return (SolidColorBrush)GetValue(MouseLeftDownBackgroundProperty); }
+            get { return (Brush)GetValue(MouseLeftDownBackgroundProperty); }
             set { SetValue(MouseLeftDownBackgroundProperty, value); }
         }
 
         public static readonly DependencyProperty MouseLeftDownBackgroundProperty =
-            DependencyProperty.Register("MouseLeftDownBackground", typeof(SolidColorBrush), typeof(TextButtons), new PropertyMetadata(default(SolidColorBrush)));
+            DependencyProperty.Register("MouseLeftDownBackground", typeof(Brush), typeof(TextButtons), new PropertyMetadata(default(Brush)));
     }
 }
