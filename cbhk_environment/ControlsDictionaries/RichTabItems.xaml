@@ -234,14 +234,15 @@
                             <Setter TargetName="innerBorder" Property="BorderThickness" Value="0,1,1,1" />
                             <Setter TargetName="mainBorder" Property="BorderThickness" Value="0,1,1,1" />
                         </MultiDataTrigger>
-                        <!--<MultiDataTrigger>
+                        <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>
                                 <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="false" />
                                 <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
                             </MultiDataTrigger.Conditions>
-                            <Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,1,0" />
-                            <Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,1,0" />
-                        </MultiDataTrigger>-->
+                            <Setter Property="MinWidth" Value="80" />
+                            <Setter Property="Margin" Value="0,0,2,0" />
+                            <Setter TargetName="contentPresenter" Property="Margin" Value="5,2,0,0" />
+                        </MultiDataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="closeButton" Property="Visibility" Value="Visible" />
                         </Trigger>
@@ -250,16 +251,11 @@
                                 <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true" />
                                 <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
                             </MultiDataTrigger.Conditions>
-                            <!--<Setter TargetName="selectedMark" Property="Visibility" Value="Visible" />-->
                             <Setter TargetName="templateRoot" Property="Background" Value="{StaticResource TabFront}" />
                             <Setter Property="Panel.ZIndex" Value="1" />
                             <Setter Property="Margin" Value="0,-2,-2,0" />
                             <Setter TargetName="closeButton" Property="Visibility" Value="Visible" />
                             <Setter Property="FontWeight" Value="Bold" />
-                            <!--<Setter Property="Margin" Value="-2,-2,-2,0" />-->
-                            <!--<Setter TargetName="innerBorder" Property="Opacity" Value="1" />-->
-                            <!--<Setter TargetName="innerBorder" Property="BorderThickness" Value="1,1,1,0" />
-                            <Setter TargetName="mainBorder" Property="BorderThickness" Value="1,1,1,0" />-->
                         </MultiDataTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

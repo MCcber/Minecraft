@@ -221,7 +221,8 @@
                 Grid.Row="2"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Background="Transparent">
+                Background="Transparent"
+                BorderThickness="0">
                 <RepeatButton
                     Margin="1"
                     Background="Transparent"

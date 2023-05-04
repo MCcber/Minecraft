@@ -24,27 +24,30 @@
                             <RowDefinition x:Name="RowDefinition1" Height="*" />
                         </Grid.RowDefinitions>
                         <ScrollViewer
+                            Grid.Row="0"
+                            Grid.Column="0"
                             HorizontalScrollBarVisibility="Auto"
-                            
                             VerticalScrollBarVisibility="Auto">
-                            <TabPanel
-                                x:Name="HeaderPanel"
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Margin="0,10,0,0"
-                                Panel.ZIndex="1"
-                                Background="Transparent"
-                                IsItemsHost="True"
-                                KeyboardNavigation.TabIndex="1" />
+                            <Border
+                                x:Name="Line"
+                                BorderBrush="#FFE5B663"
+                                BorderThickness="0,0,0,2">
+                                <TabPanel
+                                    x:Name="HeaderPanel"
+                                    Margin="0,10,0,0"
+                                    Panel.ZIndex="1"
+                                    Background="Transparent"
+                                    IsItemsHost="True"
+                                    KeyboardNavigation.TabIndex="1" />
+                            </Border>
                         </ScrollViewer>
-                        <Line
-                            Margin="0,0,0,1"
+                        <!--<Line
                             VerticalAlignment="Bottom"
                             SnapsToDevicePixels="True"
-                            Stroke="White"
-                            StrokeThickness="0.1"
+                            Stroke="#FFE5B663"
+                            StrokeThickness="2"
                             X1="0"
-                            X2="{Binding ActualWidth, RelativeSource={RelativeSource Self}}" />
+                            X2="{Binding ActualWidth, RelativeSource={RelativeSource Self}}" />-->
                         <Border
                             x:Name="ContentPanel"
                             Grid.Row="1"
@@ -73,6 +76,7 @@
                             <Setter TargetName="RowDefinition1" Property="Height" Value="Auto" />
                         </Trigger>
                         <Trigger Property="TabStripPlacement" Value="Left">
+                            <Setter TargetName="Line" Property="BorderThickness" Value="0" />
                             <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="0" />
                             <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0" />
                             <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="0" />
