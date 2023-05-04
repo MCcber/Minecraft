@@ -1,9 +1,11 @@
 ﻿using cbhk_environment.CustomControls;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -20,6 +22,8 @@ namespace cbhk_environment.GenerateResultDisplayer
         string buttonPressedImage = "pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png";
         ImageBrush buttonNormalBrush = null;
         ImageBrush buttonPressedBrush = null;
+        string fontFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\Fonts\\SourceCodePro-Medium\\SourceCodePro-Medium.ttf";
+        FontFamily fontFamily = null;
         /// <summary>
         /// 进程锁
         /// </summary>
@@ -35,6 +39,7 @@ namespace cbhk_environment.GenerateResultDisplayer
             #region 初始化字段
             buttonNormalBrush = new ImageBrush(new BitmapImage(new Uri(buttonNormalImage, UriKind.RelativeOrAbsolute)));
             buttonPressedBrush = new ImageBrush(new BitmapImage(new Uri(buttonPressedImage, UriKind.RelativeOrAbsolute)));
+            fontFamily = new FontFamily(new Uri(fontFilePath,UriKind.Absolute), "Source Code Pro Medium");
             #endregion
         }
 
@@ -81,29 +86,13 @@ namespace cbhk_environment.GenerateResultDisplayer
             }
             #endregion
 
-            #region 创建复制生成结果的按钮
-            IconTextButtons copyResultButton = new()
-            {
-                Style = Application.Current.Resources["IconTextButton"] as Style,
-                Content = "复制结果",
-                Margin = new Thickness(0,0,5,0),
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Padding = new Thickness(5),
-                Foreground = blackBrush,
-                Background = buttonNormalBrush,
-                PressedBackground = buttonPressedBrush
-            };
-            #endregion
-
             #region 处理新加入的数据
             //如果不存在相同标签页
             if (!ExistSamePage)
             {
                 EnabledFlowDocument flowDocument = new() { LineHeight = 1 };
-
                 #region 显示生成器图标
-                Paragraph firstParagraph = new() { FontSize = 25, TextAlignment = TextAlignment.Center };
+                Paragraph firstParagraph = new() { FontSize = 15, TextAlignment = TextAlignment.Center };
                 firstParagraph.Inlines.Add(new Run("------------ "));
                 firstParagraph.Inlines.Add(new Image()
                 {
@@ -113,24 +102,35 @@ namespace cbhk_environment.GenerateResultDisplayer
                 });
                 firstParagraph.Inlines.Add(new Run(" ------------"));
                 #endregion
-
-                copyResultButton.Click += (a,b) => { Clipboard.SetText(spawn_result); };
-                Paragraph paragraph = new();
-                paragraph.Inlines.Add(copyResultButton);
-                paragraph.Inlines.Add(new Run(spawn_result));
+                Paragraph paragraph = new() { TextAlignment = TextAlignment.Left };
+                Run newResult = new() { ToolTip = "点击复制", Text = Regex.Replace(spawn_result,@"\s+"," "), FontFamily = fontFamily,Cursor = Cursors.Hand };
+                ToolTipService.SetBetweenShowDelay(newResult, 0);
+                ToolTipService.SetInitialShowDelay(newResult, 0);
+                newResult.MouseEnter += (a, b) =>
+                {
+                    Run run = a as Run;
+                    run.TextDecorations = TextDecorations.Baseline;
+                };
+                newResult.MouseLeave += (a, b) =>
+                {
+                    Run run = a as Run;
+                    run.TextDecorations = null;
+                };
+                newResult.MouseLeftButtonDown += (a, b) => { Clipboard.SetText(spawn_result); };
+                paragraph.Inlines.Add(newResult);
                 flowDocument.Blocks.Add(firstParagraph);
                 flowDocument.Blocks.Add(paragraph);
                 RichTextBox result_box = new()
                 {
                     IsReadOnly = true,
                     Document = flowDocument,
+                    FontFamily = fontFamily,
+                    BorderBrush = blackBrush,
                     Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                     Background = tranparentBrush,
                     FontSize = 15,
                     HorizontalAlignment = HorizontalAlignment.Stretch,
                     VerticalAlignment = VerticalAlignment.Stretch,
-                    HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-                    VerticalScrollBarVisibility = ScrollBarVisibility.Disabled,
                     CaretBrush = new SolidColorBrush(Colors.White)
                 };
                 ScrollViewer.SetVerticalScrollBarVisibility(result_box,ScrollBarVisibility.Auto);
@@ -152,17 +152,27 @@ namespace cbhk_environment.GenerateResultDisplayer
             {
                 RichTextBox richTextBox = currentTabItem.Content as RichTextBox;
                 Paragraph firstParagraph = richTextBox.Document.Blocks.ElementAt(1) as Paragraph;
-
                 #region 用于分割的段落
-                Paragraph splitParagraph = new() { FontSize = 25, TextAlignment = TextAlignment.Center };
+                Paragraph splitParagraph = new() { FontSize = 15, TextAlignment = TextAlignment.Left };
                 Run splitRun = new("--------------------");
                 splitParagraph.Inlines.Add(splitRun);
                 #endregion
-
                 Paragraph newParagraph = new();
-                copyResultButton.Click += (a,b) => { Clipboard.SetText(spawn_result); };
-                newParagraph.Inlines.Add(copyResultButton);
-                newParagraph.Inlines.Add(new Run(spawn_result));
+                Run newResult = new() { ToolTip = "点击复制", FontFamily = fontFamily,Cursor = Cursors.Hand,Text = spawn_result };
+                newResult.MouseLeftButtonDown += (a, b) => { Clipboard.SetText(spawn_result); };
+                newResult.MouseEnter += (a, b) =>
+                {
+                    Run run = a as Run;
+                    run.TextDecorations = TextDecorations.Baseline;
+                };
+                newResult.MouseLeave += (a, b) =>
+                {
+                    Run run = a as Run;
+                    run.TextDecorations = null;
+                };
+                ToolTipService.SetBetweenShowDelay(newResult, 0);
+                ToolTipService.SetInitialShowDelay(newResult, 0);
+                newParagraph.Inlines.Add(newResult);
                 richTextBox.Document.Blocks.InsertBefore(firstParagraph,splitParagraph);
                 richTextBox.Document.Blocks.InsertBefore(splitParagraph, newParagraph);
             }
