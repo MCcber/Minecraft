@@ -13,6 +13,8 @@
     <UserControl.Resources>
         <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
+        <ImageBrush x:Key="CloseWhite" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhite.png" />
+        <ImageBrush x:Key="CloseWhiteHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
     </UserControl.Resources>
 
     <StackPanel>
@@ -21,7 +23,7 @@
                 Margin="5,0"
                 VerticalAlignment="Center"
                 Foreground="White"
-                Text="属性名:" />
+                Text="属性名" />
             <ComboBox
                 Width="100"
                 HorizontalAlignment="Left"
@@ -35,7 +37,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Foreground="White"
-                Text="生效槽位:" />
+                Text="生效槽位" />
             <ComboBox
                 Width="60"
                 HorizontalAlignment="Left"
@@ -49,10 +51,39 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Foreground="White"
-                Text="值:" />
-            <Slider
-                Width="120"
+                Text="值类型" />
+            <ComboBox
+                Width="100"
+                Height="30"
                 HorizontalAlignment="Left"
+                VerticalContentAlignment="Center"
+                Loaded="AttributeValueTypesLoaded"
+                SelectedIndex="0"
+                SelectedItem="{Binding AttributeValueType, Mode=TwoWay}"
+                Style="{DynamicResource TextComboBoxStyle}" />
+            <CustomControls:IconTextButtons
+                Width="25"
+                Height="25"
+                Padding="0,-5,0,0"
+                HorizontalAlignment="Left"
+                Background="{StaticResource CloseWhite}"
+                Click="Delete_Click"
+                FontSize="30"
+                Foreground="Black"
+                PressedBackground="{StaticResource CloseWhiteHover}"
+                Style="{DynamicResource IconTextButton}" />
+        </DockPanel>
+        <DockPanel>
+            <TextBlock
+                Margin="5,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Foreground="White"
+                Text="值" />
+            <Slider
+                Height="25"
+                Margin="30,0,0,0"
+                HorizontalAlignment="Stretch"
                 Background="Transparent"
                 BorderThickness="0"
                 Foreground="White"
@@ -67,44 +98,17 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Foreground="White"
-                Text="值类型:" />
-            <ComboBox
-                Width="100"
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalContentAlignment="Center"
-                Loaded="AttributeValueTypesLoaded"
-                SelectedIndex="0"
-                SelectedItem="{Binding AttributeValueType, Mode=TwoWay}"
-                Style="{DynamicResource TextComboBoxStyle}" />
-            <TextBlock
-                Margin="5,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Foreground="White"
-                Text="名称:" />
+                Text="名称" />
             <TextBox
-                Width="200"
-                Height="30"
+                Height="25"
+                Margin="15,0,0,0"
                 Padding="0,2,0,0"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 BorderBrush="Black"
                 BorderThickness="1"
                 Foreground="White"
                 Text="{Binding AttributeName, Mode=TwoWay}" />
-            <CustomControls:IconTextButtons
-                Width="25"
-                Margin="25,0"
-                Padding="0,-5,0,0"
-                HorizontalAlignment="Left"
-                Background="{StaticResource ButtonNormal}"
-                Click="IconTextButtons_Click"
-                Content="×"
-                FontSize="30"
-                Foreground="Black"
-                PressedBackground="{StaticResource ButtonPressed}"
-                Style="{DynamicResource IconTextButton}" />
         </DockPanel>
     </StackPanel>
 </UserControl>

@@ -3,9 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
-    xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local_datacontext="clr-namespace:cbhk_environment.Generators.ItemGenerator"
+    xmlns:local="clr-namespace:cbhk_environment.Generators.ItemGenerator"
     xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="物品生成器"
@@ -21,7 +20,7 @@
     mc:Ignorable="d">
 
     <Window.DataContext>
-        <local_datacontext:item_datacontext />
+        <local:item_datacontext />
     </Window.DataContext>
 
     <Window.Resources>
@@ -31,13 +30,18 @@
         <Geometry x:Key="DeleteIcon">
             M10 104 c0 -4 10 -15 22 -25 l21 -19 -23 -20 c-13 -11 -20 -23 -17 -27 4 -3 16 4 27 17 l20 23 20 -23 c11 -13 23 -20 27 -17 3 4 -4 16 -17 27 l-23 20 23 20 c13 11 20 23 17 27 -4 3 -16 -4 -27 -17 l-20 -23 -19 21 c-18 22 -31 28 -31 16z
         </Geometry>
-        <ImageBrush x:Key="IssueIcon" ImageSource="/cbhk_environment;component/resources/common/images/Issue.png" />
+        <ImageBrush x:Key="Save" ImageSource="/cbhk_environment;component/resources/common/images/Save.png" />
+        <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
+        <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
         <ImageBrush x:Key="LeftArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
         <ImageBrush x:Key="RightArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowRight.png" />
     </Window.Resources>
 
     <Window.InputBindings>
-        <KeyBinding Key="F5" Command="{Binding RunCommand}" />
+        <KeyBinding
+            Key="F5"
+            Command="{Binding RunCommand}"
+            Modifiers="Ctrl" />
         <KeyBinding
             Key="Esc"
             Command="{Binding ReturnCommand}"
@@ -46,8 +50,8 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="9*" />
         </Grid.RowDefinitions>
         <DockPanel Grid.Row="0">
             <CustomControls:IconTextButtons
@@ -66,6 +70,7 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
+                HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
                 Background="{StaticResource RightArrow}"
@@ -75,371 +80,71 @@
                 Style="{DynamicResource IconTextButton}"
                 ToolTip="F5:运行"
                 ToolTipService.InitialShowDelay="0" />
-            <TextBlock
-                Margin="10,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Foreground="White"
-                Text="版本"
-                TextAlignment="Center" />
-            <ComboBox
-                Width="100"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                FontSize="15"
-                SelectedIndex="1"
-                SelectedItem="{Binding SelectedVersion, Mode=TwoWay}"
-                Style="{DynamicResource TextComboBoxStyle}">
-                <behavior:Interaction.Triggers>
-                    <behavior:EventTrigger EventName="Loaded">
-                        <behavior:CallMethodAction MethodName="VersionLoaded" TargetObject="{Binding}" />
-                    </behavior:EventTrigger>
-                </behavior:Interaction.Triggers>
-            </ComboBox>
-            <TextBlock
+            <CustomControls:IconTextButtons
+                Width="20"
+                Height="20"
                 Margin="5,0"
+                Padding="5"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Foreground="White"
-                Text="ID" />
-            <ComboBox
-                Width="180"
-                Height="25"
+                Background="{StaticResource Save}"
+                Command="{Binding SaveAll}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Padding="5"
                 HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{DynamicResource ButtonNormal}"
+                Command="{Binding AddItem}"
+                Content="添加物品"
+                PressedBackground="{DynamicResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Padding="5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{DynamicResource ButtonNormal}"
+                Command="{Binding ClearItem}"
+                Content="清空物品"
+                PressedBackground="{DynamicResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Padding="5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{DynamicResource ButtonNormal}"
+                Command="{Binding ImportItemFromClipboard}"
+                Content="从剪切板导入物品"
+                PressedBackground="{DynamicResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Padding="5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{DynamicResource ButtonNormal}"
+                Command="{Binding ImportItemFromFile}"
+                Content="从文件导入物品"
+                PressedBackground="{DynamicResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:RadiusToggleButtons
                 VerticalContentAlignment="Center"
                 Foreground="White"
-                SelectedIndex="0"
-                SelectedItem="{Binding SelectItemIdSource, Mode=TwoWay}"
-                Style="{DynamicResource IconComboBoxStyle}">
-                <behavior:Interaction.Triggers>
-                    <behavior:EventTrigger EventName="Loaded">
-                        <behavior:CallMethodAction MethodName="ItemIdsLoaded" TargetObject="{Binding}" />
-                    </behavior:EventTrigger>
-                </behavior:Interaction.Triggers>
-            </ComboBox>
+                IsChecked="{Binding ShowGeneratorResult, Mode=OneWayToSource}"
+                SelectedToggleText="显示结果"
+                Style="{DynamicResource RadiusToggleButton}"
+                ToggleHeight="26"
+                ToggleWidth="45"
+                UnSelectedToggleText="隐藏结果" />
         </DockPanel>
-        <ScrollViewer
+        <TabControl
             Grid.Row="1"
-            HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <CustomControls:Accordion
-                    Title="通用"
-                    Margin="2,2,2,0"
-                    Background="#FFE5B663"
-                    BorderThickness="0"
-                    FontSize="15"
-                    FreshVisibility="Collapsed"
-                    IsExpanded="True"
-                    ModifyVisibility="Collapsed"
-                    Style="{DynamicResource AccordionStyle}"
-                    TitleForeground="Black">
-                    <Grid Background="#2F2F2F">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="Transparent"
-                            Foreground="White"
-                            Text="名称" />
-                        <TextBox
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            HorizontalAlignment="Stretch"
-                            VerticalContentAlignment="Center"
-                            BorderBrush="Black"
-                            CaretBrush="White"
-                            Foreground="White"
-                            Text="{Binding DisplayName, Mode=TwoWay}" />
-                        <TextBlock
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="Transparent"
-                            Foreground="White"
-                            Text="简介" />
-                        <TextBox
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            HorizontalAlignment="Stretch"
-                            VerticalContentAlignment="Center"
-                            BorderBrush="Black"
-                            CaretBrush="White"
-                            Foreground="White"
-                            Text="{Binding ItemLore, Mode=TwoWay}" />
-                        <TextBlock
-                            Grid.Row="2"
-                            Grid.Column="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Background="Transparent"
-                            Foreground="White"
-                            Text="信息隐藏" />
-                        <ComboBox
-                            Grid.Row="2"
-                            Grid.Column="1"
-                            Height="25"
-                            HorizontalAlignment="Stretch"
-                            VerticalContentAlignment="Center"
-                            Background="Black"
-                            Foreground="White"
-                            SelectedIndex="0"
-                            SelectedItem="{Binding HideInfomationOption, Mode=TwoWay}"
-                            Style="{DynamicResource TextComboBoxStyle}">
-                            <behavior:Interaction.Triggers>
-                                <behavior:EventTrigger EventName="Loaded">
-                                    <behavior:CallMethodAction MethodName="HideFlagsLoaded" TargetObject="{Binding}" />
-                                </behavior:EventTrigger>
-                            </behavior:Interaction.Triggers>
-                        </ComboBox>
-                        <TextBlock
-                            Grid.Row="3"
-                            Grid.Column="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="White"
-                            Text="自定义标签" />
-                        <!--  Style="{DynamicResource ResizableTextBoxStyle}"  -->
-                        <TextBox
-                            Grid.Row="3"
-                            Grid.Column="1"
-                            MinWidth="250"
-                            MinHeight="25"
-                            MaxWidth="526"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            BorderBrush="Black"
-                            FontSize="20"
-                            Foreground="White"
-                            Text="{Binding CustomTag, Mode=TwoWay}" />
-                        <CustomControls:IconCheckBoxs
-                            Grid.Row="4"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            HorizontalAlignment="Stretch"
-                            VerticalContentAlignment="Center"
-                            Content="无法破坏"
-                            Cursor="Hand"
-                            FontSize="15"
-                            Foreground="White"
-                            HeaderHeight="20"
-                            HeaderWidth="20"
-                            IsChecked="{Binding Unbreakable, Mode=TwoWay}"
-                            Style="{DynamicResource IconCheckBox}" />
-                    </Grid>
-                </CustomControls:Accordion>
-                <CustomControls:Accordion
-                    Title="功能"
-                    Margin="2,2,2,0"
-                    Background="#FFE5B663"
-                    BorderThickness="0"
-                    FontSize="15"
-                    FreshVisibility="Collapsed"
-                    ModifyVisibility="Collapsed"
-                    Style="{DynamicResource AccordionStyle}"
-                    TitleForeground="Black">
-                    <StackPanel Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=CustomControls:Accordion}, Path=Width}" Background="#2F2F2F">
-                        <CustomControls:Accordion
-                            Title="可破坏方块"
-                            Margin="10,2,10,0"
-                            Background="#FFE5B663"
-                            BorderThickness="0"
-                            ExpandDirection="Down"
-                            Fresh="{Binding ClearCanDestroyBlocks}"
-                            FreshForeground="Black"
-                            FreshIconData="{StaticResource DeleteIcon}"
-                            FreshVisibility="Visible"
-                            Modify="{Binding AddCanDestroyBlock}"
-                            ModifyForeground="Black"
-                            ModifyIconData="{StaticResource ModifyIcon}"
-                            ModifyVisibility="Visible"
-                            Style="{DynamicResource AccordionStyle}"
-                            TitleForeground="Black">
-                            <behavior:Interaction.Triggers>
-                                <behavior:EventTrigger EventName="Loaded">
-                                    <behavior:CallMethodAction MethodName="CanDestroyBlockPanelLoaded" TargetObject="{Binding}" />
-                                </behavior:EventTrigger>
-                            </behavior:Interaction.Triggers>
-                            <StackPanel Background="#2F2F2F" />
-                        </CustomControls:Accordion>
-                        <CustomControls:Accordion
-                            Title="可放置在"
-                            Margin="10,2,10,0"
-                            Background="#FFE5B663"
-                            BorderThickness="0"
-                            ExpandDirection="Down"
-                            FontSize="15"
-                            Fresh="{Binding ClearCanPlaceOnBlocks}"
-                            FreshForeground="Black"
-                            FreshIconData="{StaticResource DeleteIcon}"
-                            FreshVisibility="Visible"
-                            Modify="{Binding AddCanPlaceOnBlock}"
-                            ModifyForeground="Black"
-                            ModifyIconData="{StaticResource ModifyIcon}"
-                            ModifyVisibility="Visible"
-                            Style="{DynamicResource AccordionStyle}"
-                            TitleForeground="Black">
-                            <behavior:Interaction.Triggers>
-                                <behavior:EventTrigger EventName="Loaded">
-                                    <behavior:CallMethodAction MethodName="CanPlaceBlockPanelLoaded" TargetObject="{Binding}" />
-                                </behavior:EventTrigger>
-                            </behavior:Interaction.Triggers>
-                            <StackPanel Background="#2F2F2F" />
-                        </CustomControls:Accordion>
-                        <CustomControls:Accordion
-                            Title="附魔"
-                            Margin="10,2,10,0"
-                            Panel.ZIndex="0"
-                            Background="#FFE5B663"
-                            BorderThickness="0"
-                            ExpandDirection="Down"
-                            FontSize="15"
-                            Fresh="{Binding ClearEnchantments}"
-                            FreshForeground="Black"
-                            FreshIconData="{StaticResource DeleteIcon}"
-                            FreshVisibility="Visible"
-                            Modify="{Binding AddEnchantment}"
-                            ModifyForeground="Black"
-                            ModifyIconData="{StaticResource ModifyIcon}"
-                            ModifyVisibility="Visible"
-                            Style="{DynamicResource AccordionStyle}"
-                            TitleForeground="Black">
-                            <behavior:Interaction.Triggers>
-                                <behavior:EventTrigger EventName="Loaded">
-                                    <behavior:CallMethodAction MethodName="EnchantmentPanelLoaded" TargetObject="{Binding}" />
-                                </behavior:EventTrigger>
-                            </behavior:Interaction.Triggers>
-                            <StackPanel Background="#2F2F2F" />
-                        </CustomControls:Accordion>
-                    </StackPanel>
-                </CustomControls:Accordion>
-                <CustomControls:Accordion
-                    Title="数据"
-                    Margin="2,2,2,0"
-                    Background="#FFE5B663"
-                    BorderThickness="0"
-                    FontSize="15"
-                    FreshVisibility="Collapsed"
-                    IsExpanded="True"
-                    ModifyVisibility="Collapsed"
-                    Style="{DynamicResource AccordionStyle}"
-                    TitleForeground="Black">
-                    <Grid Background="#2F2F2F">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <TextBlock
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Margin="5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="White"
-                            Text="数量" />
-                        <Slider
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            HorizontalAlignment="Stretch"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            Maximum="2147483647"
-                            Minimum="1"
-                            Style="{DynamicResource NumberBoxStyle}"
-                            Value="{Binding ItemCount, Mode=TwoWay}" />
-                        <TextBlock
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="5,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Foreground="White"
-                            Text="附加值" />
-                        <Slider
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            HorizontalAlignment="Stretch"
-                            BorderThickness="0"
-                            Maximum="2147483647"
-                            Minimum="0"
-                            Style="{DynamicResource NumberBoxStyle}"
-                            Value="{Binding ItemDamage, Mode=TwoWay}" />
-                        <CustomControls:Accordion
-                            Title="属性"
-                            Grid.Row="2"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="2"
-                            Margin="10,2,10,0"
-                            Background="#FFE5B663"
-                            BorderThickness="0"
-                            FontSize="15"
-                            Fresh="{Binding ClearAttributes}"
-                            FreshForeground="Black"
-                            FreshIconData="{StaticResource DeleteIcon}"
-                            FreshVisibility="Visible"
-                            IsExpanded="True"
-                            Modify="{Binding AddAttribute}"
-                            ModifyForeground="Black"
-                            ModifyIconData="{StaticResource ModifyIcon}"
-                            ModifyVisibility="Visible"
-                            Style="{DynamicResource AccordionStyle}"
-                            TitleForeground="Black">
-                            <behavior:Interaction.Triggers>
-                                <behavior:EventTrigger EventName="Loaded">
-                                    <behavior:CallMethodAction MethodName="AttributePanelLoaded" TargetObject="{Binding}" />
-                                </behavior:EventTrigger>
-                            </behavior:Interaction.Triggers>
-                            <StackPanel Background="#2F2F2F" />
-                        </CustomControls:Accordion>
-                    </Grid>
-                </CustomControls:Accordion>
-                <CustomControls:Accordion
-                    Title="药水效果"
-                    Margin="2,2,2,0"
-                    Background="#FFE5B663"
-                    BorderThickness="0"
-                    FontSize="15"
-                    Fresh="{Binding ClearAttributes}"
-                    FreshForeground="Black"
-                    FreshIconData="{StaticResource DeleteIcon}"
-                    FreshVisibility="Visible"
-                    Modify="{Binding AddSpecial}"
-                    ModifyForeground="Black"
-                    ModifyIconData="{StaticResource ModifyIcon}"
-                    ModifyVisibility="Visible"
-                    Style="{DynamicResource AccordionStyle}"
-                    TitleForeground="Black">
-                    <behavior:Interaction.Triggers>
-                        <behavior:EventTrigger EventName="Loaded">
-                            <behavior:CallMethodAction MethodName="SpecialPanelLoaded" TargetObject="{Binding}" />
-                        </behavior:EventTrigger>
-                    </behavior:Interaction.Triggers>
-                    <StackPanel Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=StackPanel}, Path=ActualWidth}" Background="#2F2F2F" />
-                </CustomControls:Accordion>
-            </StackPanel>
-        </ScrollViewer>
+            Margin="0,-5,0,0"
+            Background="Transparent"
+            BorderThickness="0"
+            ItemsSource="{Binding ItemPageList}"
+            SelectedIndex="0"
+            Style="{DynamicResource TabControlWithScrollBar}"
+            VirtualizingPanel.IsVirtualizing="False" />
     </Grid>
+
 </local_window:CommonWindow>

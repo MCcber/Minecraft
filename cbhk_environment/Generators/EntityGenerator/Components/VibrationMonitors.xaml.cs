@@ -139,7 +139,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 results[4] = "projectile_owner:[I;" + ProjectileUUID.number0.Value + "," + ProjectileUUID.number1.Value + "," + ProjectileUUID.number2.Value + "," + ProjectileUUID.number3.Value + "]";
             else
                 results[4] = "";
-            string result = string.Join(",", results).TrimEnd(',');
+            string result = string.Join(",", results).Trim(',');
             textTabItems.Tag = result.Length > 0 ?"event:{" + result + "}":"";
         }
 

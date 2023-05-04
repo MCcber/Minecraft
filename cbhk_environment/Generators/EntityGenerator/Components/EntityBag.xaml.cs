@@ -32,5 +32,15 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         {
 
         }
+
+        /// <summary>
+        /// 删除本实例
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void IconTextButtons_Click(object sender, RoutedEventArgs e)
+        {
+            (Parent as StackPanel).Children.Remove(this);
+        }
     }
 }

@@ -21,6 +21,7 @@
             Height="30"
             VerticalContentAlignment="Center"
             Foreground="White"
+            IsChecked="False"
             SelectedToggleText="启用振动监听器"
             Style="{DynamicResource RadiusToggleButton}"
             ToggleHeight="25"
@@ -82,7 +83,7 @@
                         </DockPanel>
                         <DockPanel Margin="2,2,2,0">
                             <TextBlock
-                                Margin="30,0,0,0"
+                                Margin="23,0,0,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Foreground="White"
@@ -90,7 +91,7 @@
                             <Slider
                                 x:Name="distance"
                                 Height="25"
-                                Margin="32,0,0,0"
+                                Margin="30,0,0,0"
                                 Loaded="Slider_Loaded"
                                 Style="{DynamicResource NumberBoxStyle}" />
                         </DockPanel>
@@ -113,7 +114,7 @@
                                 Text="振动源UUID" />
                             <local:UUIDOrPosGroup
                                 x:Name="TargetUUID"
-                                Margin="4,0,0,0"
+                                Margin="5,0,0,0"
                                 IsUUID="True" />
                         </DockPanel>
                         <DockPanel Margin="2,2,2,0">
@@ -124,7 +125,7 @@
                                 Text="弹射物UUID" />
                             <local:UUIDOrPosGroup
                                 x:Name="ProjectileUUID"
-                                Margin="4,0,0,0"
+                                Margin="5,0,0,0"
                                 IsUUID="True" />
                         </DockPanel>
                     </StackPanel>
@@ -180,7 +181,7 @@
                                 </DockPanel>
                                 <DockPanel Margin="2,2,2,0">
                                     <TextBlock
-                                        Margin="25,0,0,0"
+                                        Margin="20,0,0,0"
                                         VerticalAlignment="Center"
                                         Foreground="White"
                                         Text="距离" />
@@ -188,7 +189,7 @@
                                         x:Name="distanceC"
                                         Uid="f"
                                         Height="25"
-                                        Margin="36,0,0,0"
+                                        Margin="32,0,0,0"
                                         Loaded="Slider_Loaded"
                                         Style="{DynamicResource NumberBoxStyle}"
                                         Value="{Binding Distance, Mode=OneWayToSource}" />
@@ -214,7 +215,7 @@
                                     <local:UUIDOrPosGroup
                                         x:Name="TargetUUIDC"
                                         Uid="source"
-                                        Margin="3,0,0,0"
+                                        Margin="4,0,0,0"
                                         IsUUID="True" />
                                 </DockPanel>
                                 <DockPanel Margin="2,2,2,0">
@@ -226,7 +227,7 @@
                                     <local:UUIDOrPosGroup
                                         x:Name="ProjectileUUIDC"
                                         Uid="projectile_owner"
-                                        Margin="3,0,0,0"
+                                        Margin="4,0,0,0"
                                         IsUUID="True" />
                                 </DockPanel>
                             </StackPanel>

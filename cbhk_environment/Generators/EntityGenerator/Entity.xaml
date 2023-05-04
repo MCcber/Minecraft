@@ -9,10 +9,10 @@
     xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="实体生成器"
-    Width="800"
-    Height="485"
-    MinWidth="800"
-    MinHeight="485"
+    Width="850"
+    Height="545"
+    MinWidth="850"
+    MinHeight="545"
     Background="#2F2F2F"
     Icon="/cbhk_environment;component/resources/common/images/spawnerIcons/IconEntities.png"
     ResizeMode="CanResizeWithGrip"
@@ -83,6 +83,7 @@
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Background="{StaticResource Save}"
+                Command="{Binding SaveAll}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
                 Padding="5"
@@ -120,16 +121,25 @@
                 Content="从文件导入实体"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
+            <CustomControls:RadiusToggleButtons
+                VerticalContentAlignment="Center"
+                Foreground="White"
+                IsChecked="{Binding ShowGeneratorResult, Mode=OneWayToSource}"
+                SelectedToggleText="显示结果"
+                Style="{DynamicResource RadiusToggleButton}"
+                ToggleHeight="26"
+                ToggleWidth="45"
+                UnSelectedToggleText="隐藏结果" />
         </DockPanel>
         <TabControl
-            Name="EntityContainer"
             Grid.Row="1"
             Margin="0,-5,0,0"
             Background="Transparent"
             BorderThickness="0"
             ItemsSource="{Binding EntityPageList}"
             SelectedIndex="0"
-            Style="{DynamicResource TabControlWithScrollBar}" />
+            Style="{DynamicResource TabControlWithScrollBar}"
+            VirtualizingPanel.IsVirtualizing="False" />
     </Grid>
 
 </local_window:CommonWindow>

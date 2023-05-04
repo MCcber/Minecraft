@@ -13,6 +13,8 @@
     <UserControl.Resources>
         <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
+        <ImageBrush x:Key="CloseWhite" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhite.png" />
+        <ImageBrush x:Key="CloseWhiteHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
     </UserControl.Resources>
 
     <DockPanel Height="30" LastChildFill="False">
@@ -40,6 +42,14 @@
             Click="ImportFromFile_Click"
             Content="从文件导入"
             PressedBackground="{StaticResource ButtonPressed}"
+            RenderOptions.BitmapScalingMode="NearestNeighbor"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Width="20"
+            Height="20"
+            Background="{StaticResource CloseWhite}"
+            Click="IconTextButtons_Click"
+            PressedBackground="{StaticResource CloseWhiteHover}"
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             Style="{DynamicResource IconTextButton}" />
     </DockPanel>

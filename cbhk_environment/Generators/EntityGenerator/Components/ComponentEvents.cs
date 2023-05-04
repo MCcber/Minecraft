@@ -2,10 +2,11 @@
 using cbhk_environment.GeneralTools;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -15,9 +16,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 {
     public partial class ComponentEvents
     {
-        [GeneratedRegex("\\d+")]
-        private static partial Regex IsHaveNumber();
-
         /// <summary>
         /// 首次获得焦点时执行绑定
         /// </summary>
@@ -26,20 +24,154 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         public void ValueChangedHandler(object sender, RoutedEventArgs e)
         {
             #region 共通变量
-            Accordion parent = (sender as FrameworkElement).FindParent<Accordion>();
-            Accordion grandParent = null;
-            if (parent != null)
-                grandParent = parent.FindParent<Accordion>();
+            Grid parentGrid = (sender as FrameworkElement).Parent as Grid;
+            if (parentGrid == null) return;
+            ScrollViewer scrollViewer = parentGrid.Parent as ScrollViewer;
+            TextTabItems parent = scrollViewer.Parent as TextTabItems;
             int currentIndex = 0;
-            EntityPages entityPages = (sender as FrameworkElement).FindParent<EntityPages>();
+            EntityPages entityPages = parent.FindParent<EntityPages>();
             if (entityPages == null) return;
-            entityPagesDataContext entityPage = entityPages.DataContext as entityPagesDataContext;
+            entityPagesDataContext specialContext = entityPages.DataContext as entityPagesDataContext;
             PropertyPath propertyPath = null;
             Binding valueBinder = new()
             {
                 Mode = BindingMode.OneWayToSource,
                 Converter = new TagToString()
             };
+            if (!specialContext.SpecialTagsResult.ContainsKey(specialContext.SelectedEntityIdString))
+                specialContext.SpecialTagsResult.Add(specialContext.SelectedEntityIdString, new System.Collections.ObjectModel.ObservableCollection<NBTDataStructure>());
+            #endregion
+
+            #region 是否为乘客
+            if (sender is Accordion && (sender as FrameworkElement).Name == "Passengers")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                accordion.Modify = new RelayCommand<FrameworkElement>(AddPassengerClick);
+                accordion.Fresh = new RelayCommand<FrameworkElement>(ClearPassengerClick);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += PassengerItems_LostFocus;
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 是否为实体属性
+            if (sender is Accordion && (sender as FrameworkElement).Name == "Attributes")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                accordion.Modify = new RelayCommand<FrameworkElement>(AddAttributeCommand);
+                accordion.Fresh = new RelayCommand<FrameworkElement>(ClearAttributeCommand);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += Attributes_LostFocus;
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    string selectedEntityIdString = specialContext.SelectedEntityIdString;
+                    propertyPath = new PropertyPath("SpecialTagsResult["+ selectedEntityIdString + "][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 是否为药水云施加状态效果列表
+            if (sender is Accordion && (sender as FrameworkElement).Name == "Effects")
+            {
+                Accordion areaEffectCloudEffectsAccordion = sender as Accordion;
+                areaEffectCloudEffectsAccordion.GotFocus -= ValueChangedHandler;
+                NBTDataStructure dataStructure = areaEffectCloudEffectsAccordion.Tag as NBTDataStructure;
+                areaEffectCloudEffectsAccordion.LostFocus += AreaEffectCloudEffects_LostFocus;
+                areaEffectCloudEffectsAccordion.Modify = new RelayCommand<FrameworkElement>(AddAreaEffectCloudCommand);
+                areaEffectCloudEffectsAccordion.Fresh = new RelayCommand<FrameworkElement>(ClearAreaEffectCloudCommand);
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = areaEffectCloudEffectsAccordion.Tag;
+                BindingOperations.SetBinding(areaEffectCloudEffectsAccordion, FrameworkElement.TagProperty, valueBinder);
+                areaEffectCloudEffectsAccordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 实体状态效果列表
+            if (sender is Accordion && (sender as FrameworkElement).Name == "ActiveEffects")
+            {
+                Accordion areaEffectCloudEffectsAccordion = sender as Accordion;
+                areaEffectCloudEffectsAccordion.GotFocus -= ValueChangedHandler;
+                NBTDataStructure dataStructure = areaEffectCloudEffectsAccordion.Tag as NBTDataStructure;
+                areaEffectCloudEffectsAccordion.LostFocus += ActiveEffects_LostFocus;
+                areaEffectCloudEffectsAccordion.Modify = new RelayCommand<FrameworkElement>(AddAreaEffectCloudCommand);
+                areaEffectCloudEffectsAccordion.Fresh = new RelayCommand<FrameworkElement>(ClearAreaEffectCloudCommand);
+                specialContext.CommonResult.Add(dataStructure);
+                currentIndex = specialContext.CommonResult.Count - 1;
+                propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                valueBinder.Path = propertyPath;
+                var currentTag = areaEffectCloudEffectsAccordion.Tag;
+                BindingOperations.SetBinding(areaEffectCloudEffectsAccordion, FrameworkElement.TagProperty, valueBinder);
+                areaEffectCloudEffectsAccordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 是否为拴绳相关数据
+            if (sender is Accordion && (sender as Accordion).Name == "Leash")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += Leash_LostFocus;
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    accordion.Uid = currentIndex.ToString();
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    accordion.Uid = currentIndex.ToString();
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
             #endregion
 
             #region 是否为可疑实体列表
@@ -47,19 +179,17 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             {
                 SuspectsEntities suspectsEntities = sender as SuspectsEntities;
                 NBTDataStructure dataStructure = suspectsEntities.Tag as NBTDataStructure;
-                if (!IsHaveNumber().IsMatch(suspectsEntities.Uid))
-                {
-                    suspectsEntities.LostFocus += SuspectsEntities_LostFocus;
-                    entityPage.SpecialTagsResult.Add(dataStructure);
-                    currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                    suspectsEntities.Uid = currentIndex.ToString();
-                    propertyPath = new("SpecialTagsResult[" + currentIndex + "]");
+                suspectsEntities.GotFocus -= ValueChangedHandler;
+                suspectsEntities.LostFocus += SuspectsEntities_LostFocus;
+                specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                suspectsEntities.Uid = currentIndex.ToString();
+                propertyPath = new("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
 
-                    valueBinder.Path = propertyPath;
-                    var currentTag = suspectsEntities.Tag;
-                    BindingOperations.SetBinding(suspectsEntities, FrameworkElement.TagProperty, valueBinder);
-                    suspectsEntities.Tag = currentTag;
-                }
+                valueBinder.Path = propertyPath;
+                var currentTag = suspectsEntities.Tag;
+                BindingOperations.SetBinding(suspectsEntities, FrameworkElement.TagProperty, valueBinder);
+                suspectsEntities.Tag = currentTag;
             }
             #endregion
 
@@ -67,29 +197,48 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (sender is VibrationMonitors)
             {
                 VibrationMonitors vibrationMonitors = sender as VibrationMonitors;
+                vibrationMonitors.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = vibrationMonitors.Tag as NBTDataStructure;
-                if (!IsHaveNumber().IsMatch(vibrationMonitors.Uid))
-                {
-                    vibrationMonitors.LostFocus += VibrationMonitors_LostFocus;
-                    entityPage.SpecialTagsResult.Add(dataStructure);
-                    currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                    vibrationMonitors.Uid = currentIndex.ToString();
-                    propertyPath = new("SpecialTagsResult[" + currentIndex + "]");
+                vibrationMonitors.LostFocus += VibrationMonitors_LostFocus;
+                specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                vibrationMonitors.Uid = currentIndex.ToString();
+                propertyPath = new("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
 
-                    valueBinder.Path = propertyPath;
-                    var currentTag = vibrationMonitors.Tag;
-                    BindingOperations.SetBinding(vibrationMonitors, FrameworkElement.TagProperty, valueBinder);
-                    vibrationMonitors.Tag = currentTag;
-                }
+                valueBinder.Path = propertyPath;
+                var currentTag = vibrationMonitors.Tag;
+                BindingOperations.SetBinding(vibrationMonitors, FrameworkElement.TagProperty, valueBinder);
+                vibrationMonitors.Tag = currentTag;
             }
             #endregion
 
             #region 是否为背包
-            if (sender is Accordion && ((sender as FrameworkElement).Uid == "Item" || (sender as FrameworkElement).Uid == "Items"))
+            if (sender is Accordion && ((sender as FrameworkElement).Name == "Item" || (sender as FrameworkElement).Name == "Items" || (sender as FrameworkElement).Name == "Inventory"))
             {
                 Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
                 accordion.Modify = new RelayCommand<FrameworkElement>(AddItemCommand);
                 accordion.Fresh = new RelayCommand<FrameworkElement>(ClearItemCommand);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += Item_LostFocus;
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    accordion.Uid = currentIndex.ToString();
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    accordion.Uid = currentIndex.ToString();
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
             }
             #endregion
 
@@ -97,29 +246,27 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (sender is UUIDOrPosGroup)
             {
                 UUIDOrPosGroup uUIDOrPosGroup = sender as UUIDOrPosGroup;
+                uUIDOrPosGroup.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = uUIDOrPosGroup.Tag as NBTDataStructure;
-                if (!IsHaveNumber().IsMatch(uUIDOrPosGroup.Uid))
+                uUIDOrPosGroup.LostFocus += UUIDOrPosGroup_LostFocus;
+                if (parent.Uid != "SpecialTags")
                 {
-                    uUIDOrPosGroup.LostFocus += UUIDOrPosGroup_LostFocus;
-                    if (parent.Uid != "SpecialTags")
-                    {
-                        entityPage.CommonResult.Add(dataStructure);
-                        currentIndex = entityPage.CommonResult.Count - 1;
-                        uUIDOrPosGroup.Uid = currentIndex.ToString();
-                        propertyPath = new("CommonResult[" + currentIndex + "]");
-                    }
-                    else
-                    {
-                        entityPage.SpecialTagsResult.Add(dataStructure);
-                        currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                        uUIDOrPosGroup.Uid = currentIndex.ToString();
-                        propertyPath = new("SpecialTagsResult[" + currentIndex + "]");
-                    }
-                    valueBinder.Path = propertyPath;
-                    var currentTag = uUIDOrPosGroup.Tag;
-                    BindingOperations.SetBinding(uUIDOrPosGroup, FrameworkElement.TagProperty, valueBinder);
-                    uUIDOrPosGroup.Tag = currentTag;
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    uUIDOrPosGroup.Uid = currentIndex.ToString();
+                    propertyPath = new("CommonResult[" + currentIndex + "]");
                 }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    uUIDOrPosGroup.Uid = currentIndex.ToString();
+                    propertyPath = new("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = uUIDOrPosGroup.Tag;
+                BindingOperations.SetBinding(uUIDOrPosGroup, FrameworkElement.TagProperty, valueBinder);
+                uUIDOrPosGroup.Tag = currentTag;
             }
             #endregion
 
@@ -127,29 +274,27 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (sender is BlockState)
             {
                 BlockState blockState = sender as BlockState;
+                blockState.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = blockState.Tag as NBTDataStructure;
-                if(!IsHaveNumber().IsMatch(blockState.Uid))
+                blockState.MouseLeave += BlockState_MouseLeave;
+                if (parent.Uid != "SpecialTags")
                 {
-                    blockState.MouseLeave += BlockState_MouseLeave;
-                    if (parent.Uid != "SpecialTags")
-                    {
-                        entityPage.CommonResult.Add(dataStructure);
-                        currentIndex = entityPage.CommonResult.Count - 1;
-                        blockState.Uid = currentIndex.ToString();
-                        propertyPath = new("CommonResult[" + currentIndex + "]");
-                    }
-                    else
-                    {
-                        entityPage.SpecialTagsResult.Add(dataStructure);
-                        currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                        blockState.Uid = currentIndex.ToString();
-                        propertyPath = new("SpecialTagsResult[" + currentIndex + "]");
-                    }
-                    valueBinder.Path = propertyPath;
-                    var currentTag = blockState.Tag;
-                    BindingOperations.SetBinding(blockState, FrameworkElement.TagProperty, valueBinder);
-                    blockState.Tag = currentTag;
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    blockState.Uid = currentIndex.ToString();
+                    propertyPath = new("CommonResult[" + currentIndex + "]");
                 }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    blockState.Uid = currentIndex.ToString();
+                    propertyPath = new("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = blockState.Tag;
+                BindingOperations.SetBinding(blockState, FrameworkElement.TagProperty, valueBinder);
+                blockState.Tag = currentTag;
             }
             #endregion
 
@@ -157,36 +302,39 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (sender is Grid)
             {
                 Grid grid = sender as Grid;
+                grid.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = grid.Tag as NBTDataStructure;
-                if(!IsHaveNumber().IsMatch(grid.Uid))
+                if (dataStructure.DataType == "TAG_Float_Array")
                 {
                     string unit = "";
-
                     unit = grid.Uid[(grid.Uid.IndexOf('_') + 1)..grid.Uid.LastIndexOf('_')].ToLower()[0..1].Replace("i", "");
                     Slider subSlider0 = grid.FindChild<Slider>("0");
                     Slider subSlider1 = grid.FindChild<Slider>("1");
                     dataStructure.Result = "\"" + grid.Name + "\":[" + subSlider0.Value + unit + "," + subSlider1 + unit + "]";
                     grid.LostFocus += Grid_LostFocus;
-
-                    if (parent.Uid != "SpecialTags")
-                    {
-                        entityPage.CommonResult.Add(dataStructure);
-                        currentIndex = entityPage.CommonResult.Count - 1;
-                        grid.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
-                    }
-                    else
-                    {
-                        entityPage.SpecialTagsResult.Add(dataStructure);
-                        currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                        grid.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("SpecialTagsResult[" + currentIndex + "]");
-                    }
-                    valueBinder.Path = propertyPath;
-                    var currentTag = grid.Tag;
-                    BindingOperations.SetBinding(grid, FrameworkElement.TagProperty, valueBinder);
-                    grid.Tag = currentTag;
                 }
+                else//路径引用
+                if(dataStructure.DataType == "TAG_StringReference")
+                {
+                    (grid.Children[1] as IconTextButtons).Click += StringReference_Clicked;
+                }
+
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = grid.Tag;
+                BindingOperations.SetBinding(grid, FrameworkElement.TagProperty, valueBinder);
+                grid.Tag = currentTag;
             }
             #endregion
 
@@ -194,68 +342,59 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (sender is Slider)
             {
                 Slider slider = sender as Slider;
+                slider.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = slider.Tag as NBTDataStructure;
-                if (!IsHaveNumber().IsMatch(slider.Uid))
+                slider.ValueChanged += NumberBoxValueChanged;
+                if (parent.Uid != "SpecialTags")
                 {
-                    slider.ValueChanged += NumberBoxValueChanged;
-                    if (parent.Uid != "SpecialTags")
-                    {
-                        entityPage.CommonResult.Add(dataStructure);
-                        currentIndex = entityPage.CommonResult.Count - 1;
-                        slider.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
-                    }
-                    else
-                    {
-                        entityPage.SpecialTagsResult.Add(dataStructure);
-                        currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                        slider.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("SpecialTagsResult[" + currentIndex + "]");
-                    }
-                    valueBinder.Path = propertyPath;
-                    var currentTag = slider.Tag;
-                    BindingOperations.SetBinding(slider, FrameworkElement.TagProperty, valueBinder);
-                    slider.Tag = currentTag;
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
                 }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = slider.Tag;
+                BindingOperations.SetBinding(slider, FrameworkElement.TagProperty, valueBinder);
+                slider.Tag = currentTag;
             }
             #endregion
 
-            #region 当前为Long型或文本框
+            #region 当前为Long型、文本框
             if (sender is TextBox)
             {
                 TextBox textBox = sender as TextBox;
+                textBox.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = textBox.Tag as NBTDataStructure;
-                if (!IsHaveNumber().IsMatch(textBox.Uid))
+                if (dataStructure.DataType == "TAG_String_List")
+                    textBox.LostFocus += StringListBox_LostFocus;
+                else
+                if (dataStructure.DataType == "TAG_Long")
+                    textBox.LostFocus += LongNumberBox_LostFocus;
+                else
+                    textBox.LostFocus += StringBox_LostFocus;
+
+                if (parent.Uid != "SpecialTags")
                 {
-
-                    if (textBox.Uid == "TAG_String_List")
-                        textBox.LostFocus += StringListBox_LostFocus;
-                    else
-                    if (textBox.Uid == "TAG_Long")
-                        textBox.LostFocus += LongNumberBox_LostFocus;
-                    else
-                        textBox.LostFocus += StringBox_LostFocus;
-
-                    if (parent.Uid != "SpecialTags")
-                    {
-                        entityPage.CommonResult.Add(textBox.Tag as NBTDataStructure);
-                        currentIndex = entityPage.CommonResult.Count - 1;
-                        textBox.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
-                    }
-                    else
-                    {
-                        entityPage.SpecialTagsResult.Add(textBox.Tag as NBTDataStructure);
-                        currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                        textBox.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("SpecialTagsResult[" + currentIndex + "]");
-                    }
-
-                    valueBinder.Path = propertyPath;
-                    var currengTag = dataStructure;
-                    BindingOperations.SetBinding(textBox, FrameworkElement.TagProperty, valueBinder);
-                    textBox.Tag = currengTag;
+                    specialContext.CommonResult.Add(textBox.Tag as NBTDataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
                 }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(textBox.Tag as NBTDataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+
+                valueBinder.Path = propertyPath;
+                var currengTag = dataStructure;
+                BindingOperations.SetBinding(textBox, FrameworkElement.TagProperty, valueBinder);
+                textBox.Tag = currengTag;
             }
             #endregion
 
@@ -263,34 +402,344 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (sender is TextCheckBoxs)
             {
                 TextCheckBoxs textCheckBoxs = sender as TextCheckBoxs;
+                textCheckBoxs.GotFocus -= ValueChangedHandler;
                 NBTDataStructure dataStructure = textCheckBoxs.Tag as NBTDataStructure;
-                if(!IsHaveNumber().IsMatch(textCheckBoxs.Uid))
+                textCheckBoxs.Checked += CheckBox_Checked;
+                textCheckBoxs.Unchecked += CheckBox_Unchecked;
+
+                if (parent.Uid != "SpecialTags")
                 {
-                    textCheckBoxs.Checked += CheckBox_Checked;
-                    textCheckBoxs.Unchecked += CheckBox_Unchecked;
-
-                    if (parent.Uid != "SpecialTags")
-                    {
-                        entityPage.CommonResult.Add(dataStructure);
-                        currentIndex = entityPage.CommonResult.Count - 1;
-                        textCheckBoxs.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
-                    }
-                    else
-                    {
-                        entityPage.SpecialTagsResult.Add(dataStructure);
-                        currentIndex = entityPage.SpecialTagsResult.Count - 1;
-                        textCheckBoxs.Uid = currentIndex.ToString();
-                        propertyPath = new PropertyPath("SpecialTagsResult[" + currentIndex + "]");
-                    }
-
-                    valueBinder.Path = propertyPath;
-                    var currentTag = textCheckBoxs.Tag;
-                    BindingOperations.SetBinding(textCheckBoxs, FrameworkElement.TagProperty, valueBinder);
-                    textCheckBoxs.Tag = currentTag;
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
                 }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+
+                valueBinder.Path = propertyPath;
+                var currentTag = textCheckBoxs.Tag;
+                BindingOperations.SetBinding(textCheckBoxs, FrameworkElement.TagProperty, valueBinder);
+                textCheckBoxs.Tag = currentTag;
             }
             #endregion
+
+            #region 当前为枚举值
+            if (sender is ComboBox)
+            {
+                ComboBox comboBox = sender as ComboBox;
+                comboBox.GotFocus -= ValueChangedHandler;
+                NBTDataStructure dataStructure = comboBox.Tag as NBTDataStructure;
+                comboBox.SelectionChanged += EnumBox_SelectionChanged;
+                if (parent.Uid != "SpecialTags")
+                {
+                    specialContext.CommonResult.Add(dataStructure);
+                    currentIndex = specialContext.CommonResult.Count - 1;
+                    comboBox.Uid = currentIndex.ToString();
+                    propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+                }
+                else
+                {
+                    specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
+                    currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
+                    comboBox.Uid = currentIndex.ToString();
+                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                }
+                valueBinder.Path = propertyPath;
+                var currentTag = comboBox.Tag;
+                BindingOperations.SetBinding(comboBox, FrameworkElement.TagProperty, valueBinder);
+                comboBox.Tag = currentTag;
+            }
+            #endregion
+        }
+
+        /// <summary>
+        /// 添加乘客
+        /// </summary>
+        /// <param name="sender"></param>
+        private void AddPassengerClick(FrameworkElement sender)
+        {
+            Accordion accordion = sender as Accordion;
+            entityPagesDataContext context = accordion.FindParent<EntityPages>().DataContext as entityPagesDataContext;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            context.CommonResult.Add(new NBTDataStructure());
+            int currentIndex = context.CommonResult.Count - 1;
+            Binding valueBinder = new()
+            {
+                Path = new PropertyPath("CommonResult[" + currentIndex + "]"),
+                Mode = BindingMode.OneWayToSource
+            };
+            PassengerItems passengerItems = new()
+            {
+                Margin = new Thickness(0, 2, 0, 0),
+                Tag = new NBTDataStructure() { Result = "", DataType = "TAG_List", NBTGroup = "EntityCommonTags" }
+            };
+            passengerItems.ReferenceIndex.Minimum = 0;
+            var currentTag = passengerItems.Tag;
+            BindingOperations.SetBinding(passengerItems, FrameworkElement.TagProperty, valueBinder);
+            passengerItems.Tag = currentTag;
+            stackPanel.Children.Add(passengerItems);
+        }
+
+        /// <summary>
+        /// 清空乘客
+        /// </summary>
+        /// <param name="sender"></param>
+        private void ClearPassengerClick(FrameworkElement sender)
+        {
+            Accordion accordion = sender as Accordion;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            stackPanel.Children.Clear();
+            dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 处理乘客数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void PassengerItems_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel =(accordion.Content as ScrollViewer).Content as StackPanel;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            dataStructure.Result = "";
+            if (stackPanel.Children.Count > 0)
+            {
+                StringBuilder result = new();
+                foreach (PassengerItems passenger in stackPanel.Children)
+                {
+                    if(passenger.DisplayEntity.Tag != null)
+                    result.Append(passenger.DisplayEntity.Tag.ToString() + ',');
+                }
+                if (result.Length > 0)
+                {
+                    result = result.Remove(result.Length - 1, 1);
+                    dataStructure.Result = "Passengers:[" + result + "]";
+                }
+            }
+        }
+
+        /// <summary>
+        /// 处理状态效果数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void ActiveEffects_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            StringBuilder result = new();
+            foreach (AreaEffectCloudEffects effect in stackPanel.Children)
+            {
+                result.Append(effect.Result + ',');
+            }
+            if (result.Length > 0)
+            {
+                result = result.Remove(result.Length - 1, 1);
+                dataStructure.Result = accordion.Name + ":[" + result.ToString().TrimEnd(',') + "]";
+            }
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 添加属性
+        /// </summary>
+        /// <param name="obj"></param>
+        public void AddAttributeCommand(FrameworkElement obj)
+        {
+            Attributes attributes = new();
+            Accordion accordion = obj as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            stackPanel.Children.Add(attributes);
+        }
+
+        /// <summary>
+        /// 处理实体属性数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Attributes_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            StringBuilder result = new();
+            if (stackPanel.Children.Count > 0)
+            {
+                foreach (Attributes attribute in stackPanel.Children)
+                {
+                    result.Append(attribute.Result + ",");
+                }
+                result.Remove(result.Length - 1, 1);
+                dataStructure.Result = "Attributes:[" + result.ToString() + "]";
+            }
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 清空属性
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ClearAttributeCommand(FrameworkElement obj)
+        {
+            Accordion accordion = obj as Accordion;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            ((accordion.Content as ScrollViewer).Content as StackPanel).Children.Clear();
+            dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 处理拴绳相关数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Leash_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            LeashData leashData = accordion.Content as LeashData;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            if (leashData.Tied.IsChecked.Value)
+            {
+                if(leashData.TiedByEntity.IsChecked.Value)
+                    dataStructure.Result = accordion.Name + ":{UUID:[" + leashData.tractor.number0.Value + "," + leashData.tractor.number1.Value + "," + leashData.tractor.number2.Value + "," + leashData.tractor.number3.Value + "]}";
+                else
+                    dataStructure.Result = accordion.Name + ":{X:" + leashData.fence.number0.Value + ",Y:" + leashData.fence.number1.Value + ",Z:" + leashData.fence.number2.Value + "}";
+            }
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 整合引用路径
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StringReference_Clicked(object sender, RoutedEventArgs e)
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                AddExtension = true,
+                CheckFileExists = true,
+                DefaultExt = ".json",
+                Multiselect = false,
+                Filter = "(*.json)|*.json;",
+                RestoreDirectory = true,
+                Title = "请选择一个JSON文件"
+            };
+            if(openFileDialog.ShowDialog().Value)
+            {
+                if(File.Exists(openFileDialog.FileName))
+                {
+                    Grid grid = (sender as IconTextButtons).Parent as Grid;
+                    NBTDataStructure dataStructure = grid.Tag as NBTDataStructure;
+                    TextBox textBox = grid.Children[0] as TextBox;
+                    textBox.Text = openFileDialog.FileName;
+                    dataStructure.Result = grid.Name + ":\"" + textBox.Text + "\"";
+                }
+            }
+        }
+
+        /// <summary>
+        /// 清空药水云施加效果列表
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ClearAreaEffectCloudCommand(FrameworkElement obj)
+        {
+            Accordion accordion = obj as Accordion;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            dataStructure.Result = "";
+            ((accordion.Content as ScrollViewer).Content as StackPanel).Children.Clear();
+        }
+
+        /// <summary>
+        /// 添加药水云施加效果
+        /// </summary>
+        /// <param name="obj"></param>
+        public void AddAreaEffectCloudCommand(FrameworkElement obj)
+        {
+            Accordion accordion = obj as Accordion;
+            ((accordion.Content as ScrollViewer).Content as StackPanel).Children.Add(new AreaEffectCloudEffects());
+        }
+
+        /// <summary>
+        /// 处理药水云施加状态效果列表
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AreaEffectCloudEffects_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            if (stackPanel.Children.Count > 0)
+            {
+                StringBuilder result = new();
+                foreach (AreaEffectCloudEffects item in stackPanel.Children)
+                {
+                    result.Append(item.Result + ",");
+                }
+                dataStructure.Result = accordion.Name + ":[" + result.ToString().TrimEnd(',') + "]";
+            }
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 处理背包或物品数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Item_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            List<string> itemList = new();
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            if (stackPanel.Children.Count > 0)
+            {
+                if (accordion.Uid == "TAG_List")
+                {
+                    for (int i = 0; i < stackPanel.Children.Count; i++)
+                    {
+                        FrameworkElement frameworkElement = stackPanel.Children[i] as FrameworkElement;
+                        itemList.Add(frameworkElement.Tag.ToString());
+                    }
+                    dataStructure.Result = accordion.Name + ":[" + string.Join(",", itemList) + "]";
+                }
+                else
+                {
+                    object obj = (stackPanel.Children[0] as FrameworkElement).Tag;
+                    if (obj != null)
+                        dataStructure.Result = accordion.Name + ":" + obj.ToString();
+                    else
+                        dataStructure.Result = "";
+                }
+            }
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 枚举变量切换时更新数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EnumBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ComboBox comboBox = sender as ComboBox;
+            NBTDataStructure dataStructure = comboBox.Tag as NBTDataStructure;
+            dataStructure.Result = comboBox.Name + ":\"" + comboBox.SelectedItem.ToString() + "\"";
         }
 
         /// <summary>
@@ -300,6 +749,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void ClearItemCommand(FrameworkElement obj)
         {
             Accordion accordion = obj as Accordion;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            dataStructure.Result = "";
             StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
             stackPanel.Children.Clear();
         }
@@ -313,7 +764,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             Accordion accordion = obj as Accordion;
             StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
             EntityBag entityBag = new();
-            if(accordion.Uid == "Items" || (stackPanel.Children.Count == 0 && accordion.Uid == "Item"))
+            if(accordion.Name == "Items" || accordion.Name == "Inventory" || (stackPanel.Children.Count == 0 && accordion.Name == "Item"))
             stackPanel.Children.Add(entityBag);
         }
 
@@ -472,12 +923,10 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             #region 两个浮点数成员
             Slider subSlider0 = grid.FindChild<Slider>("0");
             Slider subSlider1 = grid.FindChild<Slider>("1");
-            string unit;
-            unit = grid.Uid[(grid.Uid.IndexOf('_') + 1)..grid.Uid.LastIndexOf('_')].ToLower()[0..1];
             if (subSlider0 != null && subSlider1 != null)
             {
                 if (subSlider0.Value != 0 || subSlider1.Value != 0)
-                    dataStructure.Result = grid.Name + ":[" + subSlider0.Value + unit + "," + subSlider1 + unit + "]";
+                    dataStructure.Result = grid.Name + ":[" + subSlider0.Value + "f," + subSlider1.Value+ "f]";
                 else
                     dataStructure.Result = "";
             }
@@ -497,9 +946,14 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 dataStructure.Result = "";
             else
             {
-                string[] valueList = textBox.Text.Split(';');
-                string value = string.Join(",", "\""+ valueList + "\"");
-                dataStructure.Result = textBox.Name + ":[" + value + "]";
+                List<string> valueList = textBox.Text.Split(',').ToList();
+                StringBuilder result = new();
+                _ = valueList.All(item =>
+                {
+                    result.Append("\"" + item + "\",");
+                    return true;
+                });
+                dataStructure.Result = textBox.Name + ":[" + result.ToString().TrimEnd(',') + "]";
             }
         }
 
@@ -516,6 +970,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 dataStructure.Result = textBox.Name + ":" + textBox.Text + "l";
             else
                 dataStructure.Result = "";
+            entityPagesDataContext context = textBox.FindParent<EntityPages>().DataContext as entityPagesDataContext;
         }
 
         /// <summary>
@@ -539,7 +994,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         {
             TextCheckBoxs textCheckBoxs = sender as TextCheckBoxs;
             NBTDataStructure dataStructure = textCheckBoxs.Tag as NBTDataStructure;
-            dataStructure.Result = textCheckBoxs.Name + ":true";
+            dataStructure.Result = textCheckBoxs.Name + ":1b";
         }
     }
 

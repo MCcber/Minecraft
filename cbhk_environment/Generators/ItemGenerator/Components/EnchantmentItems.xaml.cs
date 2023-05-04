@@ -41,7 +41,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             {
                 string result = "";
                 string id = MainWindow.EnchantmentDataBase.Where(item=>item.Value.Contains(EnchantmentId)).Select(item=>item.Key).First();
-                result = "{id:\"minecraft:"+id+"\",lvl:"+EnchantmentLevel+"s},";
+                result = "{id:\"minecraft:"+id+"\",lvl:"+EnchantmentLevel+"s}";
                 return result;
             }
         }

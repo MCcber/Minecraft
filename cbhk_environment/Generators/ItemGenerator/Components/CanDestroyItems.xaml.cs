@@ -27,7 +27,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         {
             get
             {
-                string result = "\"" + MainWindow.ItemDataBase.Where(item => item.Key.Split(':')[1] == Block.ComboBoxItemText).Select(item=>item.Key).First().Split(':')[0]+"\",";
+                string result = "\"" + MainWindow.ItemDataBase.Where(item => item.Key.Split(':')[1] == Block.ComboBoxItemText).Select(item=>item.Key).First().Split(':')[0]+"\"";
                 return result;
             }
         }

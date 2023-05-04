@@ -1,4 +1,6 @@
-﻿using System;
+﻿using cbhk_environment.GeneralTools;
+using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -83,6 +85,9 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         }
         #endregion
 
+        /// <summary>
+        /// 合并数据
+        /// </summary>
         public string Result
         {
             get
@@ -141,11 +146,10 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void IconTextButtons_Click(object sender, RoutedEventArgs e)
+        private void Delete_Click(object sender, RoutedEventArgs e)
         {
-            StackPanel parent = Parent as StackPanel;
-            //删除自己
-            parent.Children.Remove(this);
+            ObservableCollection<AttributeItems> attributeItems = this.FindParent<Data>().AttributeSource;
+            attributeItems.Remove(this);
         }
     }
 }
