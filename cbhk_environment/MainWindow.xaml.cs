@@ -101,8 +101,8 @@ namespace cbhk_environment
         //信息隐藏标记
         public static ObservableCollection<string> HideFlagsSource = new ();
 
-        //标签生成器的过滤类型数据源
-        public static ObservableCollection<string> TypeItemSource = new ();
+        public static Dictionary<string, string> BlockNameAndID = new();
+        public static Dictionary<string, string> EnchantmentNameAndID = new();
 
         //标签生成器的复选框列表
         public static ObservableCollection<RichCheckBoxs> TagSpawnerItemCheckBoxList = new ();
@@ -156,7 +156,7 @@ namespace cbhk_environment
         private void ReadDataSource()
         {
             #region 获取所有物品的id和对应的中文
-            SolidColorBrush white_brush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 255, 255));
+            SolidColorBrush white_brush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json") && ItemDataBase.Count == 0)
             {
                 string items_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json");
@@ -172,8 +172,8 @@ namespace cbhk_environment
                     BitmapImage image = null;
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png"))
                     {
-                        image = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.Relative));
-                        ItemIdSource.Add(new IconComboBoxItem() { ComboBoxItemText = item_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.Absolute)) });
+                        image = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.RelativeOrAbsolute));
+                        ItemIdSource.Add(new IconComboBoxItem() { ComboBoxItemText = item_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.RelativeOrAbsolute)) });
                         RenderOptions.SetBitmapScalingMode(image,BitmapScalingMode.NearestNeighbor);
                         RenderOptions.SetClearTypeHint(image,ClearTypeHint.Enabled);
 
@@ -241,7 +241,10 @@ namespace cbhk_environment
                         RenderOptions.SetClearTypeHint(image, ClearTypeHint.Enabled);
                     }
                     if (!BlockDataBase.ContainsKey(block_id + ":" + block_name))
+                    {
                         BlockDataBase.Add(block_id + ":" + block_name, image);
+                        BlockNameAndID.Add(block_name,block_id);
+                    }
 
                     BlockCheckBoxList.Add(new RichCheckBoxs()
                     {
@@ -280,6 +283,7 @@ namespace cbhk_environment
                     enchantment_name = enchantmentArray[i]["name"].ToString();
                     enchantment_num = enchantmentArray[i]["num"].ToString();
                     EnchantmentDataBase.Add(enchantment_id, enchantment_name + enchantment_num);
+                    EnchantmentNameAndID.Add(enchantment_id,enchantment_name);
                     itemDataGroups.Add(enchantment_name);
                 }
                 EnchantmentIdSource = itemDataGroups;
@@ -522,17 +526,6 @@ namespace cbhk_environment
                     }
                     else
                     ScoreboardTypeDataBase.Add(scoreboard_type);
-                }
-            }
-            #endregion
-
-            #region 加载过滤类型
-            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Tag\\TypeFilter.ini"))
-            {
-                string[] Types = File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Tag\\TypeFilter.ini");
-                for (int i = 0; i < Types.Length; i++)
-                {
-                    TypeItemSource.Add(Types[i]);
                 }
             }
             #endregion

@@ -10,6 +10,7 @@ namespace cbhk_environment.GeneralTools
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Uri uri = (Uri)value;
+            if (uri == null) return null;
             BitmapImage bmp = new()
             {
                 DecodePixelHeight = 250 // 确定解码高度，宽度不同时设置

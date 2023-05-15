@@ -19,7 +19,7 @@
 
     <DockPanel Height="30" LastChildFill="False">
         <Border
-            x:Name="EntityIcon"
+            x:Name="ItemIcon"
             BorderBrush="#FFE5B663"
             BorderThickness="1">
             <Image Grid.Column="0" Width="30" />

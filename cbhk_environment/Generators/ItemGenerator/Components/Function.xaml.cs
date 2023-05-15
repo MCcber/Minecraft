@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using WK.Libraries.BetterFolderBrowserNS.Helpers;
 
 namespace cbhk_environment.Generators.ItemGenerator.Components
 {
@@ -80,6 +79,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             get
             {
                 string result = "Trim:{" + (Material.Length > 0 ? Material : "") + (Pattern.Length > 0 ? "," + Pattern : "") + "},";
+                result = result != "Trim:{}," ?result:"";
                 return result;
             }
         }
@@ -184,13 +184,38 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         /// <param name="e"></param>
         private void TrimData_Click(object sender, RoutedEventArgs e)
         {
-            BetterFolderBrowserDialog folderBrowserDialog = new()
+            //BetterFolderBrowser folderBrowserDialog = new()
+            //{
+            //    RootFolder = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+            //    Title = "为盔甲纹饰引用一个命名空间",
+            //    Multiselect = false
+            //};
+            //if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            //{
+            //    IconTextButtons button = sender as IconTextButtons;
+            //    int currentRowIndex = Grid.GetRow(button);
+            //    Grid parent = button.Parent as Grid;
+            //    foreach (FrameworkElement item in parent.Children)
+            //    {
+            //        int row = Grid.GetRow(item);
+            //        int column = Grid.GetColumn(item);
+            //        if (row == currentRowIndex && column == 1)
+            //        {
+            //            TextBox textBox = item as TextBox;
+            //            textBox.Text = folderBrowserDialog.SelectedPath;
+            //        }
+            //    }
+            //}
+
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
             {
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
-                Title = "为盔甲纹饰引用一个命名空间",
-                AllowMultiselect = false
+                ShowHiddenFiles = true,
+                ShowNewFolderButton = true,
+                Description = "为盔甲纹饰引用一个命名空间",
+                UseDescriptionForTitle = true
             };
-            if(folderBrowserDialog.ShowDialog())
+            if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 Button button = sender as Button;
                 int currentRowIndex = Grid.GetRow(button);
@@ -199,10 +224,10 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                 {
                     int row = Grid.GetRow(item);
                     int column = Grid.GetColumn(item);
-                    if(row == currentRowIndex && column == 1)
+                    if (row == currentRowIndex && column == 1)
                     {
                         TextBox textBox = item as TextBox;
-                        textBox.Text = folderBrowserDialog.FileName;
+                        textBox.Text = folderBrowserDialog.SelectedPath;
                     }
                 }
             }

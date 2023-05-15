@@ -130,14 +130,11 @@
                 BorderBrush="Black"
                 FontSize="15"
                 Foreground="White"
-                SelectedIndex="0"
+                SelectedItem="{Binding SelectedTypeItem, Mode=TwoWay}"
                 Style="{DynamicResource TextComboBoxStyle}">
                 <behavior:Interaction.Triggers>
                     <behavior:EventTrigger EventName="Loaded">
                         <behavior:CallMethodAction MethodName="TypeFilterLoaded" TargetObject="{Binding}" />
-                    </behavior:EventTrigger>
-                    <behavior:EventTrigger EventName="SelectionChanged">
-                        <behavior:CallMethodAction MethodName="TypeSelectionChanged" TargetObject="{Binding}" />
                     </behavior:EventTrigger>
                 </behavior:Interaction.Triggers>
             </ComboBox>

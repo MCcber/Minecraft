@@ -1,4 +1,5 @@
 ﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -119,7 +120,9 @@ namespace cbhk_environment.Generators.ItemGenerator.Components.SpecialNBT
         /// <param name="obj"></param>
         private void CloseEffectCommand(FrameworkElement obj)
         {
-            (Parent as StackPanel).Children.Remove(this);
+            StackPanel stackPanel = Parent as StackPanel;
+            stackPanel.Children.Remove(this);
+            stackPanel.FindParent<Accordion>().FindChild<IconButtons>().Focus();
             HaveResult = false;
         }
 
@@ -130,7 +133,12 @@ namespace cbhk_environment.Generators.ItemGenerator.Components.SpecialNBT
         /// <param name="e"></param>
         private void EffectID_Loaded(object sender, RoutedEventArgs e)
         {
-            (sender as ComboBox).ItemsSource = MainWindow.MobEffectIdSource;
+            ComboBox comboBox = sender as ComboBox;
+            if (comboBox.ItemsSource == null)
+            {
+                comboBox.ItemsSource = MainWindow.MobEffectIdSource;
+                comboBox.SelectedIndex = 0;
+            }
         }
     }
 }

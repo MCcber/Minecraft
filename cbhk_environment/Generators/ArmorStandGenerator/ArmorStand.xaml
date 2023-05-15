@@ -138,6 +138,17 @@
                         FontSize="20"
                         Foreground="White"
                         Text="{Binding Path=CustomName, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" />
+                    <CustomControls:RadiusToggleButtons
+                        Margin="5,0"
+                        HorizontalAlignment="Left"
+                        FontSize="12"
+                        Foreground="White"
+                        IsChecked="{Binding Path=CustomNameVisible, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                        SelectedToggleText="名称可见性"
+                        Style="{StaticResource RadiusToggleButton}"
+                        ToggleHeight="25"
+                        ToggleWidth="45"
+                        UnSelectedToggleText="名称可见性" />
                     <TextBlock
                         Margin="5,0,0,0"
                         VerticalAlignment="Center"
@@ -155,17 +166,6 @@
                             </behavior:EventTrigger>
                         </behavior:Interaction.Triggers>
                     </ColorPickers:ColorPickers>
-                    <CustomControls:RadiusToggleButtons
-                        Margin="5,0"
-                        HorizontalAlignment="Left"
-                        FontSize="12"
-                        Foreground="White"
-                        IsChecked="{Binding Path=CustomNameVisible, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
-                        SelectedToggleText="名称可见性"
-                        Style="{StaticResource RadiusToggleButton}"
-                        ToggleHeight="25"
-                        ToggleWidth="45"
-                        UnSelectedToggleText="名称可见性" />
                 </DockPanel>
                 <TextBlock
                     Margin="10,5,0,2"
@@ -1663,66 +1663,84 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <CustomControls:IconTextButtons
+                            Uid="Head"
                             Grid.Column="0"
                             Margin="10,0"
                             Padding="0,0,0,3"
                             Background="{StaticResource DataButtonBackground}"
                             BorderThickness="0"
+                            Command="{Binding SetHeadItem}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
                             Content="头部"
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
                             Style="{DynamicResource IconTextButton}" />
                         <CustomControls:IconTextButtons
+                            Uid="Body"
                             Grid.Column="1"
                             Margin="10,0"
                             Padding="0,0,0,3"
                             Background="{StaticResource DataButtonBackground}"
                             BorderThickness="0"
+                            Command="{Binding SetBodyItem}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
                             Content="身体"
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
                             Style="{DynamicResource IconTextButton}" />
                         <CustomControls:IconTextButtons
+                            Uid="LeftHand"
                             Grid.Column="2"
                             Margin="10,0"
                             Padding="0,0,0,3"
                             Background="{StaticResource DataButtonBackground}"
                             BorderThickness="0"
+                            Command="{Binding SetLeftHandItem}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
                             Content="左手"
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
                             Style="{DynamicResource IconTextButton}" />
                         <CustomControls:IconTextButtons
+                            Uid="RightHand"
                             Grid.Column="3"
                             Margin="10,0"
                             Padding="0,0,0,3"
                             Background="{StaticResource DataButtonBackground}"
                             BorderThickness="0"
+                            Command="{Binding SetRightHandItem}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
                             Content="右手"
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
                             Style="{DynamicResource IconTextButton}" />
                         <CustomControls:IconTextButtons
+                            Uid="Legs"
                             Grid.Column="4"
                             Margin="10,0"
                             Padding="0,0,0,3"
                             Background="{StaticResource DataButtonBackground}"
                             BorderThickness="0"
+                            Command="{Binding SetLegsItem}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
                             Content="腿部"
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
                             Style="{DynamicResource IconTextButton}" />
                         <CustomControls:IconTextButtons
+                            Uid="Feet"
                             Grid.Column="5"
                             Margin="10,0"
                             Padding="0,0,0,3"
                             Background="{StaticResource DataButtonBackground}"
                             BorderThickness="0"
+                            Command="{Binding SetFeetItem}"
+                            CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}"
                             Content="脚部"
                             FontSize="15"
                             Foreground="White"

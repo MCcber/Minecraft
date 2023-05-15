@@ -29,7 +29,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         {
             Microsoft.Win32.OpenFileDialog openFileDialog = new()
             {
-                DefaultExt = ".command",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
                 Multiselect = false,
                 RestoreDirectory = true,
@@ -39,21 +38,62 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             {
                 if(File.Exists(openFileDialog.FileName))
                 {
-                    string entityData = File.ReadAllText(openFileDialog.FileName);
-                    entityData = entityData[entityData.IndexOf('{')..entityData.LastIndexOf('}')];
-                    //补齐缺失双引号对的key
-                    entityData = Regex.Replace(entityData, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
-                    //清除数值型数据的单位
-                    entityData = Regex.Replace(entityData, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
-                    if (entityData.Trim().Length == 0) return;
+                    string entityData = ExternalDataImportManager.GetEntityDataHandler(openFileDialog.FileName);
                     JToken entityTag = JObject.Parse(entityData)["EntityTag"];
                     if (entityTag != null)
                         entityData = entityTag.ToString();
                     else
                         entityTag = JObject.Parse(entityData);
-                    string entityID = entityTag["id"].ToString();
+                    JToken entityID = entityTag["id"];
                     DisplayEntity.Tag = entityData;
+                    if(entityID != null)
                     (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + entityID + ".png", UriKind.RelativeOrAbsolute));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从剪切板导入
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ImportFromClipboardClick(object sender, RoutedEventArgs e)
+        {
+            string entityData = ExternalDataImportManager.GetEntityDataHandler(Clipboard.GetText(),false);
+            entityData = entityData[entityData.IndexOf('{')..entityData.LastIndexOf('}')];
+            //补齐缺失双引号对的key
+            entityData = Regex.Replace(entityData, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
+            //清除数值型数据的单位
+            entityData = Regex.Replace(entityData, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+            if (entityData.Trim().Length == 0) return;
+            JToken entityTag = JObject.Parse(entityData)["EntityTag"];
+            if (entityTag != null)
+                entityData = entityTag.ToString();
+            else
+                entityTag = JObject.Parse(entityData);
+            JToken entityID = entityTag["id"];
+            DisplayEntity.Tag = entityData;
+            if(entityID != null)
+            (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + entityID + ".png", UriKind.RelativeOrAbsolute));
+        }
+
+        /// <summary>
+        /// 更新引用的实体索引
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReferenceIndex_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (ReferenceMode.IsChecked.Value)
+            {
+                Slider slider = sender as Slider;
+                entity_datacontext entityContext = this.FindParent<Entity>().DataContext as entity_datacontext;
+                if (slider.Value < entityContext.EntityPageList.Count)
+                {
+                    int index = int.Parse(slider.Value.ToString());
+                    entityPagesDataContext pageContext = entityContext.EntityPageList[index].DataContext as entityPagesDataContext;
+                    DisplayEntity.Tag = pageContext.run_command(false);
+                    (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + pageContext.SelectedEntityIdString + ".png", UriKind.RelativeOrAbsolute));
                 }
             }
         }
@@ -68,6 +108,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             IconTextButtons iconTextButtons = sender as IconTextButtons;
             StackPanel stackPanel = iconTextButtons.FindParent<StackPanel>();
             stackPanel.Children.Remove(this);
+            Accordion accordion = (stackPanel.Parent as ScrollViewer).Parent as Accordion;
+            accordion.FindChild<IconButtons>().Focus();
         }
     }
 }

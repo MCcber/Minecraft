@@ -25,9 +25,10 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 {
     public partial class entityPagesDataContext : ObservableObject
     {
-        #region 运行指令、保存指令
+        #region 运行指令、保存等指令
         public RelayCommand RunCommand { get; set; }
         public RelayCommand SaveCommand { get; set; }
+        public RelayCommand ClearUnnecessaryData { get; set; }
         #endregion
 
         #region 指示是否需要展示生成结果
@@ -88,15 +89,20 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 
         #endregion
 
+        #region 作为工具
+        public bool UseForTool { get; set; } = false;
+        #endregion
+
+        #region 当前实体页引用
+        EntityPages currentEntityPage = null;
+        #endregion
+
         #region 通用NBT
 
         #region 全选和反选bool型NBT
         public RelayCommand<FrameworkElement> SelectAllBoolNBTs { get; set; }
         public RelayCommand<FrameworkElement> ReverseAllBoolNBTs { get; set; }
         #endregion
-
-        //清除不需要的特指数据
-        public RelayCommand ClearUnnecessaryData { get; set; }
 
         #region 共通标签是否开放编辑
 
@@ -444,198 +450,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         }
         #endregion
 
-        #region 外观
-
-        #region 手部
-        private string HandItems
-        {
-            get
-            {
-                string result;
-                result = MainHand.Trim() != "" || OffHand.Trim() != "" ? "HandItems:[" + MainHand + "," + OffHand + "]," : "";
-                return result;
-            }
-        }
-        //掉率
-        private string HandDropChances
-        {
-            get
-            {
-                string result;
-                result = MainHandDropChance != 0 || OffHandDropChance != 0 ? "HandDropChances:[" + MainHandDropChance + "f," + OffHandDropChance + "f]," : "";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 主手
-        private string main_hand = "";
-        public string MainHand
-        {
-            get { return main_hand; }
-            set
-            {
-                main_hand = value;
-                OnPropertyChanged();
-            }
-        }
-        //掉率
-        private double mainhand_dropchance = 0f;
-        public double MainHandDropChance
-        {
-            get { return mainhand_dropchance; }
-            set
-            {
-                mainhand_dropchance = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 副手
-        private string off_hand = "";
-        public string OffHand
-        {
-            get { return off_hand; }
-            set
-            {
-                off_hand = value;
-                OnPropertyChanged();
-            }
-        }
-        //掉率
-        private double offhand_dropchance = 0;
-        public double OffHandDropChance
-        {
-            get { return offhand_dropchance; }
-            set
-            {
-                offhand_dropchance = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 装备
-        private string ArmorItems
-        {
-            get
-            {
-                string result;
-                result = HeadItem.Trim() != "" || ChestItem.Trim() != "" || LegItem.Trim() != "" || BootItem.Trim() != "" ? "ArmorItems:[" + HeadItem + "," + ChestItem + "," + LegItem + "," + BootItem + "]," : "";
-                return result;
-            }
-        }
-        //掉率
-        private string ArmorDropChances
-        {
-            get
-            {
-                string result;
-                result = HeadItemDropChance != 0 || ChestItemDropChance != 0 || LegItemDropChance != 0 || BootItemDropChance != 0 ? "ArmorDropChances:[" + HeadItemDropChance + "f," + ChestItemDropChance + "f," + LegItemDropChance + "f," + BootItemDropChance + "f]," : "";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 头部
-        private string head_item = "";
-        public string HeadItem
-        {
-            get { return head_item; }
-            set
-            {
-                head_item = value;
-                OnPropertyChanged();
-            }
-        }
-        //掉率
-        private double headitem_dropchance = 0f;
-        public double HeadItemDropChance
-        {
-            get { return headitem_dropchance; }
-            set
-            {
-                headitem_dropchance = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 胸部
-        private string chest_item = "";
-        public string ChestItem
-        {
-            get { return chest_item; }
-            set
-            {
-                chest_item = value;
-                OnPropertyChanged();
-            }
-        }
-        //掉率
-        private double chest_item_dropchance = 0f;
-        public double ChestItemDropChance
-        {
-            get { return chest_item_dropchance; }
-            set
-            {
-                chest_item_dropchance = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 腿部
-        private string leg_item = "";
-        public string LegItem
-        {
-            get { return leg_item; }
-            set
-            {
-                leg_item = value;
-                OnPropertyChanged();
-            }
-        }
-        //掉率
-        private double leg_item_dropchance = 0f;
-        public double LegItemDropChance
-        {
-            get { return leg_item_dropchance; }
-            set
-            {
-                leg_item_dropchance = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 脚部
-        private string boot_item = "";
-        public string BootItem
-        {
-            get { return boot_item; }
-            set
-            {
-                boot_item = value;
-                OnPropertyChanged();
-            }
-        }
-        //掉率
-        private double boot_item_dropchance = 0f;
-        public double BootItemDropChance
-        {
-            get { return boot_item_dropchance; }
-            set
-            {
-                boot_item_dropchance = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #endregion
-
         #region 版本
         private string selectedVersion = "";
         public string SelectedVersion
@@ -759,6 +573,16 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             }
             #endregion
         }
+        
+        /// <summary>
+        /// 载入实体页
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void EntityPageLoaded(object sender,RoutedEventArgs e)
+        {
+            currentEntityPage = sender as EntityPages;
+        }
 
         /// <summary>
         /// 搜索当前实体下拥有哪些共通标签,用于过滤当前实体不存在的数据
@@ -854,7 +678,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         /// <summary>
         /// 运行生成
         /// </summary>
-        public void run_command()
+        private void run_command()
         {
             CollectionCommonTagsMark();
             Result = string.Join(",",SpecialTagsResult[SelectedEntityIdString].Select(item =>
@@ -870,6 +694,13 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     return "";
             }));
             Result = Regex.Replace(Result.Trim(','), @",{2,}", ",");
+            if (UseForTool)
+            {
+                Result = "{" + Result + "}";
+                Entity entity = Window.GetWindow(currentEntityPage) as Entity;
+                entity.DialogResult = true;
+                return;
+            }
             if (Summon)
                 Result = Result.Trim() != "" ? "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~ {" + Result + "}" : "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~";
             else
@@ -981,6 +812,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 
             result.Add(displayText);
             ComponentEvents componentEvents = new();
+
             switch (Request.dataType)
             {
                 case "TAG_BlockState":
@@ -1052,7 +884,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             Background = orangeBrush,
                                             Title = Request.description,
                                             BorderThickness = new Thickness(0),
-                                            Margin = new Thickness(10, 2, 10, 0),
+                                            Margin = new Thickness(2, 2, 2, 0),
                                             TitleForeground = blackBrush,
                                             ModifyName = "添加",
                                             FreshName = "清空",
@@ -1091,7 +923,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                                     if (File.Exists(imagePath))
                                                         image.Source = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
                                                     EntityBag entityBag = new();
-                                                    (entityBag.EntityIcon.Child as Image).Source = image.Source;
+                                                    (entityBag.ItemIcon.Child as Image).Source = image.Source;
                                                     itemPanel.Children.Add(entityBag);
                                                 }
                                                 itemAccordion.Focus();
@@ -1111,7 +943,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             Background = orangeBrush,
                                             Title = Request.description,
                                             BorderThickness = new Thickness(0),
-                                            Margin = new Thickness(10, 2, 10, 0),
+                                            Margin = new Thickness(2, 2, 2, 0),
                                             TitleForeground = blackBrush,
                                             ModifyName = "添加",
                                             FreshName = "清空",
@@ -1210,7 +1042,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             Background = orangeBrush,
                                             Title = Request.description,
                                             BorderThickness = new Thickness(0),
-                                            Margin = new Thickness(10, 2, 10, 0),
+                                            Margin = new Thickness(2, 2, 2, 0),
                                             TitleForeground = blackBrush,
                                             ModifyName = "添加",
                                             FreshName = "清空",
@@ -1295,7 +1127,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             Background = orangeBrush,
                                             Title = Request.description,
                                             BorderThickness = new Thickness(0),
-                                            Margin = new Thickness(10, 2, 10, 0),
+                                            Margin = new Thickness(2, 2, 2, 0),
                                             TitleForeground = blackBrush,
                                             ModifyName = "添加",
                                             FreshName = "清空",
@@ -1333,11 +1165,201 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                                     imagePath = itemImageFilePath + itemID + ".png";
                                                     if (File.Exists(imagePath))
                                                         image.Source = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
-                                                    EntityBag entityBag = new();
-                                                    (entityBag.EntityIcon.Child as Image).Source = image.Source;
-                                                    itemPanel.Children.Add(entityBag);
+                                                    PassengerItems passengerItems = new();
+                                                    (passengerItems.DisplayEntity.Child as Image).Source = image.Source;
+                                                    itemPanel.Children.Add(passengerItems);
                                                 }
                                                 itemAccordion.Focus();
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                case "ArmorDropChances":
+                                    {
+                                        Accordion itemAccordion = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Uid = Request.nbtType,
+                                            Name = Request.key,
+                                            Style = Application.Current.Resources["AccordionStyle"] as Style,
+                                            Background = orangeBrush,
+                                            Title = Request.description,
+                                            BorderThickness = new Thickness(0),
+                                            Margin = new Thickness(2, 2, 2, 0),
+                                            TitleForeground = blackBrush,
+                                            ModifyVisibility = Visibility.Collapsed,
+                                            FreshVisibility = Visibility.Collapsed,
+                                            Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
+                                        };
+                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
+                                        ArmorDropChances armorDropChances = new();
+                                        itemPanel.Children.Add(armorDropChances);
+                                        ScrollViewer scrollViewer = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Content = itemPanel,
+                                            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                                            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                                        };
+                                        itemAccordion.Content = scrollViewer;
+                                        itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
+                                        result.Add(itemAccordion);
+                                        result.Remove(displayText);
+                                        #region 分析是否需要代入导入的数据
+                                        if (ImportMode)
+                                        {
+                                            string key = Request.key;
+                                            if (Give)
+                                                key = "EntityTag." + key;
+                                            if (ExternallyReadEntityData.SelectToken(key) is JArray data)
+                                            {
+                                                armorDropChances.boots.Value = double.Parse(data[0].ToString());
+                                                armorDropChances.legs.Value = double.Parse(data[1].ToString());
+                                                armorDropChances.chest.Value = double.Parse(data[2].ToString());
+                                                armorDropChances.helmet.Value = double.Parse(data[3].ToString());
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                case "ArmorItems":
+                                    {
+                                        Accordion itemAccordion = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Uid = Request.nbtType,
+                                            Name = Request.key,
+                                            Style = Application.Current.Resources["AccordionStyle"] as Style,
+                                            Background = orangeBrush,
+                                            Title = Request.description,
+                                            BorderThickness = new Thickness(0),
+                                            Margin = new Thickness(2, 2, 2, 0),
+                                            TitleForeground = blackBrush,
+                                            ModifyVisibility = Visibility.Collapsed,
+                                            FreshVisibility = Visibility.Collapsed,
+                                            Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
+                                        };
+                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
+                                        ArmorItems armorItems = new();
+                                        itemPanel.Children.Add(armorItems);
+                                        ScrollViewer scrollViewer = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Content = itemPanel,
+                                            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                                            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                                        };
+                                        itemAccordion.Content = scrollViewer;
+                                        itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
+                                        result.Add(itemAccordion);
+                                        result.Remove(displayText);
+                                        #region 分析是否需要代入导入的数据
+                                        if (ImportMode)
+                                        {
+                                            string key = Request.key;
+                                            if (Give)
+                                                key = "EntityTag." + key;
+                                            if (ExternallyReadEntityData.SelectToken(key) is JArray data)
+                                            {
+                                                armorItems.boots.Tag = data[0].ToString();
+                                                armorItems.legs.Tag = data[1].ToString();
+                                                armorItems.chest.Tag = data[2].ToString();
+                                                armorItems.helmet.Tag = data[3].ToString();
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                case "HandDropChances":
+                                    {
+                                        Accordion itemAccordion = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Uid = Request.nbtType,
+                                            Name = Request.key,
+                                            Style = Application.Current.Resources["AccordionStyle"] as Style,
+                                            Background = orangeBrush,
+                                            Title = Request.description,
+                                            BorderThickness = new Thickness(0),
+                                            Margin = new Thickness(2, 2, 2, 0),
+                                            TitleForeground = blackBrush,
+                                            ModifyVisibility = Visibility.Collapsed,
+                                            FreshVisibility = Visibility.Collapsed,
+                                            Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
+                                        };
+                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
+                                        ArmorDropChances armorDropChances = new();
+                                        itemPanel.Children.Add(armorDropChances);
+                                        ScrollViewer scrollViewer = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Content = itemPanel,
+                                            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                                            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                                        };
+                                        itemAccordion.Content = scrollViewer;
+                                        itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
+                                        result.Add(itemAccordion);
+                                        result.Remove(displayText);
+                                        #region 分析是否需要代入导入的数据
+                                        if (ImportMode)
+                                        {
+                                            string key = Request.key;
+                                            if (Give)
+                                                key = "EntityTag." + key;
+                                            if (ExternallyReadEntityData.SelectToken(key) is JArray data)
+                                            {
+                                                armorDropChances.boots.Value = double.Parse(data[0].ToString());
+                                                armorDropChances.legs.Value = double.Parse(data[1].ToString());
+                                                armorDropChances.chest.Value = double.Parse(data[2].ToString());
+                                                armorDropChances.helmet.Value = double.Parse(data[3].ToString());
+                                            }
+                                        }
+                                        #endregion
+                                    }
+                                    break;
+                                case "HandItems":
+                                    {
+                                        Accordion itemAccordion = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Uid = Request.nbtType,
+                                            Name = Request.key,
+                                            Style = Application.Current.Resources["AccordionStyle"] as Style,
+                                            Background = orangeBrush,
+                                            Title = Request.description,
+                                            BorderThickness = new Thickness(0),
+                                            Margin = new Thickness(2, 2, 2, 0),
+                                            TitleForeground = blackBrush,
+                                            ModifyVisibility = Visibility.Collapsed,
+                                            FreshVisibility = Visibility.Collapsed,
+                                            Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
+                                        };
+                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
+                                        HandItems handItems = new();
+                                        itemPanel.Children.Add(handItems);
+                                        ScrollViewer scrollViewer = new()
+                                        {
+                                            MaxHeight = 200,
+                                            Content = itemPanel,
+                                            VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                                            HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                                        };
+                                        itemAccordion.Content = scrollViewer;
+                                        itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
+                                        result.Add(itemAccordion);
+                                        result.Remove(displayText);
+                                        #region 分析是否需要代入导入的数据
+                                        if (ImportMode)
+                                        {
+                                            string key = Request.key;
+                                            if (Give)
+                                                key = "EntityTag." + key;
+                                            if (ExternallyReadEntityData.SelectToken(key) is JArray data)
+                                            {
+                                                handItems.mainhand.Tag = data[0].ToString();
+                                                handItems.offhand.Tag = data[1].ToString();
                                             }
                                         }
                                         #endregion
@@ -1606,7 +1628,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                                     if (File.Exists(imagePath))
                                                         image.Source = new BitmapImage(new Uri(imagePath, UriKind.RelativeOrAbsolute));
                                                     EntityBag entityBag = new();
-                                                    (entityBag.EntityIcon.Child as Image).Source = image.Source;
+                                                    (entityBag.ItemIcon.Child as Image).Source = image.Source;
                                                     itemPanel.Children.Add(entityBag);
                                                 }
                                                 itemAccordion.Focus();
@@ -2069,6 +2091,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     }
                     break;
             }
+
             #region 删除已读取的键
             if (ImportMode)
                 ExternallyReadEntityData.Remove(Request.key);
@@ -2082,6 +2105,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 }
             }
             #endregion
+
             return result;
         }
 

@@ -4,7 +4,14 @@ using cbhk_environment.Generators.ItemGenerator.Components;
 using cbhk_environment.WindowDictionaries;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -90,27 +97,41 @@ namespace cbhk_environment.Generators.ItemGenerator
         }
 
         /// <summary>
-        /// 从剪切板导入
-        /// </summary>
-        private void ImportItemFromClipboardCommand()
-        {
-            
-        }
-
-        /// <summary>
         /// 从文件导入
         /// </summary>
         private void ImportItemFromFileCommand()
         {
+            Microsoft.Win32.OpenFileDialog dialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                RestoreDirectory = true,
+                DefaultExt = ".command",
+                Multiselect = false,
+                Title = "请选择一个Minecraft实体数据文件"
+            };
+            if (dialog.ShowDialog().Value)
+                if (File.Exists(dialog.FileName))
+                {
+                    ObservableCollection<RichTabItems> result = ItemPageList;
+                    ExternalDataImportManager.ImportItemDataHandler(dialog.FileName, ref result);
+                }
+        }
 
+        /// <summary>
+        /// 从剪切板导入
+        /// </summary>
+        private void ImportItemFromClipboardCommand()
+        {
+            ObservableCollection<RichTabItems> result = ItemPageList;
+            ExternalDataImportManager.ImportItemDataHandler(Clipboard.GetText(), ref result, false);
         }
 
         /// <summary>
         /// 保存所有物品
         /// </summary>
-        private void SaveAllCommand()
+        private async void SaveAllCommand()
         {
-
+            await GeneratorAndSaveAllItems();
         }
 
         /// <summary>
@@ -130,9 +151,78 @@ namespace cbhk_environment.Generators.ItemGenerator
         /// <summary>
         /// 全部生成
         /// </summary>
-        private void run_command()
+        private async void run_command()
         {
+            await GeneratorAllItems();
+        }
 
+        private async Task GeneratorAllItems()
+        {
+            StringBuilder Result = new();
+            foreach (var itemPage in ItemPageList)
+            {
+                await itemPage.Dispatcher.InvokeAsync(() =>
+                {
+                    ItemPages itemPages = itemPage.Content as ItemPages;
+                    string result = itemPages.run_command(false) + "\r\n";
+                    Result.Append(result);
+                });
+            }
+            if (ShowGeneratorResult)
+            {
+                GenerateResultDisplayer.Displayer displayer = GenerateResultDisplayer.Displayer.GetContentDisplayer();
+                displayer.GeneratorResult(Result.ToString(), "物品", icon_path);
+                displayer.Show();
+            }
+            else
+                Clipboard.SetText(Result.ToString());
+        }
+
+        private async Task GeneratorAndSaveAllItems()
+        {
+            List<string> Result = new();
+            List<string> FileNameList = new();
+
+            foreach (var itemPage in ItemPageList)
+            {
+                await itemPage.Dispatcher.InvokeAsync(() =>
+                {
+                    ItemPages itemPages = itemPage.Content as ItemPages;
+                    string result = itemPages.run_command(false);
+                    string nbt = "";
+                    if (result.Contains('{'))
+                    {
+                        nbt = result[result.IndexOf('{')..(result.IndexOf('}') + 1)];
+                        //补齐缺失双引号对的key
+                        nbt = Regex.Replace(nbt, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
+                        //清除数值型数据的单位
+                        nbt = Regex.Replace(nbt, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+                    }
+                    JObject resultJSON = JObject.Parse(nbt);
+                    string entityIDPath = "";
+                    if (result.StartsWith("give"))
+                        entityIDPath = "EntityTag.CustomName";
+                    else
+                        if (nbt.Length > 0)
+                        entityIDPath = "CustomName";
+                    JToken name = resultJSON.SelectToken(entityIDPath);
+                    FileNameList.Add(itemPages.SelectedItemIdString + (name != null ? "-" + name.ToString() : ""));
+                    Result.Add(result);
+                });
+            }
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
+            {
+                Description = "请选择要保存的目录",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+            };
+            if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                {
+                    for (int i = 0; i < Result.Count; i++)
+                        File.WriteAllText(folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
+                }
+            }
         }
     }
 }

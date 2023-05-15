@@ -17,8 +17,7 @@ namespace cbhk_environment.ControlsDataContexts
         ComboBox current_box;
         public void ItemSearcher(object sender, KeyEventArgs e)
         {
-            TextBox box = sender as TextBox;
-            if (box == null) return;
+            if (sender is not TextBox box) return;
             if (box.Text.Trim().Length == 0)
             {
                 pop.IsOpen = false;
@@ -49,6 +48,14 @@ namespace cbhk_environment.ControlsDataContexts
             }
         }
 
+        /// <summary>
+        /// 展开搜索视图
+        /// </summary>
+        /// <param name="pop"></param>
+        /// <param name="listSource"></param>
+        /// <param name="element"></param>
+        /// <param name="display_template"></param>
+        /// <returns></returns>
         public Popup CreatePop(Popup pop, IEnumerable<IconComboBoxItem> listSource, FrameworkElement element, DataTemplate display_template)
         {
             Border border = new Border
@@ -56,10 +63,6 @@ namespace cbhk_environment.ControlsDataContexts
                 BorderBrush = new SolidColorBrush(Colors.Black),
                 BorderThickness = new Thickness(0)
             };
-
-            //StackPanel panel1 = new StackPanel();
-            //panel1.Children.Clear();
-            //panel1.Background = new SolidColorBrush(Colors.Black);
 
             ScrollViewer viewer = new ScrollViewer()
             {
@@ -85,8 +88,6 @@ namespace cbhk_environment.ControlsDataContexts
             viewer.Content = listbox;
 
             listbox.MouseDoubleClick += Listbox_MouseDoubleClick;
-
-            //panel1.Children.Add(viewer);
 
             border.Child = viewer;
 
@@ -119,50 +120,4 @@ namespace cbhk_environment.ControlsDataContexts
         public ImageSource ComboBoxItemIcon { get; set; } = new BitmapImage();
         public string ComboBoxItemText { get; set; } = "";
     }
-    //public class IconComboBoxItem:ObservableObject
-    //{
-    //    public string item_text;
-    //    public string ItemText
-    //    {
-    //        get { return item_text; }
-    //        set
-    //        {
-    //            item_text = value;
-    //            OnPropertyChanged();
-    //        }
-    //    }
-
-    //    public string item_image_path;
-    //    public string ItemImagePath
-    //    {
-    //        get { return item_image_path; }
-    //        set
-    //        {
-    //            item_image_path = value;
-    //            OnPropertyChanged();
-    //        }
-    //    }
-
-    //    public BitmapImage item_image;
-    //    public BitmapImage ItemImage
-    //    {
-    //        get { return item_image; }
-    //        set
-    //        {
-    //            item_image = value;
-    //            OnPropertyChanged();
-    //        }
-    //    }
-
-    //    public int item_index;
-    //    public int ItemIndex
-    //    {
-    //        get { return item_index; }
-    //        set
-    //        {
-    //            item_index = value;
-    //            OnPropertyChanged();
-    //        }
-    //    }
-    //}
 }

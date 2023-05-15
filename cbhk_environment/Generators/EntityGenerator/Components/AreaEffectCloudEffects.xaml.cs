@@ -1,4 +1,5 @@
 ﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -121,6 +122,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         {
             (Parent as StackPanel).Children.Remove(this);
             HaveResult = false;
+            this.FindParent<Accordion>().FindChild<IconButtons>().Focus();
         }
 
         /// <summary>

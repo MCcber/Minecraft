@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -9,39 +12,13 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
     /// </summary>
     public partial class EnchantmentItems : UserControl
     {
-        private string enchantmentID;
-        public string EnchantmentId
-        {
-            get
-            {
-                return enchantmentID;
-            }
-            set
-            {
-                enchantmentID = value;
-            }
-        }
-
-        private string enchantmentLevel = "1";
-        public string EnchantmentLevel
-        {
-            get
-            {
-                return enchantmentLevel;
-            }
-            set
-            {
-                enchantmentLevel = value;
-            }
-        }
-
         public string Result
         {
             get
             {
                 string result = "";
-                string id = MainWindow.EnchantmentDataBase.Where(item=>item.Value.Contains(EnchantmentId)).Select(item=>item.Key).First();
-                result = "{id:\"minecraft:"+id+"\",lvl:"+EnchantmentLevel+"s}";
+                string id = MainWindow.EnchantmentDataBase.Where(item=>Regex.Replace(item.Value,@"\d+","") == Id.SelectedValue.ToString()).Select(item=>item.Key).First();
+                result = "{id:\"minecraft:"+id+"\",lvl:"+Level.Value+"s}";
                 return result;
             }
         }
@@ -49,7 +26,6 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         public EnchantmentItems()
         {
             InitializeComponent();
-            DataContext = this;
         }
 
         /// <summary>
@@ -73,6 +49,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             StackPanel parent = Parent as StackPanel;
             //删除自己
             parent.Children.Remove(this);
+            parent.FindParent<Accordion>().FindChild<IconButtons>().Focus();
         }
     }
 }

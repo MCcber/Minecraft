@@ -103,7 +103,7 @@ namespace cbhk_environment.GenerateResultDisplayer
                 firstParagraph.Inlines.Add(new Run(" ------------"));
                 #endregion
                 Paragraph paragraph = new() { TextAlignment = TextAlignment.Left };
-                Run newResult = new() { ToolTip = "点击复制", Text = Regex.Replace(spawn_result,@"\s+"," "), FontFamily = fontFamily,Cursor = Cursors.Hand };
+                Run newResult = new() { ToolTip = "点击复制", Text = spawn_result, FontFamily = fontFamily,Cursor = Cursors.Hand };
                 ToolTipService.SetBetweenShowDelay(newResult, 0);
                 ToolTipService.SetInitialShowDelay(newResult, 0);
                 newResult.MouseEnter += (a, b) =>
@@ -153,11 +153,11 @@ namespace cbhk_environment.GenerateResultDisplayer
                 RichTextBox richTextBox = currentTabItem.Content as RichTextBox;
                 Paragraph firstParagraph = richTextBox.Document.Blocks.ElementAt(1) as Paragraph;
                 #region 用于分割的段落
-                Paragraph splitParagraph = new() { FontSize = 15, TextAlignment = TextAlignment.Left };
+                Paragraph splitParagraph = new() { FontSize = 15, TextAlignment = TextAlignment.Center };
                 Run splitRun = new("--------------------");
                 splitParagraph.Inlines.Add(splitRun);
                 #endregion
-                Paragraph newParagraph = new();
+                Paragraph newParagraph = new() { TextAlignment = TextAlignment.Left };
                 Run newResult = new() { ToolTip = "点击复制", FontFamily = fontFamily,Cursor = Cursors.Hand,Text = spawn_result };
                 newResult.MouseLeftButtonDown += (a, b) => { Clipboard.SetText(spawn_result); };
                 newResult.MouseEnter += (a, b) =>

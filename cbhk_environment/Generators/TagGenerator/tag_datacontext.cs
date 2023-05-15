@@ -4,6 +4,7 @@ using cbhk_environment.WindowDictionaries;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -39,9 +40,13 @@ namespace cbhk_environment.Generators.TagGenerator
         }
         #endregion
 
-        //存储最终生成的列表
-        List<string> BlocksAndItems = new();
+        #region 存储最终生成的列表
+        List<string> Blocks = new();
+        List<string> Items = new();
         List<string> Entities = new();
+        List<string> GameEvent = new();
+        List<string> Biomes = new();
+        #endregion
 
         #region 搜索内容
         private string searchText;
@@ -60,7 +65,7 @@ namespace cbhk_environment.Generators.TagGenerator
         #endregion
 
         #region 所有标签成员
-        private ObservableCollection<TagItemTemplate> tagItems = new ObservableCollection<TagItemTemplate> { };
+        private ObservableCollection<TagItemTemplate> tagItems = new(){ };
         public ObservableCollection<TagItemTemplate> TagItems
         {
             get
@@ -81,7 +86,7 @@ namespace cbhk_environment.Generators.TagGenerator
         //标签容器
         ListView TagZone = null;
 
-        #region 当前选中成员
+        #region 当前选中的值成员
         private TagItemTemplate selectedItem = null;
         public TagItemTemplate SelectedItem
         {
@@ -95,6 +100,23 @@ namespace cbhk_environment.Generators.TagGenerator
             }
         }
         private int LastSelectedIndex = 0;
+        #endregion
+
+        #region 当前选中的类型成员
+        private string selectedTypeItem = null;
+        public string SelectedTypeItem
+        {
+            get
+            {
+                return selectedTypeItem;
+            }
+            set
+            {
+                selectedTypeItem = value;
+                OnPropertyChanged();
+                TypeSelectionChanged();
+            }
+        }
         #endregion
 
         #region 全选或反选
@@ -120,18 +142,36 @@ namespace cbhk_environment.Generators.TagGenerator
                             if (tagItemTemplate.BeChecked.Value)
                             {
                                 if (tagItemTemplate.DataType == "Item")
-                                    BlocksAndItems.Add("\"minecraft:" + itemString + "\",");
+                                    Items.Add("\"minecraft:" + itemString + "\",");
                                 else
                                 if (tagItemTemplate.DataType == "Entity")
                                     Entities.Add("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Blocks")
+                                    Blocks.Add("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Biomes")
+                                    Biomes.Add("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "GameEvent")
+                                    GameEvent.Add("\"minecraft:" + itemString + "\",");
                             }
                             else
                             {
                                 if (tagItemTemplate.DataType == "Item")
-                                    BlocksAndItems.Remove("\"minecraft:" + itemString + "\",");
+                                    Items.Remove("\"minecraft:" + itemString + "\",");
                                 else
                                 if (tagItemTemplate.DataType == "Entity")
                                     Entities.Remove("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Blocks")
+                                    Blocks.Remove("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Biomes")
+                                    Biomes.Remove("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "GameEvent")
+                                    GameEvent.Remove("\"minecraft:" + itemString + "\",");
                             }
                         }
                     }
@@ -159,18 +199,36 @@ namespace cbhk_environment.Generators.TagGenerator
                             if (tagItemTemplate.BeChecked.Value)
                             {
                                 if (tagItemTemplate.DataType == "Item")
-                                    BlocksAndItems.Add("\"minecraft:" + itemString + "\",");
+                                    Items.Add("\"minecraft:" + itemString + "\",");
                                 else
                                 if (tagItemTemplate.DataType == "Entity")
                                     Entities.Add("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Blocks")
+                                    Blocks.Add("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Biomes")
+                                    Biomes.Add("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "GameEvent")
+                                    GameEvent.Add("\"minecraft:" + itemString + "\",");
                             }
                             else
                             {
                                 if (tagItemTemplate.DataType == "Item")
-                                    BlocksAndItems.Remove("\"minecraft:" + itemString + "\",");
+                                    Items.Remove("\"minecraft:" + itemString + "\",");
                                 else
                                 if (tagItemTemplate.DataType == "Entity")
                                     Entities.Remove("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Blocks")
+                                    Blocks.Remove("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "Biomes")
+                                    Biomes.Remove("\"minecraft:" + itemString + "\",");
+                                else
+                                if (tagItemTemplate.DataType == "GameEvent")
+                                    GameEvent.Remove("\"minecraft:" + itemString + "\",");
                             }
                         }
                     }
@@ -181,6 +239,35 @@ namespace cbhk_environment.Generators.TagGenerator
 
         //对象数据源
         CollectionViewSource TagViewSource = null;
+        //标签生成器的过滤类型数据源
+        public static ObservableCollection<string> TypeItemSource = new();
+
+        /// <summary>
+        /// 生物群系配置文件路径
+        /// </summary>
+        private string BiomesFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\Biomes.ini";
+        /// <summary>
+        /// 游戏事件配置文件路径
+        /// </summary>
+        private string GameEventFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\GameEventTags.ini";
+        /// <summary>
+        /// 物品配置文件路径
+        /// </summary>
+        private string ItemFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json";
+        /// <summary>
+        /// 方块配置文件路径
+        /// </summary>
+        private string BlockFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\blocks.json";
+        /// <summary>
+        /// 实体配置文件路径
+        /// </summary>
+        private string EntityFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entities.json";
+        /// <summary>
+        /// 物品、方块、实体的图像目录
+        /// </summary>
+        private string ImageFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\";
+        //标记载入状态
+        bool ItemsLoaded = false;
 
         [GeneratedRegex("[a-zA-z_]+")]
         private static partial Regex GetDisplayText();
@@ -198,23 +285,103 @@ namespace cbhk_environment.Generators.TagGenerator
             {
                 lock(tagItemsLock)
                 {
-                    string uriDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\";
-                    string urlPath = "";
-                    string id = "";
-                    foreach (var item in MainWindow.ItemDataBase)
+                    #region 物品
+                    if (File.Exists(ItemFilePath))
                     {
-                        id = item.Key[..item.Key.IndexOf(":")];
-                        urlPath = uriDirectoryPath + id + ".png";
-                        int matchCount = MainWindow.EntityDataBase.Where(block => block.Key[..block.Key.IndexOf(':')] == id).Count();
-                        string uid = matchCount > 0 ? "Entity" : "Item";
-                        TagItems.Add(new TagItemTemplate()
+                        string items = File.ReadAllText(ItemFilePath);
+                        JArray itemArray = JArray.Parse(items);
+                        foreach (JObject item in itemArray.Cast<JObject>())
                         {
-                            Icon = new Uri(urlPath, UriKind.RelativeOrAbsolute),
-                            DisplayText = item.Key.Replace(":", " "),
-                            DataType = uid,
-                            BeChecked = false
-                        });
+                            string id = item["id"].ToString();
+                            string name = item["name"].ToString();
+                            string iconPath = ImageFolderPath + id + ".png";
+                            Uri uri = new(iconPath,UriKind.Absolute);
+                            TagItems.Add(new TagItemTemplate()
+                            {
+                                Icon = uri,
+                                DisplayText = id + " " + name,
+                                DataType = "Item",
+                                BeChecked = false
+                            });
+                        }
                     }
+                    #endregion
+                    #region 方块
+                    if (File.Exists(BlockFilePath))
+                    {
+                        string blocks = File.ReadAllText(BlockFilePath);
+                        JArray blockArray = JArray.Parse(blocks);
+                        foreach (JObject block in blockArray.Cast<JObject>())
+                        {
+                            string id = block["id"].ToString();
+                            string name = block["name"].ToString();
+                            string iconPath = ImageFolderPath + id + ".png";
+                            Uri uri = new(iconPath, UriKind.Absolute);
+                            TagItems.Add(new TagItemTemplate()
+                            {
+                                Icon = uri,
+                                DisplayText = id + " " + name,
+                                DataType = "Block&Item",
+                                BeChecked = false
+                            });
+                        }
+                    }
+                    #endregion
+                    #region 实体
+                    if (File.Exists(EntityFilePath))
+                    {
+                        string entities = File.ReadAllText(EntityFilePath);
+                        JArray entityArray = JArray.Parse(entities);
+                        foreach (JObject entity in entityArray.Cast<JObject>())
+                        {
+                            string id = entity["id"].ToString();
+                            string name = entity["name"].ToString();
+                            string iconPath = ImageFolderPath + id + "_spawner_egg.png";
+                            if (!File.Exists(ImageFolderPath + id + ".png"))
+                                iconPath = ImageFolderPath + id + ".png";
+                            Uri uri = new(iconPath, UriKind.Absolute);
+                            TagItems.Add(new TagItemTemplate()
+                            {
+                                Icon = uri,
+                                DisplayText = id + " " + name,
+                                DataType = "Entity",
+                                BeChecked = false
+                            });
+                        }
+                    }
+                    #endregion
+                    #region 生物群系
+                    if (File.Exists(BiomesFilePath))
+                    {
+                        string[] biomes = File.ReadAllLines(BiomesFilePath);
+                        foreach (string biome in biomes)
+                        {
+                            TagItems.Add(new TagItemTemplate()
+                            {
+                                DisplayText = biome,
+                                DataType = "Biome",
+                                BeChecked = false
+                            });
+                        }
+                    }
+                    #endregion
+                    #region 游戏事件
+                    if (File.Exists(GameEventFilePath))
+                    {
+                        string[] gameEvents = File.ReadAllLines(GameEventFilePath);
+                        foreach (string gameEvent in gameEvents)
+                        {
+                            TagItems.Add(new TagItemTemplate()
+                            {
+                                DisplayText = gameEvent,
+                                DataType = "GameEvent",
+                                BeChecked = false
+                            });
+                        }
+                    }
+                    #endregion
+                    //载入完毕
+                    ItemsLoaded = true;
                 }
             });
             #endregion
@@ -227,16 +394,22 @@ namespace cbhk_environment.Generators.TagGenerator
         /// <param name="e"></param>
         private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
         {
-            if (SearchText.Trim().Length > 0)
+            #region 执行过滤
+            TagItemTemplate currentItem = e.Item as TagItemTemplate;
+            bool needDisplay = e.Accepted = currentItem.DataType.Contains(SelectedTypeItem) || SelectedTypeItem == "All";
+            #endregion
+            #region 执行搜索
+            if (needDisplay)
             {
-                e.Accepted = false;
-                TagItemTemplate tagItemTemplate = e.Item as TagItemTemplate;
-                string currentItemIDAndName = tagItemTemplate.DisplayText;
-                if (currentItemIDAndName.Contains(SearchText))
+                if (SearchText.Trim().Length > 0)
+                {
+                    string currentItemIDAndName = currentItem.DisplayText;
+                    e.Accepted = currentItemIDAndName.Contains(SearchText);
+                }
+                else
                     e.Accepted = true;
             }
-            else
-                e.Accepted = true;
+            #endregion
         }
 
         /// <summary>
@@ -247,7 +420,18 @@ namespace cbhk_environment.Generators.TagGenerator
         public void TypeFilterLoaded(object sender, RoutedEventArgs e)
         {
             ComboBox comboBoxs = sender as ComboBox;
-            comboBoxs.ItemsSource = MainWindow.TypeItemSource;
+            #region 加载过滤类型
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Tag\\data\\TypeFilter.ini"))
+            {
+                string[] Types = File.ReadAllLines(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Tag\\data\\TypeFilter.ini");
+                for (int i = 0; i < Types.Length; i++)
+                {
+                    TypeItemSource.Add(Types[i]);
+                }
+            }
+            comboBoxs.ItemsSource = TypeItemSource;
+            comboBoxs.SelectedIndex = 0;
+            #endregion
         }
 
         /// <summary>
@@ -255,8 +439,10 @@ namespace cbhk_environment.Generators.TagGenerator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void TypeSelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void TypeSelectionChanged()
         {
+            if(ItemsLoaded)
+            TagViewSource?.View.Refresh();
         }
 
         /// <summary>
@@ -278,8 +464,8 @@ namespace cbhk_environment.Generators.TagGenerator
         /// </summary>
         private void run_command()
         {
-            string result = string.Join("\r\n",BlocksAndItems) + "\r\n" + string.Join("\r\n",Entities).TrimEnd(',');
-            result = "{\r\n  \"replace\": " + Replace.ToString().ToLower() + ",\r\n\"values\": [\r\n" + result.TrimEnd('\n').TrimEnd('\r').TrimEnd(',') + "\r\n]\r\n}";
+            string result = string.Join("\r\n",Items) + "\r\n" + string.Join("\r\n",Blocks) + "\r\n" + string.Join("\r\n",Entities) + "\r\n" + string.Join("\r\n",Biomes) + "\r\n" + string.Join("\r\n",GameEvent);
+            result = "{\r\n  \"replace\": " + Replace.ToString().ToLower() + ",\r\n\"values\": [\r\n" + result.Trim('\n').Trim('\r').TrimEnd(',') + "\r\n]\r\n}";
             SaveFileDialog saveFileDialog = new()
             {
                 AddExtension = true,
@@ -326,7 +512,6 @@ namespace cbhk_environment.Generators.TagGenerator
         public void ListViewLoaded(object sender, RoutedEventArgs e)
         {
             TagZone = sender as ListView;
-
             #region 获取数据源引用，订阅过滤事件
             Window parent = Window.GetWindow(TagZone);
             TagViewSource = parent.FindResource("TagItemSource") as CollectionViewSource;
@@ -348,25 +533,46 @@ namespace cbhk_environment.Generators.TagGenerator
                 string itemString;
                 if (displayText.Trim().Length > 0)
                 {
-                    itemString = displayText.Trim()[..displayText.Trim().IndexOf(' ')];
+                    if (displayText.Contains(' '))
+                        itemString = displayText.Trim()[..displayText.Trim().IndexOf(' ')];
+                    else
+                        itemString = displayText.Trim();
                     if (GetDisplayText().IsMatch(displayText.Trim()))
                     {
                         iconCheckBoxs.IsChecked = !iconCheckBoxs.IsChecked.Value;
                         if (iconCheckBoxs.IsChecked.Value)
                         {
                             if (CurrentItem.DataType == "Item")
-                                BlocksAndItems.Add("\"minecraft:" + itemString + "\",");
+                                Items.Add("\"minecraft:" + itemString + "\",");
                             else
                             if (CurrentItem.DataType == "Entity")
                                 Entities.Add("\"minecraft:" + itemString + "\",");
+                            else
+                            if (CurrentItem.DataType == "Block")
+                                Blocks.Add("\"minecraft:" + itemString + "\",");
+                            else
+                            if (CurrentItem.DataType == "Biome")
+                                Biomes.Add("\"minecraft:" + itemString + "\",");
+                            else
+                            if (CurrentItem.DataType == "GameEvent")
+                                GameEvent.Add("\"minecraft:" + itemString + "\",");
                         }
                         else
                         {
                             if (CurrentItem.DataType == "Item")
-                                BlocksAndItems.Remove("\"minecraft:" + itemString + "\",");
+                                Items.Remove("\"minecraft:" + itemString + "\",");
                             else
                             if (CurrentItem.DataType == "Entity")
                                 Entities.Remove("\"minecraft:" + itemString + "\",");
+                            else
+                            if (CurrentItem.DataType == "Block")
+                                Blocks.Remove("\"minecraft:" + itemString + "\",");
+                            else
+                            if (CurrentItem.DataType == "Biome")
+                                Biomes.Remove("\"minecraft:" + itemString + "\",");
+                            else
+                            if (CurrentItem.DataType == "GameEvent")
+                                GameEvent.Remove("\"minecraft:" + itemString + "\",");
                         }
                     }
                 }

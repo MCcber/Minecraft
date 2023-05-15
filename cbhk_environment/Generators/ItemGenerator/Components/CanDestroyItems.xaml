@@ -14,31 +14,34 @@
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
     </UserControl.Resources>
 
-    <DockPanel Height="30">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
         <TextBlock
-            Margin="5,0"
+            Grid.Column="0"
             VerticalAlignment="Center"
             Foreground="White"
             Text="方块ID" />
         <ComboBox
-            Width="200"
-            HorizontalAlignment="Left"
+            Grid.Column="1"
+            Height="25"
             Background="Transparent"
             Loaded="CanDestroyItemLoaded"
             SelectedIndex="0"
             SelectedItem="{Binding Block, Mode=TwoWay}"
             Style="{DynamicResource IconComboBoxStyle}" />
         <CustomControls:IconTextButtons
+            Grid.Column="2"
             Width="25"
-            Margin="10,0"
-            Padding="0,-8,0,0"
-            HorizontalAlignment="Left"
-            Background="{StaticResource ButtonNormal}"
+            Height="25"
+            Background="{StaticResource CloseButtonNormal}"
             Click="IconTextButtons_Click"
-            Content="×"
             FontSize="30"
             Foreground="Black"
-            PressedBackground="{StaticResource ButtonPressed}"
+            PressedBackground="{StaticResource CloseButtonHightLight}"
             Style="{DynamicResource IconTextButton}" />
-    </DockPanel>
+    </Grid>
 </UserControl>

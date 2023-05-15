@@ -91,22 +91,28 @@
                 HorizontalAlignment="Left"
                 VerticalContentAlignment="Center"
                 Foreground="White"
-                SelectedIndex="0"
-                SelectedItem="{Binding SelectItemIdSource, Mode=TwoWay}"
-                Style="{DynamicResource IconComboBoxStyle}">
-                <behavior:Interaction.Triggers>
-                    <behavior:EventTrigger EventName="Loaded">
-                        <behavior:CallMethodAction MethodName="ItemIdsLoaded" TargetObject="{Binding}" />
-                    </behavior:EventTrigger>
-                </behavior:Interaction.Triggers>
-            </ComboBox>
+                ItemsSource="{Binding ItemIds}"
+                SelectedItem="{Binding SelectedItemId, Mode=TwoWay}"
+                Style="{DynamicResource IconComboBoxStyle}" />
+            <CustomControls:TextToggleButtons
+                x:Name="SummonMode"
+                Padding="5,0"
+                Content="召唤"
+                IsChecked="{Binding Summon, Mode=TwoWay}"
+                Style="{DynamicResource TextToggleButtonsStyle}" />
+            <CustomControls:TextToggleButtons
+                x:Name="GiveMode"
+                Padding="5,0"
+                Content="给予"
+                IsChecked="{Binding Give, Mode=TwoWay}"
+                Style="{DynamicResource TextToggleButtonsStyle}" />
             <CustomControls:IconTextButtons
                 Padding="5,0"
                 Background="{StaticResource ButtonNormal}"
-                BorderThickness="0"
                 Command="{Binding ClearUnnecessaryData}"
                 Content="冻结数据"
-                PressedBackground="{StaticResource ButtonPressed}" />
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
             <CustomControls:RadiusToggleButtons
                 VerticalContentAlignment="Center"
                 Foreground="White"

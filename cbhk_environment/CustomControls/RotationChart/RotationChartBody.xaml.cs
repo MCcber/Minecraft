@@ -17,19 +17,19 @@ namespace cbhk_environment.CustomControls.RotationChart
     /// </summary>
     public partial class RotationChartBody : UserControl
     {
-        public DispatcherTimer SwitchTimer = new DispatcherTimer()
+        public DispatcherTimer SwitchTimer = new()
         {
             Interval = new TimeSpan(0, 0, 0, 0, 1000),
             IsEnabled = false
         };
 
-        public DispatcherTimer StopTimer = new DispatcherTimer()
+        public DispatcherTimer StopTimer = new()
         {
             Interval = new TimeSpan(0, 0, 0, 0, 1000),
             IsEnabled = false
         };
 
-        DoubleAnimation doubleAnimation = new DoubleAnimation()
+        DoubleAnimation doubleAnimation = new()
         {
             From = 0,
             Duration = TimeSpan.FromSeconds(1),
@@ -37,9 +37,9 @@ namespace cbhk_environment.CustomControls.RotationChart
             FillBehavior = FillBehavior.Stop
         };
 
-        Storyboard storyboard = new Storyboard();
-        SolidColorBrush redBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000"));
-        SolidColorBrush whiteBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+        Storyboard storyboard = new();
+        SolidColorBrush redBrush = new((Color)ColorConverter.ConvertFromString("#FF0000"));
+        SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
 
         private int selectedIndex = 0;
         public int SelectedIndex

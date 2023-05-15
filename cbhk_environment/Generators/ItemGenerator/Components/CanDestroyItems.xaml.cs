@@ -1,4 +1,6 @@
 ﻿using cbhk_environment.ControlsDataContexts;
+using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,6 +49,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             StackPanel parent = Parent as StackPanel;
             //删除自己
             parent.Children.Remove(this);
+            parent.FindParent<Accordion>().FindChild<IconButtons>().Focus();
         }
 
         /// <summary>

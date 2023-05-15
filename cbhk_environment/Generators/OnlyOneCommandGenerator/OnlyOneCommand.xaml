@@ -110,6 +110,7 @@
                 Width="200"
                 HorizontalAlignment="Left"
                 VerticalContentAlignment="Center"
+                BorderBrush="Black"
                 FontSize="15"
                 Foreground="White"
                 Text="{Binding CurrentItem.Header, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

@@ -1,7 +1,6 @@
 ﻿using cbhk_environment.CustomControls;
-using cbhk_environment.CustomControls.ColorPickers;
-using cbhk_environment.GeneralTools.ScrollViewerHelper;
-using cbhk_environment.GenerateResultDisplayer;
+using cbhk_environment.GeneralTools;
+using cbhk_environment.Generators.FireworkRocketGenerator.Components;
 using cbhk_environment.WindowDictionaries;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,450 +8,154 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 
 namespace cbhk_environment.Generators.FireworkRocketGenerator
 {
     public class firework_rocket_datacontext: ObservableObject
     {
-
-        #region 返回和运行指令
-        public RelayCommand<CommonWindow> ReturnCommand { get; set; }
-        public RelayCommand RunCommand { get; set; }
+        #region 返回和运行等指令
+        public RelayCommand<CommonWindow> Return { get; set; }
+        public RelayCommand Run { get; set; }
+        public RelayCommand SaveAll { get; set; }
         #endregion
 
-        #region 版本
-        private string selectedVersion = "";
-        public string SelectedVersion
+        #region 添加、清空、导入烟花等指令
+        public RelayCommand AddFireworkRocket { get; set; }
+        public RelayCommand ClearFireworkRocket { get; set; }
+        public RelayCommand ImportFireworkRocketFromClipboard { get; set; }
+        public RelayCommand ImportFireworkRocketFromFile { get; set; }
+        #endregion
+
+        #region 是否展示生成结果
+        private bool showGeneratorResult = false;
+        public bool ShowGeneratorResult
         {
             get
             {
-                return selectedVersion;
+                return showGeneratorResult;
             }
             set
             {
-                selectedVersion = value;
-                OnPropertyChanged();
-            }
-        }
-
-        //数据源
-        private ObservableCollection<string> VersionSource = new ObservableCollection<string> { "1.12-","1.13+" };
-        #endregion
-
-        #region 生成行为
-        bool behavior_lock = true;
-        private bool summon = true;
-        public bool Summon
-        {
-            get { return summon; }
-            set
-            {
-                summon = value;
-                if (behavior_lock)
-                {
-                    behavior_lock = false;
-                    Give = !Summon;
-                    behavior_lock = true;
-                }
-                OnPropertyChanged();
-            }
-        }
-        private bool give = false;
-        public bool Give
-        {
-            get { return give; }
-            set
-            {
-                give = value;
-                if (behavior_lock)
-                {
-                    behavior_lock = false;
-                    Summon = !give;
-                    behavior_lock = true;
-                }
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 轨迹
-        private string FireworkTrajectoryString
-        {
-            get
-            {
-                string result = (Flicker? "Flicker:1b," : "") + (Trail? "Trail:1b," : "");
-                return result;
-            }
-        }
-        #endregion
-
-        #region 闪烁
-        public bool Flicker { get; set; } = false;
-        #endregion
-
-        #region 拖尾
-        public bool Trail { get; set; } = false;
-        #endregion
-
-        #region 时长
-        private double duration = 1;
-        public double Duration
-        {
-            get { return duration; }
-            set
-            {
-                duration = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string FireworkDurationString
-        {
-            get
-            {
-                string result;
-                result = "Flight:"+ Duration + ",";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 已飞行刻数
-        private double life = 0;
-        public double Life
-        {
-            get
-            {
-                return life;
-            }
-            set
-            {
-                life = value;
-                OnPropertyChanged();
-            }
-        }
-        private string LifeString
-        {
-            get
-            {
-                string result = Life > 0? "Life:" +Life+",":"";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 发射时长
-        private double lifeTime = 20;
-        public double LifeTime
-        {
-            get
-            {
-                return lifeTime;
-            }
-            set
-            {
-                lifeTime = value;
-                OnPropertyChanged();
-            }
-        }
-        private string LifeTimeString
-        {
-            get
-            {
-                string result = LifeTime > 0 ? "LifeTime:" + LifeTime + "," : "";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 主颜色
-        private string MainColorsString
-        {
-            get
-            {
-                string result = "Colors:[I;";
-                foreach (Border item in MainColors)
-                {
-                    result += Convert.ToUInt64(item.Background.ToString().Substring(2),16) + ",";
-                }
-                result = result.Trim() != "Colors:[I;" ? result.TrimEnd(',') + "]," : "";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 备选颜色
-        private string FadeColorsString
-        {
-            get
-            {
-                string result = "FadeColors:[I;";
-                foreach (Border item in FadeColors)
-                {
-                    result += Convert.ToUInt64(item.Background.ToString().Substring(2),16) + ",";
-                }
-                result = result.Trim() != "FadeColors:[I;" ? result.TrimEnd(',') + "]," : "";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 按角度飞出
-        //按角度飞出
-        public bool FlyAngle { get; set; }
-        private string FlyAngleString
-        {
-            get
-            {
-                string result;
-                result = FlyAngle ? "ShotAtAngle:true," :"";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 清除淡入/淡出
-        public RelayCommand<FrameworkElement> ClearMainColor { get; set; }
-        public RelayCommand<FrameworkElement> ClearFadeColor { get; set; }
-        #endregion
-
-        #region 已选择的形状
-        private int selectedShape = 0;
-        public int SelectedShape
-        {
-            get
-            {
-                return selectedShape;
-            }
-            set
-            {
-                selectedShape = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 点/连续(模式切换)
-        private bool selectedModeLock = true;
-        private bool pointMode = true;
-        public bool PointMode
-        {
-            get
-            {
-                return pointMode;
-            }
-            set
-            {
-                pointMode = value;
-                if(selectedModeLock)
-                {
-                    selectedModeLock = false;
-                    ContinuousMode = !pointMode;
-                    selectedModeLock = true;
-                }
-                OnPropertyChanged();
-            }
-        }
-
-        private bool continuousMode = false;
-        public bool ContinuousMode
-        {
-            get
-            {
-                return continuousMode;
-            }
-            set
-            {
-                continuousMode = value;
-                if (selectedModeLock)
-                {
-                    selectedModeLock = false;
-                    PointMode = !continuousMode;
-                    selectedModeLock = true;
-                }
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 已选择颜色
-        private SolidColorBrush selectedColor = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0000"));
-        public SolidColorBrush SelectedColor
-        {
-            get
-            {
-                return selectedColor;
-            }
-            set
-            {
-                selectedColor = value;
-                if(ContinuousMode)
-                {
-                    Border border = new Border()
-                    {
-                        Width = 25,
-                        Background = selectedColor
-                    };
-                    border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
-                    if (AddInMain)
-                    {
-                        border.Uid = "Main";
-                        MainColors.Add(border);
-                    }
-                    else
-                    {
-                        border.Uid = "Fade";
-                        FadeColors.Add(border);
-                    }
-                }
-                OnPropertyChanged();
+                showGeneratorResult = value;
             }
         }
         #endregion
 
         /// <summary>
-        /// 形状数据源
+        /// 本生成器的图标路径
         /// </summary>
-        ObservableCollection<string> shapeList { get; set; } = new ObservableCollection<string> { };
-
-        #region 最终形状数据
-        private string FireworkShapeString
-        {
-            get
-            {
-                string result = "Type:"+SelectedShape + ",";
-                return result;
-            }
-        }
-        #endregion
-
-        #region 主颜色库
-        private ObservableCollection<Border> mainColors = new ObservableCollection<Border> { };
-        public ObservableCollection<Border> MainColors
-        {
-            get
-            {
-                return mainColors;
-            }
-            set
-            {
-                mainColors = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 备选颜色库
-        private ObservableCollection<Border> fadeColors = new ObservableCollection<Border> { };
-        public ObservableCollection<Border> FadeColors
-        {
-            get
-            {
-                return fadeColors;
-            }
-            set
-            {
-                fadeColors = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        //原版颜色映射库
-        private Dictionary<string, string> OriginColorDictionary = new Dictionary<string, string> { };
-
-        /// <summary>
-        /// 原版颜色库面板
-        /// </summary>
-        UniformGrid structureColorGrid = null;
-        //拾色器
-        ColorPickers colorpicker = null;
-
-        //本生成器的图标路径
         string icon_path = "pack://application:,,,/cbhk_environment;component/resources/common/images/spawnerIcons/IconFireworks.png";
-        //原版颜色库路径
-        string colorStoragePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\images";
-        //形状路径
-        string shapePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\data\\shapes.ini";
-        //颜色映射表路径
-        string colorTablePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\data\\structureColorDictionary.ini";
 
-        #region 加入淡入或淡出
-        private bool addInMain = true;
-        public bool AddInMain
-        {
-            get
-            {
-                return addInMain;
-            }
-            set
-            {
-                addInMain = value;
-                OnPropertyChanged();
-            }
-        }
-        private bool addInFade = false;
-        public bool AddInFade
-        {
-            get
-            {
-                return addInFade;
-            }
-            set
-            {
-                addInFade = value;
-                OnPropertyChanged();
-            }
-        }
+        #region 正方体侧面、上面和下面的纹理，烟花火箭纹理
+        public BitmapImage GrassBlockSide { get; set; }
+        public BitmapImage GrassBlockTop { get; set; }
+        public BitmapImage GrassBlockBottom { get; set; }
+        public BitmapImage FireworkImage { get; set; }
         #endregion
 
-        #region 淡入淡出滚动视图引用
-        ScrollViewer mainScrollViewer = null;
-        ScrollViewer fadeScrollViewer = null;
-        #endregion
+        /// <summary>
+        /// 烟花火箭标签页
+        /// </summary>
+        public ObservableCollection<RichTabItems> FireworkRocketPageList { get; set; } = new() { new RichTabItems() { Style = Application.Current.Resources["RichTabItemStyle"] as Style, Header = "烟花", IsContentSaved = true } };
 
-        #region 全选和反选原版颜色库
-        public RelayCommand<FrameworkElement> SelectedAllStructureColor { get; set; }
-        public RelayCommand<FrameworkElement> ReverseAllStructureColor { get; set; }
-        #endregion
-
-        #region 滚轮缩放倍率
-        double viewScale = 0;
-        double ViewScale
-        {
-            get
-            {
-                return viewScale;
-            }
-            set
-            {
-                viewScale = value;
-                if (viewScale < 0.1)
-                    viewScale = 0.1;
-                if(viewScale > 2)
-                    viewScale = 2;
-            }
-        }
-        #endregion
+        /// <summary>
+        /// 三维视图
+        /// </summary>
+        public Viewport3D viewport3D = null;
 
         public firework_rocket_datacontext()
         {
             #region 连接指令
-            ReturnCommand = new RelayCommand<CommonWindow>(return_command);
-            RunCommand = new RelayCommand(run_command);
-            SelectedAllStructureColor = new RelayCommand<FrameworkElement>(SelectedAllStructureColorCommand);
-            ReverseAllStructureColor = new RelayCommand<FrameworkElement>(ReverseAllStructureColorCommand);
-            ClearMainColor = new RelayCommand<FrameworkElement>(ClearMainColorCommand);
-            ClearFadeColor = new RelayCommand<FrameworkElement>(ClearFadeColorCommand);
+            Return = new RelayCommand<CommonWindow>(return_command);
+            Run = new RelayCommand(run_command);
+            SaveAll = new RelayCommand(SaveAllCommand);
+            AddFireworkRocket = new RelayCommand(AddFireworkRocketCommand);
+            ClearFireworkRocket = new RelayCommand(ClearFireworkRocketCommand);
+            ImportFireworkRocketFromFile = new RelayCommand(ImportFireworkRocketFromFileCommand);
+            ImportFireworkRocketFromClipboard = new RelayCommand(ImportFireworkRocketFromClipboardCommand);
+            #endregion
+
+            #region 初始化成员
+            FireworkRocketPages fireworkRocketPages = new() { FontWeight = FontWeights.Normal };
+            FireworkRocketPageList[0].Content = fireworkRocketPages;
+            GrassBlockSide = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\images\\grass_block_side.png", UriKind.Absolute));
+            GrassBlockTop = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\images\\grass_block_top.png", UriKind.Absolute));
+            GrassBlockBottom = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\images\\grass_block_bottom.png", UriKind.Absolute));
+            FireworkImage = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\FireworkRocket\\images\\firework_rocket.png", UriKind.Absolute));
             #endregion
         }
 
+        /// <summary>
+        /// 添加烟花火箭
+        /// </summary>
+        private void AddFireworkRocketCommand()
+        {
+            FireworkRocketPages fireworkRocketPages = new() { FontWeight = FontWeights.Normal };
+            RichTabItems richTabItems = new()
+            {
+                Style = Application.Current.Resources["RichTabItemStyle"] as Style,
+                Header = "烟花",
+                IsContentSaved = true,
+                Content = fireworkRocketPages
+            };
+            FireworkRocketPageList.Add(richTabItems);
+
+            if (FireworkRocketPageList.Count == 1)
+            {
+                TabControl tabControl = richTabItems.FindParent<TabControl>();
+                tabControl.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// 清空烟花火箭
+        /// </summary>
+        private void ClearFireworkRocketCommand()
+        {
+            FireworkRocketPageList.Clear();
+        }
+
+        /// <summary>
+        /// 从文件导入烟花火箭
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        private void ImportFireworkRocketFromFileCommand()
+        {
+            Microsoft.Win32.OpenFileDialog dialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                RestoreDirectory = true,
+                DefaultExt = ".command",
+                Multiselect = false,
+                Title = "请选择一个Minecraft烟花火箭数据文件"
+            };
+            if (dialog.ShowDialog().Value)
+                if (File.Exists(dialog.FileName))
+                {
+                    ObservableCollection<RichTabItems> result = FireworkRocketPageList;
+                    ExternalDataImportManager.ImportFireworkDataHandler(dialog.FileName, ref result);
+                }
+        }
+
+        /// <summary>
+        /// 从剪切板导入烟花火箭
+        /// </summary>
+        private void ImportFireworkRocketFromClipboardCommand()
+        {
+            ObservableCollection<RichTabItems> result = FireworkRocketPageList;
+            ExternalDataImportManager.ImportFireworkDataHandler(Clipboard.GetText(), ref result, false);
+        }
+
+        /// <summary>
+        /// 返回主页
+        /// </summary>
+        /// <param name="win"></param>
         private void return_command(CommonWindow win)
         {
             FireworkRocket.cbhk.Topmost = true;
@@ -462,319 +165,157 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator
             FireworkRocket.cbhk.ShowInTaskbar = true;
             win.Close();
         }
-        private void run_command()
+
+        /// <summary>
+        /// 执行生成
+        /// </summary>
+        private async void run_command()
         {
-            string result = "";
-            if (Give)
+            await GeneratorAllFireworks();
+        }
+
+        /// <summary>
+        /// 生成所有烟花火箭
+        /// </summary>
+        /// <returns></returns>
+        private async Task GeneratorAllFireworks()
+        {
+            StringBuilder Result = new();
+            foreach (var itemPage in FireworkRocketPageList)
             {
-                result = "{Explosions:[{";
-                result += FireworkShapeString + FireworkTrajectoryString + MainColorsString + FadeColorsString;
-                result = result.TrimEnd(',') + "}],";
-                result += FireworkDurationString.TrimEnd(',') + "}";
-                result = "give @p firework_rocket{Fireworks:" + result + "}";
+                await itemPage.Dispatcher.InvokeAsync(() =>
+                {
+                    FireworkRocketPagesDataContext context = (itemPage.Content as FireworkRocketPages).DataContext as FireworkRocketPagesDataContext;
+                    string result = context.run_command(false) + "\r\n";
+                    Result.Append(result);
+                });
+            }
+            if (ShowGeneratorResult)
+            {
+                GenerateResultDisplayer.Displayer displayer = GenerateResultDisplayer.Displayer.GetContentDisplayer();
+                displayer.GeneratorResult(Result.ToString(), "烟花", icon_path);
+                displayer.Show();
             }
             else
-            if (Summon)
-            {
-                result = FireworkShapeString + FireworkTrajectoryString + MainColorsString + FadeColorsString;
-                result = "FireworksItem:{id:firework_rocket,Count:1b,tag:{Fireworks:{Explosions:[{" + result.TrimEnd(',') + "}],";
-                result = "summon firework_rocket ~ ~ ~ {" + LifeTimeString + LifeString + FlyAngleString + result + FireworkDurationString.TrimEnd(',') + "}}}}";
-            }
-            Displayer displayer = Displayer.GetContentDisplayer();
-            displayer.GeneratorResult(result , "烟花火箭", icon_path);
-            displayer.Show();
+                Clipboard.SetText(Result.ToString());
         }
 
         /// <summary>
-        /// 滚轮缩放色谱视图
+        /// 保存所有烟花火箭
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void Canvas_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private async void SaveAllCommand()
         {
-            if(Keyboard.IsKeyDown(Key.LeftCtrl))
+            await GeneratorAndSaveAllFireworks();
+        }
+
+        private async Task GeneratorAndSaveAllFireworks()
+        {
+            List<string> Result = new();
+            List<string> FileNameList = new();
+
+            foreach (var itemPage in FireworkRocketPageList)
             {
-                if (e.Delta < 0)
-                    ViewScale -= 0.1;
-                else
-                    ViewScale += 0.1;
-                ScaleTransform scaleTransform = new ScaleTransform
+                await itemPage.Dispatcher.InvokeAsync(() =>
                 {
-                    ScaleX = ViewScale
-                };
-                Canvas canvas = sender as Canvas;
-                ScrollViewer scrollViewer = canvas.Children[0] as ScrollViewer;
-                scrollViewer.RenderTransform = scaleTransform;
+                    FireworkRocketPagesDataContext context = (itemPage.Content as FireworkRocketPages).DataContext as FireworkRocketPagesDataContext;
+                    string result = context.run_command(false);
+                    //string nbt = "";
+                    //if (result.Contains('{'))
+                    //{
+                    //    nbt = result[result.IndexOf('{')..(result.IndexOf('}') + 1)];
+                    //    //补齐缺失双引号对的key
+                    //    nbt = Regex.Replace(nbt, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
+                    //    //清除数值型数据的单位
+                    //    nbt = Regex.Replace(nbt, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+                    //}
+                    FileNameList.Add(context.Summon?"FireworkRocket":"FireworkStar");
+                    Result.Add(result);
+                });
             }
-        }
-
-        /// <summary>
-        /// 左击并抬起拾色器
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void ColorPickers_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            if(colorpicker.pop.IsOpen && PointMode)
+            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
             {
-                if (AddInMain)
-                {
-                    Border border = new()
-                    {
-                        Width = 25,
-                        Background = colorpicker.SelectColor
-                    };
-                    border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
-                    border.Uid = "Main";
-                    MainColors.Add(border);
-                }
-                if(AddInFade)
-                {
-                    Border border = new()
-                    {
-                        Width = 25,
-                        Background = colorpicker.SelectColor
-                    };
-                    border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
-                    border.Uid = "Fade";
-                    FadeColors.Add(border);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 清空淡出颜色
-        /// </summary>
-        private void ClearFadeColorCommand(FrameworkElement obj)
-        {
-            FadeColors.Clear();
-        }
-
-        /// <summary>
-        /// 清空淡入颜色
-        /// </summary>
-        private void ClearMainColorCommand(FrameworkElement obj)
-        {
-            MainColors.Clear();
-        }
-
-        /// <summary>
-        /// 反选所有结构色
-        /// </summary>
-        private void ReverseAllStructureColorCommand(FrameworkElement obj)
-        {
-            foreach (var item in structureColorGrid.Children)
-            {
-                IconCheckBoxs iconCheckBoxs = item as IconCheckBoxs;
-                iconCheckBoxs.IsChecked = !iconCheckBoxs.IsChecked.Value;
-            }
-        }
-
-        /// <summary>
-        /// 全选所有结构色
-        /// </summary>
-        private void SelectedAllStructureColorCommand(FrameworkElement obj)
-        {
-            foreach (var item in structureColorGrid.Children)
-            {
-                IconCheckBoxs iconCheckBoxs = item as IconCheckBoxs;
-                iconCheckBoxs.IsChecked = true;
-            }
-        }
-
-        /// <summary>
-        /// 载入原版颜色库
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void StructureColorList_Loaded(object sender, RoutedEventArgs e)
-        {
-            ScrollViewer scrollViewer = sender as ScrollViewer;
-            structureColorGrid = scrollViewer.Content as UniformGrid;
-
-            string[] colorArray = Directory.GetFiles(colorStoragePath);
-            string[] colorTable = File.ReadAllLines(colorTablePath);
-            foreach (var item in colorArray)
-            {
-                if(item.Contains("dye"))
-                {
-                    string colorName = Path.GetFileNameWithoutExtension(item);
-                    colorName = colorName.Substring(0, colorName.LastIndexOf('_'));
-                    System.Windows.Media.Imaging.BitmapImage bitmapImage = new System.Windows.Media.Imaging.BitmapImage(new Uri(item,UriKind.Absolute));
-                    IconCheckBoxs iconCheckBoxs = new IconCheckBoxs
-                    {
-                        ContentImage = bitmapImage,
-                        HeaderHeight = 25,
-                        HeaderWidth = 25,
-                        SnapsToDevicePixels = true,
-                        UseLayoutRounding = true,
-                        ToolTip = colorName,
-                        Tag = colorName,
-                        Style = Application.Current.Resources["IconCheckBox"] as Style
-                    };
-                    iconCheckBoxs.Checked += StructureColorChecked;
-                    RenderOptions.SetBitmapScalingMode(iconCheckBoxs,BitmapScalingMode.NearestNeighbor);
-                    RenderOptions.SetClearTypeHint(iconCheckBoxs,ClearTypeHint.Enabled);
-                    ToolTipService.SetShowDuration(iconCheckBoxs,1000);
-                    ToolTipService.SetInitialShowDelay(iconCheckBoxs,0);
-                    structureColorGrid.Children.Add(iconCheckBoxs);
-                }
-            }
-
-            string colorID = "";
-            string colorString = "";
-            foreach (var item in colorTable)
-            {
-                colorID = item.Split(':')[0];
-                colorString = item.Split(':')[1];
-                OriginColorDictionary.Add(colorID,colorString);
-            }
-        }
-
-        /// <summary>
-        /// 已选择结构色
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StructureColorChecked(object sender, RoutedEventArgs e)
-        {
-            IconCheckBoxs iconCheckBoxs = sender as IconCheckBoxs;
-            string searchTarget = iconCheckBoxs.Tag.ToString();
-            string colorValue = OriginColorDictionary.Where(item => item.Value == searchTarget).Select(item => item.Key).First();
-            Border border = new Border()
-            {
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorValue)),
-                Width = 25,
+                Description = "请选择要保存的目录",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             };
-            border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
-            if (AddInMain)
+            if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                border.Uid = "Main";
-                MainColors.Add(border);
+                if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                    for (int i = 0; i < Result.Count; i++)
+                        File.WriteAllText(folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
+            }
+        }
+
+        /// <summary>
+        /// 生成一个球体表面坐标
+        /// </summary>
+        /// <param name="random"></param>
+        /// <returns></returns>
+        public Vector3D GetSphereRandom(float[] random, double radius)
+        {
+            double phi = 2 * Math.PI * random[0];
+            double cosTheta = 1 - 2 * random[1];
+            double sinTheta = Math.Sqrt(1 - cosTheta * cosTheta);
+            return new Vector3D(radius * sinTheta * Math.Cos(phi), radius * sinTheta * Math.Sin(phi), radius * cosTheta);
+        }
+
+        /// <summary>
+        /// 生成苦力怕面部样式的表面坐标
+        /// </summary>
+        /// <param name="numPoints"></param>
+        /// <param name="radius"></param>
+        /// <returns></returns>
+        public Vector3D GetCreeperFaceRandom(int numPoints, double radius)
+        {
+            Vector3D result = new();
+            GaussianRandom random = new();
+
+            double x = random.NextDouble() * radius;
+            double y = random.NextDouble() * radius;
+            double z = random.NextDouble() * radius;
+
+            if (Math.Abs(x) < radius / 2 && Math.Abs(y) < radius / 2 && Math.Abs(z) < radius / 2)
+                result = new Vector3D(x, y, z);
+
+            return result;
+        }
+
+        /// <summary>
+        /// 获取Viewport3D引用
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void GetViewport3DLoaded(object sender,RoutedEventArgs e)
+        {
+            viewport3D = sender as Viewport3D;
+        }
+    }
+
+    public class GaussianRandom : Random
+    {
+        private double nextGaussian;
+        private bool hasNextGaussian = false;
+
+        public override double NextDouble()
+        {
+            if (hasNextGaussian)
+            {
+                hasNextGaussian = false;
+                return nextGaussian;
             }
             else
             {
-                border.Uid = "Fade";
-                FadeColors.Add(border);
-            }
-
-        }
-
-        /// <summary>
-        /// 淡入颜色视图滚动到最右侧
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void MainColorItemsControl_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            mainScrollViewer.ScrollToHorizontalOffset(mainScrollViewer.ExtentWidth);
-        }
-
-        /// <summary>
-        /// 淡出颜色视图滚动到最右侧
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void FadeColorItemsControl_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            fadeScrollViewer.ScrollToHorizontalOffset(fadeScrollViewer.ExtentWidth);
-        }
-
-        /// <summary>
-        /// 右击删除指定颜色
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteColorMouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            Border border = sender as Border;
-            if (border.Uid == "Main")
-                MainColors.Remove(border);
-            else
-                FadeColors.Remove(border);
-        }
-
-        /// <summary>
-        /// 载入淡入颜色滚动视图引用
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void MainColorGridScrollViewerLoaded(object sender, RoutedEventArgs e)
-        {
-            mainScrollViewer = sender as ScrollViewer;
-        }
-
-        /// <summary>
-        /// 载入淡出颜色滚动视图引用
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void FadeColorGridScrollViewerLoaded(object sender, RoutedEventArgs e)
-        {
-            fadeScrollViewer = sender as ScrollViewer;
-        }
-
-        /// <summary>
-        /// 为拾色器的矩形选择面板订阅左击抬起事件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void ColorPickerLoaded(object sender,RoutedEventArgs e)
-        {
-            colorpicker = sender as ColorPickers;
-            colorpicker.rectColorGrid.PreviewMouseLeftButtonUp += ColorPickers_PreviewMouseLeftButtonUp;
-        }
-
-        /// <summary>
-        /// 载入版本
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void VersionLoaded(object sender,RoutedEventArgs e)
-        {
-            ComboBox comboBox = sender as ComboBox;
-            comboBox.ItemsSource = VersionSource;
-        }
-
-        /// <summary>
-        /// 载入形状
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void ShapeLoaded(object sender,RoutedEventArgs e)
-        {
-            ComboBox comboBox = sender as ComboBox;
-            if(File.Exists(shapePath))
-            {
-                string[] shapes = File.ReadAllLines(shapePath);
-                foreach (string shape in shapes)
+                double v1, v2, s;
+                do
                 {
-                    shapeList.Add(shape.Substring(shape.LastIndexOf(':') + 1));
-                }
-                comboBox.ItemsSource = shapeList;
+                    v1 = 2 * base.NextDouble() - 1; // between -1.0 and 1.0
+                    v2 = 2 * base.NextDouble() - 1; // between -1.0 and 1.0
+                    s = v1 * v1 + v2 * v2;
+                } while (s >= 1 || s == 0);
+                double multiplier = Math.Sqrt(-2 * Math.Log(s) / s);
+                nextGaussian = v2 * multiplier;
+                hasNextGaussian = true;
+                return v1 * multiplier;
             }
         }
-
-        /// <summary>
-        /// 处理图片
-        /// </summary>
-        //private void HandleImage(int effectWidth)
-        //{
-        //    if (map == null) return;
-        //    this.mainCanvas.Children.Clear();
-        //    List<Particle> particleList = MosaicHelper.AdjustTobMosaic(map, effectWidth);
-        //    foreach (var pd in particleList)
-        //    {
-        //        var ep = new Ellipse
-        //        {
-        //            Width = pd.Size,
-        //            Height = pd.Size,
-        //            Fill = new SolidColorBrush(Colors.Black),
-        //        };
-        //        Canvas.SetTop(ep, pd.Position.Y);
-        //        Canvas.SetLeft(ep, pd.Position.X);
-        //        this.mainCanvas.Children.Add(ep);
-        //    }
-        //}
     }
 }

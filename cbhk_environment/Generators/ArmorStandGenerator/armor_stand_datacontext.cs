@@ -2,6 +2,8 @@
 using cbhk_environment.CustomControls.ColorPickers;
 using cbhk_environment.CustomControls.TimeLines;
 using cbhk_environment.GeneralTools;
+using cbhk_environment.Generators.ItemGenerator;
+using cbhk_environment.Generators.ItemGenerator.Components;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -840,80 +842,88 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
 
         #region 装备
 
+        #region 合并装备数据
+        private string Equipments
+        {
+            get
+            {
+                string result;
+                string ArmorItems = (HeadItem.Length + BodyItem.Length + LegsItem.Length + FeetItem.Length) > 0 ? "ArmorItems:[" + (HeadItem + "," + BodyItem + "," + LegsItem + "," + FeetItem).Trim(',') + "]," : "";
+                string HandItems = (LeftHandItem.Length + RightHandItem.Length) > 0 ? "HandItems:[" + (LeftHandItem + "," + RightHandItem).Trim(',') + "]," : "";
+                result = ArmorItems + HandItems;
+                return result;
+            }
+        }
+        #endregion
+
         #region Head
-        private string head_item;
+        private string head_item = "";
         public string HeadItem
         {
             get { return head_item; }
             set
             {
                 head_item = value;
-                OnPropertyChanged();
             }
         }
         #endregion
 
         #region Body
-        private string body_item;
+        private string body_item = "";
         public string BodyItem
         {
             get { return body_item; }
             set
             {
                 body_item = value;
-                OnPropertyChanged();
             }
         }
         #endregion
 
         #region LeftHand
-        private string left_hand_item;
+        private string left_hand_item = "";
         public string LeftHandItem
         {
-            get { return body_item; }
+            get { return left_hand_item; }
             set
             {
                 left_hand_item = value;
-                OnPropertyChanged();
             }
         }
         #endregion
 
         #region RightHand
-        private string right_hand_item;
+        private string right_hand_item = "";
         public string RightHandItem
         {
-            get { return body_item; }
+            get { return right_hand_item; }
             set
             {
                 right_hand_item = value;
-                OnPropertyChanged();
             }
         }
         #endregion
 
         #region Legs
-        private string leg_item;
+        private string leg_item = "";
         public string LegsItem
         {
-            get { return body_item; }
+            get { return leg_item; }
             set
             {
                 leg_item = value;
-                OnPropertyChanged();
             }
         }
         #endregion
 
         #region Boots
-        private string boots_item;
-        public string BootsItem
+        private string feet_item = "";
+        public string FeetItem
         {
-            get { return body_item; }
+            get { return feet_item; }
             set
             {
-                boots_item = value;
-                OnPropertyChanged();
+                feet_item = value;
             }
         }
         #endregion
@@ -978,6 +988,15 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         private int CannotPlaceOrReplaceSum;
         //禁止添加总值
         private int CannotPlaceSum;
+
+        #region 设置各部位装备
+        public RelayCommand<FrameworkElement> SetHeadItem { get; set; }
+        public RelayCommand<FrameworkElement> SetBodyItem { get; set; }
+        public RelayCommand<FrameworkElement> SetLeftHandItem { get; set; }
+        public RelayCommand<FrameworkElement> SetRightHandItem { get; set; }
+        public RelayCommand<FrameworkElement> SetLegsItem { get; set; }
+        public RelayCommand<FrameworkElement> SetFeetItem { get; set; }
+        #endregion
 
         #region 禁止移除或改变头部、身体、手部、腿部、脚部装备
         private bool cannotTakeOrReplaceHead;
@@ -1212,7 +1231,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <summary>
         /// 版本数据源
         /// </summary>
-        ObservableCollection<string> versionSource = new ObservableCollection<string>() { "1.9+", "1.8-" };
+        ObservableCollection<string> versionSource = new() { "1.9+", "1.8-" };
 
         #region 已选择的版本
         private string selectedVersion = "";
@@ -1225,6 +1244,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             set
             {
                 selectedVersion = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -1251,6 +1271,13 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             RArmThreeAxisCommand = new RelayCommand<Button>(rarm_three_axis_command);
             LLegThreeAxisCommand = new RelayCommand<Button>(lleg_three_axis_command);
             RLegThreeAxisCommand = new RelayCommand<Button>(rleg_three_axis_command);
+
+            SetHeadItem = new RelayCommand<FrameworkElement>(SetItemCommand);
+            SetBodyItem = new RelayCommand<FrameworkElement>(SetItemCommand);
+            SetLeftHandItem = new RelayCommand<FrameworkElement>(SetItemCommand);
+            SetRightHandItem = new RelayCommand<FrameworkElement>(SetItemCommand);
+            SetLegsItem = new RelayCommand<FrameworkElement>(SetItemCommand);
+            SetFeetItem = new RelayCommand<FrameworkElement>(SetItemCommand);
             #endregion
 
             #region 连接三个轴的上下文
@@ -1270,6 +1297,42 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
                 }
             }
             #endregion
+        }
+
+        /// <summary>
+        /// 设置盔甲架的装备
+        /// </summary>
+        private void SetItemCommand(FrameworkElement element)
+        {
+            IconTextButtons iconTextButtons = element as IconTextButtons;
+            Item item = new(ArmorStand.cbhk);
+            item_datacontext itemContext = item.DataContext as item_datacontext;
+            ItemPages itemPages = itemContext.ItemPageList.First().Content as ItemPages;
+            itemPages.UseForTool = true;
+            if (item.ShowDialog().Value)
+            {
+                switch (iconTextButtons.Uid)
+                {
+                    case "Head":
+                        HeadItem = itemPages.Result;
+                        break;
+                    case "Body":
+                        BodyItem = itemPages.Result;
+                        break;
+                    case "LeftHand":
+                        LeftHandItem = itemPages.Result;
+                        break;
+                    case "RightHand":
+                        RightHandItem = itemPages.Result;
+                        break;
+                    case "Legs":
+                        LegsItem = itemPages.Result;
+                        break;
+                    case "Feet":
+                        FeetItem = itemPages.Result;
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -1311,14 +1374,12 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
 
             #region 拼接指令数据
 
-            #region HaveAniamtion
-            #endregion
+            #region HaveAnimation
 
-            #region Equipments
             #endregion
 
             #region result
-            result = CustomName + BoolNBTs + DisabledValue + CustomNameVisibleString + Tag + PoseString;
+            result = CustomName + BoolNBTs + Equipments + DisabledValue + CustomNameVisibleString + Tag + PoseString;
             result = result.TrimEnd(',');
             result = "/summon armor_stand ~ ~ ~" + (result != "" ? " {" + result +"}":"");
             #endregion
@@ -1891,7 +1952,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
                 groupScene.Children.Add(Z_axis_cubeModel);
                 groupScene.Children.Add(PositionLight(new Point3D(-5.0, 10.0, 0.0)));
                 groupScene.Children.Add(new AmbientLight(Colors.LightGray));
-                ModelVisual3D visual = new ModelVisual3D
+                ModelVisual3D visual = new()
                 {
                     Content = groupScene
                 };
@@ -1944,12 +2005,22 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 mouse_move_x = 0.01 * (e.GetPosition(CurrentViewModel).X - mouse_pos_x) + move_x;
                 mouse_move_y = 0.01 * (e.GetPosition(CurrentViewModel).Y - mouse_pos_y) + move_y;
+
                 pos_x = Camera_pos_x * Math.Cos(mouse_move_x) * Math.Cos(mouse_move_y);
                 pos_y = Camera_pos_x * Math.Sin(mouse_move_y) * -1.0;
                 pos_z = Camera_pos_x * Math.Sin(mouse_move_x) * Math.Cos(mouse_move_y);
+
                 motion_x = zero_pos.X - pos_x;
                 motion_y = zero_pos.Y - pos_y;
                 motion_z = zero_pos.Z - pos_z;
+
+                double degress = Vector3D.DotProduct(new Vector3D(motion_x,motion_y,motion_z), new Vector3D(0,1,0));
+
+                if(degress <= 14.99 || degress >= 14.99)
+                {
+
+                }
+
                 CurrentViewModel.Camera = Camera(pos_x, pos_y, pos_z, 90, new Vector3D(motion_x, motion_y, motion_z));
             }
         }
@@ -2053,9 +2124,9 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
     {
         public static Vector3D Rotate(this Vector3D vector3D, double x, double y, double z)
         {
-            Matrix3D rotateX = new Matrix3D(1.0, 0.0, 0.0, 0.0, 0.0, Math.Cos(x), Math.Sin(x), 0.0, 0.0, 0.0 - Math.Sin(x), Math.Cos(x), 0.0, 0.0, 0.0, 0.0, 1.0);
-            Matrix3D rotateY = new Matrix3D(Math.Cos(y), 0.0, 0.0 - Math.Sin(y), 0.0, 0.0, 1.0, 0.0, 0.0, Math.Sin(y), 0.0, Math.Cos(y), 0.0, 0.0, 0.0, 0.0, 1.0);
-            Matrix3D rotateZ = new Matrix3D(Math.Cos(z), Math.Sin(z), 0.0, 0.0, 0.0 - Math.Sin(z), Math.Cos(z), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
+            Matrix3D rotateX = new(1.0, 0.0, 0.0, 0.0, 0.0, Math.Cos(x), Math.Sin(x), 0.0, 0.0, 0.0 - Math.Sin(x), Math.Cos(x), 0.0, 0.0, 0.0, 0.0, 1.0);
+            Matrix3D rotateY = new(Math.Cos(y), 0.0, 0.0 - Math.Sin(y), 0.0, 0.0, 1.0, 0.0, 0.0, Math.Sin(y), 0.0, Math.Cos(y), 0.0, 0.0, 0.0, 0.0, 1.0);
+            Matrix3D rotateZ = new(Math.Cos(z), Math.Sin(z), 0.0, 0.0, 0.0 - Math.Sin(z), Math.Cos(z), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
             return vector3D * rotateX * rotateY * rotateZ;
         }
     }
@@ -2286,7 +2357,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
 
         public static void AddCubeToMesh(Point3D p0, double w, double h, double d, MeshGeometry3D mesh)
         {
-            WpfCube cube = new WpfCube(p0, w, h, d);
+            WpfCube cube = new(p0, w, h, d);
             WpfRectangle front = cube.Front();
             WpfRectangle back = cube.Back();
             WpfRectangle right = cube.Right();
@@ -2308,7 +2379,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
 
         public static GeometryModel3D CreateCubeModel(Point3D p0, double w, double h, double d, BitmapImage image_material)
         {
-            MeshGeometry3D mesh = new MeshGeometry3D();
+            MeshGeometry3D mesh = new();
 
             #region 3DMaterialInformation
             //mesh.Positions.Add(new Point3D(20, 0, 0));

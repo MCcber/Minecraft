@@ -27,7 +27,7 @@
             <Image Width="25" Height="25" />
         </Border>
         <CustomControls:RadiusToggleButtons
-            x:Name="ReferencemMode"
+            x:Name="ReferenceMode"
             Height="25"
             Margin="5,0,0,0"
             Foreground="White"
@@ -45,8 +45,10 @@
             x:Name="ReferenceIndex"
             Width="110"
             Height="25"
+            Maximum="2147483647"
             Minimum="0"
             Style="{DynamicResource NumberBoxStyle}"
+            ValueChanged="ReferenceIndex_ValueChanged"
             Value="0" />
         <TextBlock
             VerticalAlignment="Center"
@@ -59,6 +61,16 @@
             Background="{StaticResource ButtonNormal}"
             Click="ReferenceSaveClick"
             Content="引用存档"
+            NeedMouseOverStyle="False"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Height="25"
+            Margin="5,0,0,0"
+            Padding="5,0,5,0"
+            Background="{StaticResource ButtonNormal}"
+            Click="ImportFromClipboardClick"
+            Content="从剪切板导入"
             NeedMouseOverStyle="False"
             PressedBackground="{StaticResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />

@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
+using CommunityToolkit.Mvvm.Input;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
@@ -18,8 +20,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         JArray attributeArray = null;
         ObservableCollection<string> AttributeNames = new();
         public ObservableCollection<AttributeModifiers> AttributeModifiersSource = new();
-        //public string SelectedAttributeName = "";
 
+        #region 合并数据
         public string Result
         {
             get
@@ -27,10 +29,11 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 string result = "";
                 string SelectedName = AttributeName.SelectedValue.ToString();
                 if(SelectedName.Length > 0)
-                result = "{Base: " + Base.Value + "d" + (AttributeModifiersSource.Count > 0 ? ",Modifiers:[" + string.Join(',', AttributeModifiersSource.Select(item => item.Result)) : "") + "],Name:\"" + SelectedName[(SelectedName.IndexOf(':') + 1)..SelectedName.LastIndexOf(':')] + "\"}";
+                result = "{Base: " + Base.Value + "d" + (AttributeModifiersSource.Count > 0 ? ",Modifiers:[" + string.Join(',', AttributeModifiersSource.Select(item => item.Result)) + "]" : "") + ",Name:\"" + SelectedName[(SelectedName.IndexOf(':') + 1)..SelectedName.LastIndexOf(':')] + "\"}";
                 return result;
             }
         }
+        #endregion
 
         public Attributes()
         {
@@ -50,11 +53,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             foreach (JToken attributeObj in attributeArray)
                 AttributeNames.Add(attributeObj["key"].ToString() + ":" + attributeObj["description"].ToString());
             comboBox.ItemsSource = AttributeNames;
-            //if(SelectedAttributeName.Length > 0)
-            //{
-            //    string currentName = AttributeNames.Where(item=> item[(item.IndexOf(":") + 1)..item.LastIndexOf(':')] == SelectedAttributeName).First();
-            //    comboBox.SelectedIndex = AttributeNames.IndexOf(currentName);
-            //}
         }
 
         /// <summary>
@@ -98,6 +96,19 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void ClearModifierCommand(FrameworkElement obj)
         {
             AttributeModifiersSource.Clear();
+        }
+
+        /// <summary>
+        /// 删除该控件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteButtons_Click(object sender, RoutedEventArgs e)
+        {
+            StackPanel stackPanel = Parent as StackPanel;
+            stackPanel.Children.Remove(this);
+            Accordion accordion = stackPanel.FindParent<Accordion>() as Accordion;
+            accordion.FindChild<IconButtons>().Focus();
         }
     }
 }

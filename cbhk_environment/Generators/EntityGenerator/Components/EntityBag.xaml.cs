@@ -1,5 +1,10 @@
-﻿using System.Windows;
+﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace cbhk_environment.Generators.EntityGenerator.Components
 {
@@ -20,7 +25,13 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         /// <param name="e"></param>
         private void ImportFromClipboard_Click(object sender, RoutedEventArgs e)
         {
-
+            string itemData = ExternalDataImportManager.GetItemDataHandler(Clipboard.GetText(),false);
+            JObject nbtData = JObject.Parse(itemData);
+            JToken itemID = nbtData.SelectToken("Item.id");
+            if (itemID == null)
+                itemID = nbtData.SelectToken("id");
+            ItemIcon.Tag = nbtData;
+            (ItemIcon.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png", UriKind.Absolute));
         }
 
         /// <summary>
@@ -30,7 +41,26 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         /// <param name="e"></param>
         private void ImportFromFile_Click(object sender, RoutedEventArgs e)
         {
-
+            Microsoft.Win32.OpenFileDialog openFileDialog = new()
+            {
+                AddExtension = false,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                Multiselect = false,
+                RestoreDirectory = true,
+                Title = "请选择一个物品文件"
+            };
+            if(openFileDialog.ShowDialog().Value)
+            {
+                string itemData = ExternalDataImportManager.GetItemDataHandler(openFileDialog.FileName);
+                JObject nbtData = JObject.Parse(itemData);
+                JToken itemID = nbtData.SelectToken("Item.id");
+                if (itemID == null)
+                    itemID = nbtData.SelectToken("id");
+                ItemIcon.Tag = nbtData;
+                (ItemIcon.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png", UriKind.Absolute));
+            }
         }
 
         /// <summary>
@@ -40,7 +70,11 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         /// <param name="e"></param>
         private void IconTextButtons_Click(object sender, RoutedEventArgs e)
         {
-            (Parent as StackPanel).Children.Remove(this);
+            StackPanel stackPanel = Parent as StackPanel;
+            stackPanel.Children.Remove(this);
+            ScrollViewer scrollViewer = stackPanel.Parent as ScrollViewer;
+            Accordion accordion = scrollViewer.Parent as Accordion;
+            accordion.FindChild<IconButtons>().Focus();
         }
     }
 }

@@ -42,6 +42,90 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 specialContext.SpecialTagsResult.Add(specialContext.SelectedEntityIdString, new System.Collections.ObjectModel.ObservableCollection<NBTDataStructure>());
             #endregion
 
+            #region 是否为穿戴装备的掉率
+            if(sender is Accordion && (sender as FrameworkElement).Name == "ArmorDropChances")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                accordion.Modify = new RelayCommand<FrameworkElement>(AddPassengerClick);
+                accordion.Fresh = new RelayCommand<FrameworkElement>(ClearPassengerClick);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += ArmorDropChances_LostFocus;
+
+                specialContext.CommonResult.Add(dataStructure);
+                currentIndex = specialContext.CommonResult.Count - 1;
+                propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 是否为穿戴装备
+            if (sender is Accordion && (sender as FrameworkElement).Name == "ArmorItems")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                accordion.Modify = new RelayCommand<FrameworkElement>(AddPassengerClick);
+                accordion.Fresh = new RelayCommand<FrameworkElement>(ClearPassengerClick);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += ArmorItems_LostFocus;
+
+                specialContext.CommonResult.Add(dataStructure);
+                currentIndex = specialContext.CommonResult.Count - 1;
+                propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 是否为双手装备的掉率
+            if (sender is Accordion && (sender as FrameworkElement).Name == "HandDropChances")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                accordion.Modify = new RelayCommand<FrameworkElement>(AddPassengerClick);
+                accordion.Fresh = new RelayCommand<FrameworkElement>(ClearPassengerClick);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += HandDropChances_LostFocus;
+
+                specialContext.CommonResult.Add(dataStructure);
+                currentIndex = specialContext.CommonResult.Count - 1;
+                propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
+            #endregion
+
+            #region 是否为双手装备
+            if (sender is Accordion && (sender as FrameworkElement).Name == "HandItems")
+            {
+                Accordion accordion = sender as Accordion;
+                accordion.GotFocus -= ValueChangedHandler;
+                accordion.Modify = new RelayCommand<FrameworkElement>(AddPassengerClick);
+                accordion.Fresh = new RelayCommand<FrameworkElement>(ClearPassengerClick);
+                NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+                accordion.LostFocus += HandItems_LostFocus;
+
+                specialContext.CommonResult.Add(dataStructure);
+                currentIndex = specialContext.CommonResult.Count - 1;
+                propertyPath = new PropertyPath("CommonResult[" + currentIndex + "]");
+
+                valueBinder.Path = propertyPath;
+                var currentTag = accordion.Tag;
+                BindingOperations.SetBinding(accordion, FrameworkElement.TagProperty, valueBinder);
+                accordion.Tag = currentTag;
+            }
+            #endregion
+
             #region 是否为乘客
             if (sender is Accordion && (sender as FrameworkElement).Name == "Passengers")
             {
@@ -61,7 +145,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 {
                     specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
                     currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
-                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                    propertyPath = new PropertyPath("SpecialTagsResult["+ specialContext.SelectedEntityIdString + "][" + currentIndex + "]");
                 }
                 valueBinder.Path = propertyPath;
                 var currentTag = accordion.Tag;
@@ -118,7 +202,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 {
                     specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
                     currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
-                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                    propertyPath = new PropertyPath("SpecialTagsResult["+ specialContext.SelectedEntityIdString + "][" + currentIndex + "]");
                 }
                 valueBinder.Path = propertyPath;
                 var currentTag = areaEffectCloudEffectsAccordion.Tag;
@@ -165,7 +249,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Add(dataStructure);
                     currentIndex = specialContext.SpecialTagsResult[specialContext.SelectedEntityIdString].Count - 1;
                     accordion.Uid = currentIndex.ToString();
-                    propertyPath = new PropertyPath("SpecialTagsResult[specialContext.SelectedEntityIdString][" + currentIndex + "]");
+                    propertyPath = new PropertyPath("SpecialTagsResult[" + specialContext.SelectedEntityIdString + "][" + currentIndex + "]");
                 }
                 valueBinder.Path = propertyPath;
                 var currentTag = accordion.Tag;
@@ -457,6 +541,74 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         }
 
         /// <summary>
+        /// 双手装备掉率合并数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandDropChances_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            HandDropChances handDropChances = stackPanel.Children[0] as HandDropChances;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            if (handDropChances.EnableButton.IsChecked.Value)
+                dataStructure.Result = handDropChances.Result;
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 双手装备合并数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void HandItems_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            HandItems handItems = stackPanel.Children[0] as HandItems;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            if (handItems.EnableButton.IsChecked.Value)
+                dataStructure.Result = handItems.Result;
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 穿戴盔甲掉率合并数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ArmorDropChances_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            ArmorDropChances armorDropChances = stackPanel.Children[0] as ArmorDropChances;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            if (armorDropChances.EnableButton.IsChecked.Value)
+                dataStructure.Result = armorDropChances.Result;
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
+        /// 穿戴盔甲合并数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ArmorItems_LostFocus(object sender, RoutedEventArgs e)
+        {
+            Accordion accordion = sender as Accordion;
+            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
+            ArmorItems armorItems = stackPanel.Children[0] as ArmorItems;
+            NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
+            if (armorItems.EnableButton.IsChecked.Value)
+                dataStructure.Result = armorItems.Result;
+            else
+                dataStructure.Result = "";
+        }
+
+        /// <summary>
         /// 添加乘客
         /// </summary>
         /// <param name="sender"></param>
@@ -514,8 +666,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 StringBuilder result = new();
                 foreach (PassengerItems passenger in stackPanel.Children)
                 {
-                    if(passenger.DisplayEntity.Tag != null)
-                    result.Append(passenger.DisplayEntity.Tag.ToString() + ',');
+                    if (passenger.DisplayEntity.Tag != null)
+                        result.Append(passenger.DisplayEntity.Tag.ToString() + ',');
                 }
                 if (result.Length > 0)
                 {
@@ -712,14 +864,14 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 {
                     for (int i = 0; i < stackPanel.Children.Count; i++)
                     {
-                        FrameworkElement frameworkElement = stackPanel.Children[i] as FrameworkElement;
-                        itemList.Add(frameworkElement.Tag.ToString());
+                        EntityBag entityBag = stackPanel.Children[i] as EntityBag;
+                        itemList.Add(entityBag.ItemIcon.Tag.ToString());
                     }
                     dataStructure.Result = accordion.Name + ":[" + string.Join(",", itemList) + "]";
                 }
                 else
                 {
-                    object obj = (stackPanel.Children[0] as FrameworkElement).Tag;
+                    object obj = (stackPanel.Children[0] as EntityBag).ItemIcon.Tag;
                     if (obj != null)
                         dataStructure.Result = accordion.Name + ":" + obj.ToString();
                     else
@@ -896,21 +1048,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         }
 
         /// <summary>
-        /// 文本框文本值更新
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StringBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            TextBox textBox = sender as TextBox;
-            NBTDataStructure dataStructure = textBox.Tag as NBTDataStructure;
-            if (textBox.Text.Length == 0)
-                dataStructure.Result = "";
-            else
-                dataStructure.Result = textBox.Name + ":\"" + textBox.Text + "\"";
-        }
-
-        /// <summary>
         /// 更新网格内所携带所有对象的值
         /// </summary>
         /// <param name="sender"></param>
@@ -931,6 +1068,21 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     dataStructure.Result = "";
             }
             #endregion
+        }
+
+        /// <summary>
+        /// 文本框文本值更新
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StringBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            NBTDataStructure dataStructure = textBox.Tag as NBTDataStructure;
+            if (textBox.Text.Length == 0)
+                dataStructure.Result = "";
+            else
+                dataStructure.Result = textBox.Name + ":\"" + textBox.Text + "\"";
         }
 
         /// <summary>

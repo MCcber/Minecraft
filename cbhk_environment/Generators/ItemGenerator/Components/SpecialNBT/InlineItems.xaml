@@ -16,7 +16,7 @@
         <ImageBrush x:Key="CloseWhiteHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
     </UserControl.Resources>
 
-    <DockPanel LastChildFill="False">
+    <DockPanel Margin="0,2,0,0" LastChildFill="False">
         <Border
             x:Name="DisplayItem"
             Height="25"
@@ -26,7 +26,7 @@
             <Image Width="25" Height="25" />
         </Border>
         <CustomControls:RadiusToggleButtons
-            x:Name="ReferencemMode"
+            x:Name="ReferenceMode"
             Height="25"
             Margin="5,0,0,0"
             Foreground="White"
@@ -46,6 +46,7 @@
             Height="25"
             Minimum="0"
             Style="{DynamicResource NumberBoxStyle}"
+            ValueChanged="ReferenceIndex_ValueChanged"
             Value="0" />
         <TextBlock
             VerticalAlignment="Center"
@@ -58,6 +59,16 @@
             Background="{StaticResource ButtonNormal}"
             Click="ReferenceSaveClick"
             Content="引用存档"
+            NeedMouseOverStyle="False"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Height="25"
+            Margin="5,0,0,0"
+            Padding="5,0,5,0"
+            Background="{StaticResource ButtonNormal}"
+            Click="ImportFromClipboardClick"
+            Content="从剪切板导入"
             NeedMouseOverStyle="False"
             PressedBackground="{StaticResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />

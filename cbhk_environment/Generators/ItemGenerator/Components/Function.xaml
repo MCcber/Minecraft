@@ -60,7 +60,10 @@
                         Grid.Row="0"
                         Grid.Column="1"
                         Height="25"
-                        BorderBrush="Black" />
+                        Padding="0,2,0,0"
+                        BorderBrush="Black"
+                        FontSize="15"
+                        Foreground="White" />
                     <CustomControls:IconTextButtons
                         Grid.Row="0"
                         Grid.Column="2"
@@ -69,7 +72,8 @@
                         Background="{StaticResource ButtonNormal}"
                         Click="TrimData_Click"
                         Content="设置引用"
-                        PressedBackground="{StaticResource ButtonPressed}" />
+                        PressedBackground="{StaticResource ButtonPressed}"
+                        Style="{DynamicResource IconTextButton}" />
                     <TextBlock
                         Grid.Row="1"
                         Grid.Column="0"
@@ -82,7 +86,10 @@
                         Grid.Row="1"
                         Grid.Column="1"
                         Height="25"
-                        BorderBrush="Black" />
+                        Padding="0,2,0,0"
+                        BorderBrush="Black"
+                        FontSize="15"
+                        Foreground="White" />
                     <CustomControls:IconTextButtons
                         Grid.Row="1"
                         Grid.Column="2"
@@ -91,7 +98,8 @@
                         Background="{StaticResource ButtonNormal}"
                         Click="TrimData_Click"
                         Content="设置引用"
-                        PressedBackground="{StaticResource ButtonPressed}" />
+                        PressedBackground="{StaticResource ButtonPressed}"
+                        Style="{DynamicResource IconTextButton}" />
                 </Grid>
             </ScrollViewer>
         </CustomControls:Accordion>

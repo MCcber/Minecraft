@@ -15,7 +15,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             {
                 string selectedItem = HideFlagsBox.SelectedValue.ToString();
                 string key = MainWindow.HideInfomationDataBase.Where(item => item.Value == selectedItem).First().Key;
-                string result = key != "0" ? "HideFlags:" + key + "b," : "";
+                string result = key != "0" ? "HideFlags:" + key + "," : "";
                 return result;
             }
         }
