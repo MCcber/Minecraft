@@ -2,6 +2,7 @@
 using cbhk_environment.GeneralTools;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -31,7 +32,9 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             if (itemID == null)
                 itemID = nbtData.SelectToken("id");
             ItemIcon.Tag = nbtData;
-            (ItemIcon.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png", UriKind.Absolute));
+            string uri = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png";
+            if(File.Exists(uri))
+            (ItemIcon.Child as Image).Source = new BitmapImage(new Uri(uri, UriKind.Absolute));
         }
 
         /// <summary>
@@ -56,10 +59,11 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 string itemData = ExternalDataImportManager.GetItemDataHandler(openFileDialog.FileName);
                 JObject nbtData = JObject.Parse(itemData);
                 JToken itemID = nbtData.SelectToken("Item.id");
-                if (itemID == null)
-                    itemID = nbtData.SelectToken("id");
+                itemID ??= nbtData.SelectToken("id");
                 ItemIcon.Tag = nbtData;
-                (ItemIcon.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png", UriKind.Absolute));
+                string uri = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png";
+                if(File.Exists(uri))
+                (ItemIcon.Child as Image).Source = new BitmapImage(new Uri(uri, UriKind.Absolute));
             }
         }
 

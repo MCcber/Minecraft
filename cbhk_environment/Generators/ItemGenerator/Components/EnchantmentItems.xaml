@@ -30,7 +30,7 @@
             Foreground="White"
             Text="附魔ID" />
         <ComboBox
-            x:Name="Id"
+            x:Name="ID"
             Grid.Column="1"
             Height="25"
             VerticalContentAlignment="Center"

@@ -236,7 +236,7 @@ namespace cbhk_environment
                         image = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png", UriKind.Relative));
                         RenderOptions.SetBitmapScalingMode(image,BitmapScalingMode.HighQuality);
                         RenderOptions.SetClearTypeHint(image,ClearTypeHint.Enabled);
-                        BlockIDSource.Add(new IconComboBoxItem() { ComboBoxItemText = block_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png", UriKind.Absolute)) });
+                        BlockIDSource.Add(new IconComboBoxItem() { ComboBoxItemText = block_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png", UriKind.Absolute)) ,ComboBoxItemId = block_id});
                         RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
                         RenderOptions.SetClearTypeHint(image, ClearTypeHint.Enabled);
                     }

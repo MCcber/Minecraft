@@ -8,7 +8,7 @@ namespace cbhk_environment.ControlsDataContexts
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null && value is IconComboBoxItem)
+            if (value is not null and IconComboBoxItem)
             {
                 IconComboBoxItem iconComboBoxItem = (IconComboBoxItem)value;
                 return iconComboBoxItem.ComboBoxItemIcon;

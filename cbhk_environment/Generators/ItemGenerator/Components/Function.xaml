@@ -54,7 +54,7 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         Foreground="White"
-                        Text="材料命令空间" />
+                        Text="材质命令空间" />
                     <TextBox
                         x:Name="material"
                         Grid.Row="0"

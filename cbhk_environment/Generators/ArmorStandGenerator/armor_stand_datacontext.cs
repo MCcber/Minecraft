@@ -6,11 +6,11 @@ using cbhk_environment.Generators.ItemGenerator;
 using cbhk_environment.Generators.ItemGenerator.Components;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -18,14 +18,12 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using Brush = System.Windows.Media.Brush;
-using Color = System.Windows.Media.Color;
-using Point = System.Windows.Point;
 
 namespace cbhk_environment.Generators.ArmorStandGenerator
 {
@@ -167,7 +165,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <summary>
         /// 在mc中已存在的颜色结构
         /// </summary>
-        Dictionary<string,string> KnownColorsInMc = new Dictionary<string, string>();
+        Dictionary<string,string> KnownColorsInMc = new();
 
         List<int> KnownColorDifferenceSet = new List<int>();
         /// <summary>
@@ -980,7 +978,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         private Point CurrentButtonCenter;
 
         // 布尔型NBT链表
-        List<string> BoolTypeNBT = new List<string> { };
+        List<string> BoolTypeNBT = new(){ };
 
         //禁止移除或改变总值
         private int CannotTakeOrReplceSum;
@@ -1307,32 +1305,170 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             IconTextButtons iconTextButtons = element as IconTextButtons;
             Item item = new(ArmorStand.cbhk);
             item_datacontext itemContext = item.DataContext as item_datacontext;
-            ItemPages itemPages = itemContext.ItemPageList.First().Content as ItemPages;
+
+            #region 如果已有数据，则导入
+            switch (iconTextButtons.Uid)
+            {
+                case "Head":
+                    if (HeadItem != null && HeadItem.Length > 0)
+                    {
+                        ObservableCollection<RichTabItems> richTabItems = itemContext.ItemPageList;
+                        ExternalDataImportManager.ImportItemDataHandler(HeadItem, ref richTabItems, false);
+                        itemContext.ItemPageList.Remove(itemContext.ItemPageList[0]);
+                        string HeadData = ExternalDataImportManager.GetItemDataHandler(HeadItem,false);
+                        (itemContext.ItemPageList[0].Content as ItemPages).ExternallyReadEntityData = JObject.Parse(HeadData);
+                    }
+                    break;
+                case "Body":
+                    if (BodyItem != null && BodyItem.Length > 0)
+                    {
+                        ObservableCollection<RichTabItems> richTabItems = itemContext.ItemPageList;
+                        ExternalDataImportManager.ImportItemDataHandler(BodyItem, ref richTabItems, false);
+                        itemContext.ItemPageList.Remove(itemContext.ItemPageList[0]);
+                        string BodyData = ExternalDataImportManager.GetItemDataHandler(HeadItem, false);
+                        (itemContext.ItemPageList[0].Content as ItemPages).ExternallyReadEntityData = JObject.Parse(BodyData);
+                    }
+                    break;
+                case "LeftHand":
+                    if (LeftHandItem != null && LeftHandItem.Length > 0)
+                    {
+                        ObservableCollection<RichTabItems> richTabItems = itemContext.ItemPageList;
+                        ExternalDataImportManager.ImportItemDataHandler(LeftHandItem, ref richTabItems, false);
+                        itemContext.ItemPageList.Remove(itemContext.ItemPageList[0]);
+                        string LeftHandData = ExternalDataImportManager.GetItemDataHandler(HeadItem, false);
+                        (itemContext.ItemPageList[0].Content as ItemPages).ExternallyReadEntityData = JObject.Parse(LeftHandData);
+                    }
+                    break;
+                case "RightHand":
+                    if (RightHandItem != null && RightHandItem.Length > 0)
+                    {
+                        ObservableCollection<RichTabItems> richTabItems = itemContext.ItemPageList;
+                        ExternalDataImportManager.ImportItemDataHandler(RightHandItem, ref richTabItems, false);
+                        itemContext.ItemPageList.Remove(itemContext.ItemPageList[0]);
+                        string RightHandData = ExternalDataImportManager.GetItemDataHandler(HeadItem, false);
+                        (itemContext.ItemPageList[0].Content as ItemPages).ExternallyReadEntityData = JObject.Parse(RightHandData);
+                    }
+                    break;
+                case "Legs":
+                    if (LegsItem != null && LegsItem.Length > 0)
+                    {
+                        ObservableCollection<RichTabItems> richTabItems = itemContext.ItemPageList;
+                        ExternalDataImportManager.ImportItemDataHandler(LegsItem, ref richTabItems, false);
+                        itemContext.ItemPageList.Remove(itemContext.ItemPageList[0]);
+                        string LegsData = ExternalDataImportManager.GetItemDataHandler(HeadItem, false);
+                        (itemContext.ItemPageList[0].Content as ItemPages).ExternallyReadEntityData = JObject.Parse(LegsData);
+                    }
+                    break;
+                case "Feet":
+                    if (FeetItem != null && FeetItem.Length > 0)
+                    {
+                        ObservableCollection<RichTabItems> richTabItems = itemContext.ItemPageList;
+                        ExternalDataImportManager.ImportItemDataHandler(FeetItem, ref richTabItems, false);
+                        itemContext.ItemPageList.Remove(itemContext.ItemPageList[0]);
+                        string FeetData = ExternalDataImportManager.GetItemDataHandler(HeadItem, false);
+                        (itemContext.ItemPageList[0].Content as ItemPages).ExternallyReadEntityData = JObject.Parse(FeetData);
+                    }
+                    break;
+            }
+            #endregion
+
+            #region 设置已生成的数据
+            ItemPages itemPages = itemContext.ItemPageList[0].Content as ItemPages;
             itemPages.UseForTool = true;
+            string Result = "";
             if (item.ShowDialog().Value)
             {
+                Result = itemPages.Result;
                 switch (iconTextButtons.Uid)
                 {
                     case "Head":
-                        HeadItem = itemPages.Result;
+                        HeadItem = Result;
                         break;
                     case "Body":
-                        BodyItem = itemPages.Result;
+                        BodyItem = Result;
                         break;
                     case "LeftHand":
-                        LeftHandItem = itemPages.Result;
+                        LeftHandItem = Result;
                         break;
                     case "RightHand":
-                        RightHandItem = itemPages.Result;
+                        RightHandItem = Result;
                         break;
                     case "Legs":
-                        LegsItem = itemPages.Result;
+                        LegsItem = Result;
                         break;
                     case "Feet":
-                        FeetItem = itemPages.Result;
+                        FeetItem = Result;
                         break;
                 }
             }
+            #endregion
+
+            #region 为装备按钮设置ToolTip
+            string nbt = ExternalDataImportManager.GetItemDataHandler(Result, false);
+            if (nbt.Length == 0) return;
+            JObject data = JObject.Parse(nbt);
+            string itemID = data.SelectToken("id").ToString();
+            JToken itemName = data.SelectToken("tag.display.Name");
+            JToken itemNameValue = itemName != null ? JObject.Parse(itemName.ToString()).SelectToken("text") : null;
+            List<Run> runs = new();
+
+            #region 处理描述
+            if (data.SelectToken("tag.display.Lore") is JArray itemLoreArray)
+            {
+                foreach (JToken itemLoreValue in itemLoreArray)
+                {
+                    JArray LoreArray = JArray.Parse(itemLoreValue.ToString());
+                    Run itemLore = new(string.Join("",LoreArray))
+                    {
+                        Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#5454FC")),
+                        Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent")),
+                        FontWeight = FontWeights.Bold
+                    };
+                    runs.Add(itemLore);
+                }
+            }
+            #endregion
+
+            #region 处理剩余数据
+
+            #endregion
+
+            string uri;
+            if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.Replace("minecraft:", "") + ".png"))
+                uri = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.Replace("minecraft:", "") + ".png";
+            else
+                uri = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.Replace("minecraft:", "") + "_spawn_egg.png";
+
+            if (iconTextButtons.ToolTip == null)
+            {
+                RichToolTip richToolTip = new()
+                {
+                    Style = Application.Current.Resources["DisplayDataStyle"] as Style,
+                    ContentIcon = new BitmapImage(new Uri(uri, UriKind.Absolute)),
+                    DisplayID = itemID,
+                    CustomName = itemNameValue != null ? itemNameValue.ToString() : "",
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#424242")),
+                    Foreground = new SolidColorBrush(Colors.White),
+                    Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint
+                };
+                richToolTip.ApplyTemplate();
+                RichTextBox richTextBox = richToolTip.Template.FindName("Box", richToolTip) as RichTextBox;
+                Paragraph paragraph = richTextBox.Document.Blocks.First() as Paragraph;
+                paragraph.Inlines.AddRange(runs);
+                iconTextButtons.ToolTip = richToolTip;
+            }
+            else
+            {
+                RichToolTip richToolTip = iconTextButtons.ToolTip as RichToolTip;
+                RichTextBox richTextBox = richToolTip.Template.FindName("Box", richToolTip) as RichTextBox;
+                Paragraph paragraph = richTextBox.Document.Blocks.First() as Paragraph;
+                paragraph.Inlines.Clear();
+                paragraph.Inlines.AddRange(runs);
+                richToolTip.ContentIcon = new BitmapImage(new Uri(uri, UriKind.Absolute));
+                richToolTip.DisplayID = itemID;
+                richToolTip.CustomName = itemNameValue != null ? itemNameValue.ToString() : "";
+            }
+            #endregion
         }
 
         /// <summary>
@@ -1922,9 +2058,9 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             if (sender is Viewport3D MainWindow)
             {
                 if (File.Exists(armor_stand_material_path))
-                    armor_stand_material = BitmapImageConverter.ToBitmapImage(System.Drawing.Image.FromFile(armor_stand_material_path) as Bitmap);
+                    armor_stand_material = BitmapImageConverter.ToBitmapImage(System.Drawing.Image.FromFile(armor_stand_material_path) as System.Drawing.Bitmap);
                 if (File.Exists(armor_stand_material_path))
-                    base_plate_material = BitmapImageConverter.ToBitmapImage(System.Drawing.Image.FromFile(base_plate_material_path) as Bitmap);
+                    base_plate_material = BitmapImageConverter.ToBitmapImage(System.Drawing.Image.FromFile(base_plate_material_path) as System.Drawing.Bitmap);
 
                 Head_cubeModel = Head_cube.CreateModel(Color.FromRgb(176, 144, 86));
                 Lhand_cubeModel = Lhand_cube.CreateModel(Color.FromRgb(176, 144, 86));
@@ -2053,35 +2189,45 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             }
         }
 
+        /// <summary>
+        /// 旋转模型
+        /// </summary>
+        /// <param name="center">旋转中心点</param>
+        /// <param name="model">旋转对象</param>
+        /// <param name="seconds">旋转持续时间</param>
+        /// <param name="axis">旋转轴</param>
+        /// <param name="X">x轴旋转角度</param>
+        /// <param name="Y">y轴旋转角度</param>
+        /// <param name="Z">z轴旋转角度</param>
         public void TurnModel(Point3D center, GeometryModel3D model, double seconds, bool axis, float X, float Y, float Z)
         {
-            Vector3D vector5 = new Vector3D(0.0, 1.0, 0.0);
-            Vector3D vector4 = new Vector3D(1.0, 0.0, 0.0);
-            Vector3D vector3 = new Vector3D(0.0, 0.0, 1.0);
-            AxisAngleRotation3D rotation5 = new AxisAngleRotation3D(vector5, 0.0);
-            AxisAngleRotation3D rotation4 = new AxisAngleRotation3D(vector4, 0.0);
-            AxisAngleRotation3D rotation3 = new AxisAngleRotation3D(vector3, 0.0);
-            RotateTransform3D rotateTransform5 = new RotateTransform3D(rotation5, center);
-            RotateTransform3D rotateTransform4 = new RotateTransform3D(rotation4, center);
-            RotateTransform3D rotateTransform3 = new RotateTransform3D(rotation3, center);
-            Transform3DGroup transformGroup = new Transform3DGroup();
+            Vector3D vector5 = new(0.0, 1.0, 0.0);
+            Vector3D vector4 = new(1.0, 0.0, 0.0);
+            Vector3D vector3 = new(0.0, 0.0, 1.0);
+            AxisAngleRotation3D rotation5 = new(vector5, 0.0);
+            AxisAngleRotation3D rotation4 = new(vector4, 0.0);
+            AxisAngleRotation3D rotation3 = new(vector3, 0.0);
+            RotateTransform3D rotateTransform5 = new(rotation5, center);
+            RotateTransform3D rotateTransform4 = new(rotation4, center);
+            RotateTransform3D rotateTransform3 = new(rotation3, center);
+            Transform3DGroup transformGroup = new();
             transformGroup.Children.Add(rotateTransform5);
             transformGroup.Children.Add(rotateTransform4);
             transformGroup.Children.Add(rotateTransform3);
             model.Transform = transformGroup;
             if (axis)
             {
-                DoubleAnimation doubleAnimation5 = new DoubleAnimation(double.Parse(Y.ToString()), double.Parse(Y.ToString()), DurationTS(seconds))
+                DoubleAnimation doubleAnimation5 = new(double.Parse(Y.ToString()), double.Parse(Y.ToString()), DurationTS(seconds))
                 {
                     BeginTime = DurationTS(0.0)
                 };
                 rotation5.BeginAnimation(AxisAngleRotation3D.AngleProperty, doubleAnimation5);
-                DoubleAnimation doubleAnimation4 = new DoubleAnimation(double.Parse(X.ToString()), double.Parse(X.ToString()), DurationTS(seconds))
+                DoubleAnimation doubleAnimation4 = new(double.Parse(X.ToString()), double.Parse(X.ToString()), DurationTS(seconds))
                 {
                     BeginTime = DurationTS(0.0)
                 };
                 rotation4.BeginAnimation(AxisAngleRotation3D.AngleProperty, doubleAnimation4);
-                DoubleAnimation doubleAnimation3 = new DoubleAnimation(double.Parse(Z.ToString()), double.Parse(Z.ToString()), DurationTS(seconds))
+                DoubleAnimation doubleAnimation3 = new(double.Parse(Z.ToString()), double.Parse(Z.ToString()), DurationTS(seconds))
                 {
                     BeginTime = DurationTS(0.0)
                 };
@@ -2130,7 +2276,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             return vector3D * rotateX * rotateY * rotateZ;
         }
     }
-
     internal class WpfTriangle
     {
         private Point3D p1;
@@ -2216,7 +2361,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             return Vector3D.CrossProduct(v2, v);
         }
     }
-
     public class WpfRectangle
     {
         private Point3D p0;
@@ -2283,7 +2427,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             return new GeometryModel3D(mesh, material);
         }
     }
-
     public class WpfCube
     {
         private Point3D origin;

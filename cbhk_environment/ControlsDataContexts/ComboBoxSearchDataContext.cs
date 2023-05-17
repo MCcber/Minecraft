@@ -119,5 +119,6 @@ namespace cbhk_environment.ControlsDataContexts
     {
         public ImageSource ComboBoxItemIcon { get; set; } = new BitmapImage();
         public string ComboBoxItemText { get; set; } = "";
+        public string ComboBoxItemId { get; set; } = "";
     }
 }

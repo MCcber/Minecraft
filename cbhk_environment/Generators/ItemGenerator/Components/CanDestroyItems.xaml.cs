@@ -60,7 +60,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         private void CanDestroyItemLoaded(object sender, RoutedEventArgs e)
         {
             ComboBox comboBoxs = sender as ComboBox;
-            comboBoxs.ItemsSource = MainWindow.ItemIdSource;
+            comboBoxs.ItemsSource = MainWindow.BlockIDSource;
         }
     }
 }

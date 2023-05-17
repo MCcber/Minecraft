@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         }
         #endregion
 
-        #region 可破坏方块列表
+        #region 可放置方块列表
         private string CanPlaceOnBlockResult
         {
             get
@@ -230,6 +231,58 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                         textBox.Text = folderBrowserDialog.SelectedPath;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// 获取外部数据
+        /// </summary>
+        /// <param name="ExternData"></param>
+        public void GetExternData(ref JObject ExternData)
+        {
+            JToken materialObj = ExternData.SelectToken("tag.material");
+            JToken trim = ExternData.SelectToken("tag.Trim");
+
+            if (materialObj != null)
+            {
+                material.Text = materialObj.ToString();
+                ExternData.Remove("tag.material");
+            }
+            if (trim != null)
+            {
+                pattern.Text = trim.ToString();
+                ExternData.Remove("tag.Trim");
+            }
+            if(ExternData.SelectToken("tag.CanDestroy") is JArray canDestroyBlockArray && canDestroyBlockArray.Count > 0)
+            {
+                foreach (JValue canDestroy in canDestroyBlockArray.Cast<JValue>())
+                {
+                    CanDestroyItems canDestroyItem = new();
+                    canDestroyItem.ID.SelectedValuePath = "ComboBoxItemId";
+                    canDestroyItem.ID.SelectedValue = canDestroy;
+                }
+                ExternData.Remove("tag.CanDestroy");
+            }
+            if (ExternData.SelectToken("tag.CanPlaceOn") is JArray canPlaceOnBlockArray && canPlaceOnBlockArray.Count > 0)
+            {
+                foreach (JValue canPlaceOn in canPlaceOnBlockArray.Cast<JValue>())
+                {
+                    CanPlaceOnItems canPlaceOnItem = new();
+                    canPlaceOnItem.ID.SelectedValuePath = "ComboBoxItemId";
+                    canPlaceOnItem.ID.SelectedValue = canPlaceOn;
+                }
+                ExternData.Remove("tag.CanPlaceOn");
+            }
+            if (ExternData.SelectToken("tag.Enchantments") is JArray enchantmentArray && enchantmentArray.Count > 0)
+            {
+                foreach (JObject enchant in enchantmentArray.Cast<JObject>())
+                {
+                    EnchantmentItems enchantmentItem = new();
+                    enchantmentItem.ID.SelectedValuePath = "ComboBoxItemId";
+                    enchantmentItem.ID.SelectedValue = enchant.SelectToken("id").ToString();
+                    enchantmentItem.Level.Value = int.Parse(enchant.SelectToken("lvl").ToString());
+                }
+                ExternData.Remove("tag.Enchantments");
             }
         }
     }

@@ -157,8 +157,9 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         #endregion
         #endregion
 
-        #region 是否作为工具
+        #region 是否作为工具或引用
         public bool UseForTool { get; set; } = false;
+        public bool UseForReference { get; set; } = false;
         #endregion
 
         #region 字段与引用
@@ -184,12 +185,12 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         ImageBrush buttonPressedBrush;
         #endregion
 
-        #region 是否同步到文件
+        #region 是否同步到文件、存储外部数据
         public bool SyncToFile { get; set; }
         public string ExternFilePath { get; set; }
         #endregion
 
-        #region 标记当前是否为导入外部数据的模式
+        #region 导入外部数据模式
         private bool importMode = false;
         public bool ImportMode
         {
@@ -320,17 +321,19 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                 nbt.Insert(0,"id:\"minecraft:"+ SelectedItemIdString + "\",tag:{");
                 nbt.Append("},Count:" + Data.ItemCount.Value + "b");
             }
+
+            if(UseForTool)
+            {
+                Result = "{id:\"minecraft:" + SelectedItemIdString + "\",Count:" + Data.ItemCount.Value + "b" + (nbt.ToString().Trim(',').Length > 0?",tag:{" + nbt.ToString().Trim(',') + "}":"")+"}";
+                Item item = Window.GetWindow(this) as Item;
+                item.DialogResult = true;
+                return;
+            }
+
             if (nbt.ToString().Length > 0)
             {
                 nbt.Insert(0, '{');
                 nbt.Append('}');
-            }
-            if (UseForTool)
-            {
-                Result = nbt.ToString();
-                Item item = Window.GetWindow(this) as Item;
-                item.DialogResult = true;
-                return;
             }
             if (Give)
             {
@@ -375,6 +378,14 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                 nbt.Insert(0, '{');
                 nbt.Append('}');
             }
+
+            if (UseForReference)
+            {
+                Result = "";
+                Result = "{id:\"minecraft:" + SelectedItemIdString + "\"" + (Result.Length > 0 ? ",tag:{" + Result + ",Count:" + Data.ItemCount.Value + "b" + "}" : "") + "}";
+                return Result;
+            }
+
             if (Give)
             {
                 if (SelectedVersion == "1.12-")
@@ -575,7 +586,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                                                         if(idString.Contains(':'))
                                                         idString = idString[(idString.IndexOf(':') + 1)..];
                                                         string id = MainWindow.EnchantmentDataBase[idString];
-                                                        enchantment.Id.SelectedIndex = MainWindow.EnchantmentIdSource.IndexOf(Regex.Replace(id, @"\d+", ""));
+                                                        enchantment.ID.SelectedIndex = MainWindow.EnchantmentIdSource.IndexOf(Regex.Replace(id, @"\d+", ""));
                                                     }
                                                     if(lvlObj != null)
                                                     enchantment.Level.Value = double.Parse(lvlObj.ToString());
@@ -1563,6 +1574,26 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                     SpecialViewer.Content = cacheGrid;
                 }
                 #endregion
+            }
+        }
+
+        /// <summary>
+        /// 切换后载入共通标签数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            TabControl tabControl = sender as TabControl;
+            JObject data = ExternallyReadEntityData;
+            if(ImportMode && ExternallyReadEntityData != null)
+            {
+                if (tabControl.SelectedIndex == 1)
+                    Common.GetExternData(ref data);
+                if (tabControl.SelectedIndex == 2)
+                    Function.GetExternData(ref data);
+                if (tabControl.SelectedIndex == 3)
+                    Data.GetExternData(ref data);
             }
         }
     }

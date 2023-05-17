@@ -158,6 +158,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 }
             }
             currentImage.Tag = "{}";
+            currentImage.Source = new BitmapImage();
         }
     }
 }

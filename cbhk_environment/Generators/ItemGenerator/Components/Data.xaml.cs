@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -52,6 +53,52 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         private void ClearAttributesComand(FrameworkElement obj)
         {
             AttributeSource.Clear();
+        }
+
+        /// <summary>
+        /// 获取外来数据
+        /// </summary>
+        /// <param name="ExternData"></param>
+        public void GetExternData(ref JObject ExternData)
+        {
+            JToken count = ExternData.SelectToken("Count");
+            JToken Damage = ExternData.SelectToken("tag.Damage");
+
+            if (count != null)
+            {
+                ItemCount.Value = int.Parse(count.ToString());
+                ExternData.Remove("Count");
+            }
+            if (Damage != null)
+            {
+                ItemDamage.Value = int.Parse(Damage.ToString());
+                ExternData.Remove("tag.Damage");
+            }
+            if(ExternData.SelectToken("tag.Attributes") is JArray AttributeArray && AttributeArray.Count > 0)
+            {
+                foreach (JObject attribute in AttributeArray.Cast<JObject>())
+                {
+                    AddAttributeCommand(null);
+                    JToken attributeId = attribute.SelectToken("AttributeName");
+                    JToken name = attribute.SelectToken("Name");
+                    JToken amount = attribute.SelectToken("Amount");
+                    JToken operation = attribute.SelectToken("Operation");
+                    JToken slot = attribute.SelectToken("Slot");
+                    AttributeItems attributeItem = AttributeSource[^1];
+
+                    if (attributeId != null)
+                        attributeItem.AttributeNameBox.SelectedValue = MainWindow.AttribuiteDataBase.Where(item => item.Key == attributeId.ToString()).Select(item => item.Value).First();
+                    if (name != null)
+                        attributeItem.NameBox.Text = name.ToString();
+                    if (amount != null)
+                        attributeItem.Amount.Value = int.Parse(amount.ToString());
+                    if (operation != null)
+                        attributeItem.Operations.SelectedIndex = int.Parse(operation.ToString());
+                    if (slot != null)
+                        attributeItem.Slot.SelectedValue = MainWindow.AttributeSlotDataBase.Where(item=>item.Key == slot.ToString()).Select(item=>item.Value).First();
+                }
+                ExternData.Remove("tag.Attributes");
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             get
             {
                 string result = "";
-                string id = MainWindow.EnchantmentDataBase.Where(item=>Regex.Replace(item.Value,@"\d+","") == Id.SelectedValue.ToString()).Select(item=>item.Key).First();
+                string id = MainWindow.EnchantmentDataBase.Where(item=>Regex.Replace(item.Value,@"\d+","") == ID.SelectedValue.ToString()).Select(item=>item.Key).First();
                 result = "{id:\"minecraft:"+id+"\",lvl:"+Level.Value+"s}";
                 return result;
             }

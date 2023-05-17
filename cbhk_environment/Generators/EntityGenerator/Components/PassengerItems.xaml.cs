@@ -21,6 +21,20 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         }
 
         /// <summary>
+        /// 删除当前乘客
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CloseButtons_Click(object sender, RoutedEventArgs e)
+        {
+            IconTextButtons iconTextButtons = sender as IconTextButtons;
+            StackPanel stackPanel = iconTextButtons.FindParent<StackPanel>();
+            stackPanel.Children.Remove(this);
+            Accordion accordion = (stackPanel.Parent as ScrollViewer).Parent as Accordion;
+            accordion.FindChild<IconButtons>().Focus();
+        }
+
+        /// <summary>
         /// 引用存档
         /// </summary>
         /// <param name="sender"></param>
@@ -84,32 +98,42 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         /// <param name="e"></param>
         private void ReferenceIndex_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            Slider slider = sender as Slider;
+            entity_datacontext entityContext = (Window.GetWindow(slider) as Entity).DataContext as entity_datacontext;
+            RichTabItems richTabItems = this.FindParent<RichTabItems>();
+            int currentIndex = entityContext.EntityPageList.IndexOf(richTabItems);
+            int index = int.Parse(slider.Value.ToString());
+            entityPagesDataContext pageContext = (entityContext.EntityPageList[index].Content as EntityPages).DataContext as entityPagesDataContext;
             if (ReferenceMode.IsChecked.Value)
             {
-                Slider slider = sender as Slider;
-                entity_datacontext entityContext = this.FindParent<Entity>().DataContext as entity_datacontext;
-                if (slider.Value < entityContext.EntityPageList.Count)
+                pageContext.UseForReference = true;
+                if (slider.Value < entityContext.EntityPageList.Count && currentIndex != index)
                 {
-                    int index = int.Parse(slider.Value.ToString());
-                    entityPagesDataContext pageContext = entityContext.EntityPageList[index].DataContext as entityPagesDataContext;
                     DisplayEntity.Tag = pageContext.run_command(false);
-                    (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + pageContext.SelectedEntityIdString + ".png", UriKind.RelativeOrAbsolute));
+                    (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + pageContext.SelectedEntityIdString + "_spawn_egg.png", UriKind.RelativeOrAbsolute));
                 }
+                else
+                {
+                    DisplayEntity.Tag = "";
+                    (DisplayEntity.Child as Image).Source = new BitmapImage();
+                }
+            }
+            else
+            {
+                DisplayEntity.Tag = "";
+                (DisplayEntity.Child as Image).Source = new BitmapImage();
+                pageContext.UseForReference = false;
             }
         }
 
         /// <summary>
-        /// 删除当前乘客
+        /// 已开启引用模式
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CloseButtons_Click(object sender, RoutedEventArgs e)
+        private void ReferenceMode_Checked(object sender, RoutedEventArgs e)
         {
-            IconTextButtons iconTextButtons = sender as IconTextButtons;
-            StackPanel stackPanel = iconTextButtons.FindParent<StackPanel>();
-            stackPanel.Children.Remove(this);
-            Accordion accordion = (stackPanel.Parent as ScrollViewer).Parent as Accordion;
-            accordion.FindChild<IconButtons>().Focus();
+            ReferenceIndex_ValueChanged(ReferenceIndex,null);
         }
     }
 }

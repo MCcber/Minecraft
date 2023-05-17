@@ -146,7 +146,7 @@
                         IsChecked="{Binding Path=CustomNameVisible, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
                         SelectedToggleText="名称可见性"
                         Style="{StaticResource RadiusToggleButton}"
-                        ToggleHeight="25"
+                        ToggleHeight="26"
                         ToggleWidth="45"
                         UnSelectedToggleText="名称可见性" />
                     <TextBlock
@@ -200,9 +200,15 @@
                         HorizontalAlignment="Left"
                         Background="{StaticResource IssueIcon}"
                         Style="{DynamicResource IconTextButton}"
-                        ToolTip="1.左键进入/退出三轴合一编辑模式 2.横向控制X轴 3.纵向控制Z轴 4.滚轮控制Y轴"
-                        ToolTipService.InitialShowDelay="0"
-                        ToolTipService.ShowDuration="3000" />
+                        ToolTipService.BetweenShowDelay="0"
+                        ToolTipService.InitialShowDelay="0">
+                        <CustomControls:IconTextButtons.ToolTip>
+                            <ToolTip
+                                Background="#424242"
+                                Content="1.左键进入/退出三轴合一编辑模式 2.横向控制X轴 3.纵向控制Z轴 4.滚轮控制Y轴"
+                                Foreground="White" />
+                        </CustomControls:IconTextButtons.ToolTip>
+                    </CustomControls:IconTextButtons>
                 </DockPanel>
                 <TabControl
                     Height="150"
@@ -1675,7 +1681,9 @@
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
-                            Style="{DynamicResource IconTextButton}" />
+                            Style="{DynamicResource IconTextButton}"
+                            ToolTipService.BetweenShowDelay="0"
+                            ToolTipService.InitialShowDelay="0" />
                         <CustomControls:IconTextButtons
                             Uid="Body"
                             Grid.Column="1"
@@ -1689,7 +1697,9 @@
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
-                            Style="{DynamicResource IconTextButton}" />
+                            Style="{DynamicResource IconTextButton}"
+                            ToolTipService.BetweenShowDelay="0"
+                            ToolTipService.InitialShowDelay="0" />
                         <CustomControls:IconTextButtons
                             Uid="LeftHand"
                             Grid.Column="2"
@@ -1703,7 +1713,9 @@
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
-                            Style="{DynamicResource IconTextButton}" />
+                            Style="{DynamicResource IconTextButton}"
+                            ToolTipService.BetweenShowDelay="0"
+                            ToolTipService.InitialShowDelay="0" />
                         <CustomControls:IconTextButtons
                             Uid="RightHand"
                             Grid.Column="3"
@@ -1717,7 +1729,9 @@
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
-                            Style="{DynamicResource IconTextButton}" />
+                            Style="{DynamicResource IconTextButton}"
+                            ToolTipService.BetweenShowDelay="0"
+                            ToolTipService.InitialShowDelay="0" />
                         <CustomControls:IconTextButtons
                             Uid="Legs"
                             Grid.Column="4"
@@ -1731,7 +1745,9 @@
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
-                            Style="{DynamicResource IconTextButton}" />
+                            Style="{DynamicResource IconTextButton}"
+                            ToolTipService.BetweenShowDelay="0"
+                            ToolTipService.InitialShowDelay="0" />
                         <CustomControls:IconTextButtons
                             Uid="Feet"
                             Grid.Column="5"
@@ -1745,7 +1761,9 @@
                             FontSize="15"
                             Foreground="White"
                             PressedBackground="{StaticResource DataButtonPressedBackground}"
-                            Style="{DynamicResource IconTextButton}" />
+                            Style="{DynamicResource IconTextButton}"
+                            ToolTipService.BetweenShowDelay="0"
+                            ToolTipService.InitialShowDelay="0" />
                     </Grid>
                 </StackPanel>
                 <DockPanel Margin="0,10,0,0" LastChildFill="False">
@@ -1854,6 +1872,7 @@
                             Height="180"
                             Margin="5,0"
                             HorizontalScrollBarVisibility="Auto"
+                            RenderOptions.BitmapScalingMode="NearestNeighbor"
                             VerticalScrollBarVisibility="Auto">
                             <ScrollViewer.Background>
                                 <ImageBrush ImageSource="/cbhk_environment;component/resources/common/images/Frame.png" />

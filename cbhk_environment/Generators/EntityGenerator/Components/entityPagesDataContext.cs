@@ -89,8 +89,9 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 
         #endregion
 
-        #region 作为工具
+        #region 作为工具或引用
         public bool UseForTool { get; set; } = false;
+        public bool UseForReference { get; set; } = false;
         #endregion
 
         #region 当前实体页引用
@@ -694,13 +695,16 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     return "";
             }));
             Result = Regex.Replace(Result.Trim(','), @",{2,}", ",");
+
             if (UseForTool)
             {
-                Result = "{" + Result + "}";
+                Result = "";
+                Result = "{id:\"minecraft:" + SelectedEntityIdString + "\"" + (Result.Length > 0 ? "," + Result : "") + "}";
                 Entity entity = Window.GetWindow(currentEntityPage) as Entity;
                 entity.DialogResult = true;
                 return;
             }
+
             if (Summon)
                 Result = Result.Trim() != "" ? "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~ {" + Result + "}" : "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~";
             else
@@ -727,6 +731,11 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 Clipboard.SetText(Result);
         }
 
+        /// <summary>
+        /// 为外部提供生成重载
+        /// </summary>
+        /// <param name="showResult"></param>
+        /// <returns></returns>
         public string run_command(bool showResult)
         {
             CollectionCommonTagsMark();
@@ -748,6 +757,15 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     return "";
             })) + "," + AttributesData + "," + PassengersData;
             Result = Regex.Replace(Result.Trim(','), @",{2,}", ",");
+
+            if(UseForReference)
+            {
+                Result = "";
+                Result = "{id:\"minecraft:" + SelectedEntityIdString + "\"" + (Result.Length > 0 ? "," + Result : "") + "}";
+                Entity entity = Window.GetWindow(currentEntityPage) as Entity;
+                return Result;
+            }
+
             if (Summon)
                 Result = Result.Trim() != "" ? "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~ {" + Result + "}" : "summon minecraft:" + SelectedEntityIdString + " ~ ~ ~";
             else

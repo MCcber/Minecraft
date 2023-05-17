@@ -32,7 +32,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components.SpecialNBT
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
                 Multiselect = false,
                 RestoreDirectory = true,
-                Title = "请选择一个实体文件"
+                Title = "请选择一个物品文件"
             };
             if (openFileDialog.ShowDialog().Value)
             {
@@ -78,28 +78,42 @@ namespace cbhk_environment.Generators.ItemGenerator.Components.SpecialNBT
         }
 
         /// <summary>
-        /// 更新引用的实体索引
+        /// 更新引用的物品索引
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void ReferenceIndex_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            Slider slider = sender as Slider;
+            item_datacontext itemContext = (Window.GetWindow(slider) as Item).DataContext as item_datacontext;
+            RichTabItems richTabItems = this.FindParent<RichTabItems>();
+            int currentIndex = itemContext.ItemPageList.IndexOf(richTabItems);
+            int index = int.Parse(slider.Value.ToString());
+            ItemPages pageContext = itemContext.ItemPageList[index].Content as ItemPages;
             if (ReferenceMode.IsChecked.Value)
             {
-                Slider slider = sender as Slider;
-                item_datacontext itemContext = this.FindParent<Item>().DataContext as item_datacontext;
-                if (slider.Value < itemContext.ItemPageList.Count)
+                pageContext.UseForReference = true;
+                if (slider.Value < itemContext.ItemPageList.Count && currentIndex != index)
                 {
-                    int index = int.Parse(slider.Value.ToString());
-                    ItemPages page = itemContext.ItemPageList[index].Content as ItemPages;
-                    DisplayItem.Tag = page.run_command(false);
-                    (DisplayItem.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + page.SelectedItemIdString + ".png", UriKind.RelativeOrAbsolute));
+                    DisplayItem.Tag = pageContext.run_command(false);
+                    (DisplayItem.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + pageContext.SelectedItemIdString + "_spawn_egg.png", UriKind.RelativeOrAbsolute));
                 }
+                else
+                {
+                    DisplayItem.Tag = "";
+                    (DisplayItem.Child as Image).Source = new BitmapImage();
+                }
+            }
+            else
+            {
+                DisplayItem.Tag = "";
+                (DisplayItem.Child as Image).Source = new BitmapImage();
+                pageContext.UseForReference = false;
             }
         }
 
         /// <summary>
-        /// 删除当前乘客
+        /// 删除当前内联物品
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

@@ -30,6 +30,7 @@
             x:Name="ReferenceMode"
             Height="25"
             Margin="5,0,0,0"
+            Checked="ReferenceMode_Checked"
             Foreground="White"
             SelectedToggleText="引用模式"
             Style="{DynamicResource RadiusToggleButton}"

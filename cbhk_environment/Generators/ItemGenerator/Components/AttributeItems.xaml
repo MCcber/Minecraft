@@ -25,6 +25,7 @@
                 Foreground="White"
                 Text="属性名" />
             <ComboBox
+                x:Name="AttributeNameBox"
                 Width="100"
                 HorizontalAlignment="Left"
                 VerticalContentAlignment="Center"
@@ -39,6 +40,7 @@
                 Foreground="White"
                 Text="生效槽位" />
             <ComboBox
+                x:Name="Slot"
                 Width="60"
                 HorizontalAlignment="Left"
                 VerticalContentAlignment="Center"
@@ -53,6 +55,7 @@
                 Foreground="White"
                 Text="值类型" />
             <ComboBox
+                x:Name="Operations"
                 Width="100"
                 Height="30"
                 HorizontalAlignment="Left"
@@ -81,6 +84,7 @@
                 Foreground="White"
                 Text="值" />
             <Slider
+                x:Name="Amount"
                 Height="25"
                 Margin="30,0,0,0"
                 HorizontalAlignment="Stretch"
@@ -100,6 +104,7 @@
                 Foreground="White"
                 Text="名称" />
             <TextBox
+                x:Name="NameBox"
                 Height="25"
                 Margin="15,0,0,0"
                 Padding="0,2,0,0"

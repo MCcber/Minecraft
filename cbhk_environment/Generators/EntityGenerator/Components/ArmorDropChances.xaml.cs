@@ -15,7 +15,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 string result = "";
                 if(EnableButton.IsChecked.Value)
                 {
-                    string data = boots.Value + "f," + legs.Value + "f," + chest.Value + "f," + helmet.Value + "f";
+                    string data = (boots.Value / 100) + "f," + (legs.Value / 100) + "f," + (chest.Value / 100) + "f," + (helmet.Value / 100) + "f";
                     result = "ArmorDropChances:[" + data.Trim(',') + "]";
                 }
                 return result;

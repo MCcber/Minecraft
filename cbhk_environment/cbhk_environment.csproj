@@ -162,6 +162,7 @@
     <Resource Include="resources\common\images\SliderBar.png" />
     <Resource Include="resources\common\images\SliderButton.png" />
     <Resource Include="resources\common\images\SliderButtonLocked.png" />
+    <Resource Include="resources\common\images\Slot.png" />
     <Resource Include="resources\common\images\spyglass_scope.png" />
     <Resource Include="resources\common\images\TextEditBox.png" />
     <Resource Include="resources\common\images\TextToggleButtonLocked.png" />
@@ -284,6 +285,7 @@
     <None Remove="resources\cbhk_form\images\Error.png" />
     <None Remove="resources\cbhk_form\images\Info.png" />
     <None Remove="resources\common\images\Save.png" />
+    <None Remove="resources\common\images\Slot.png" />
     <None Remove="resources\common\images\spyglass_scope.png" />
   </ItemGroup>
 </Project>

@@ -15,7 +15,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 string result = "";
                 if (EnableButton.IsChecked.Value)
                 {
-                    string data = mainhand.Value + "f," + offhand.Value + "f";
+                    string data = (mainhand.Value / 100) + "f," + (offhand.Value / 100) + "f";
                     result = "HandDropChances:[" + data.Trim(',') + "]";
                 }
                 return result;

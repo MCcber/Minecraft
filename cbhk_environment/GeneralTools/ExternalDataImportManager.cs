@@ -152,8 +152,9 @@ namespace cbhk_environment.GeneralTools
         {
             string result = "";
             string data = IsPath ? File.ReadAllText(filePathOrData) : filePathOrData;
+            if (data == null) return result;
             #region 提取可用NBT数据和物品ID
-            if (data.Contains("{") && data.Contains("}"))
+            if (data.Contains('{') && data.Contains('}'))
                 result = data[data.IndexOf('{')..(data.LastIndexOf('}') + 1)];
             //补齐缺失双引号对的key
             result = Regex.Replace(result, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
@@ -195,6 +196,7 @@ namespace cbhk_environment.GeneralTools
                     version1_12 = true;
             }
             else
+            if (nbtData.Length == 0)
             {
                 displayContext.DisplayInfomation = "该指令内容与物品生成无关";
                 displayContext.MessageTitle = "导入失败";
@@ -207,6 +209,7 @@ namespace cbhk_environment.GeneralTools
             try
             {
                 JToken itemTagID = JObject.Parse(nbtData).SelectToken("Item.id");
+                itemTagID ??= JObject.Parse(nbtData).SelectToken("id");
                 if (itemTagID != null && itemID.Length == 0)
                     itemID = itemTagID.ToString();
                 //过滤掉命名空间
@@ -257,21 +260,23 @@ namespace cbhk_environment.GeneralTools
                 IsContentSaved = true
             };
             Generators.ItemGenerator.Components.ItemPages itemPages = new() { FontWeight = FontWeights.Normal };
+
+            if (mode == "Summon")
+                itemPages.Summon = true;
+            else
+                itemPages.Give = true;
+            if (filePath.Length > 0 && File.Exists(filePath))
+                itemPages.ExternFilePath = filePath;
             if (externData != null)
             {
-                if (mode == "Summon")
-                    itemPages.Summon = true;
-                else
-                    itemPages.Give = true;
                 itemPages.ImportMode = true;
-                if (filePath.Length > 0 && File.Exists(filePath))
-                    itemPages.ExternFilePath = filePath;
                 itemPages.ExternallyReadEntityData = externData;
-                if (version1_12)
-                    itemPages.SelectedVersion = "1.12-";
-                IconComboBoxItem itemId = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemText == selectedItemID).First();
-                itemPages.SelectedItemId = itemId;
             }
+            if (version1_12)
+                itemPages.SelectedVersion = "1.12-";
+            IconComboBoxItem itemId = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemText == selectedItemID).First();
+            itemPages.SelectedItemId = itemId;
+
             richTabItems.Content = itemPages;
             itemPageList.Add(richTabItems);
             if (itemPageList.Count == 1)

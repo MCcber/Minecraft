@@ -40,7 +40,7 @@
             Foreground="White"
             SelectedToggleText="启用"
             Style="{DynamicResource RadiusToggleButton}"
-            ToggleHeight="25"
+            ToggleHeight="26"
             ToggleWidth="45"
             UnSelectedToggleText="禁用" />
         <TextBlock
@@ -57,7 +57,6 @@
             Width="25"
             Height="25" />
         <CustomControls:IconTextButtons
-            x:Name="referenceBootsFromClipboard"
             Grid.Row="1"
             Grid.Column="2"
             Height="25"
@@ -67,7 +66,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="referenceBootsFromFile"
             Grid.Row="1"
             Grid.Column="3"
             Height="25"
@@ -77,7 +75,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="generatorBoots"
             Grid.Row="1"
             Grid.Column="4"
             Height="25"
@@ -87,7 +84,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="setBootsEmpty"
             Grid.Row="1"
             Grid.Column="5"
             Height="25"
@@ -110,7 +106,6 @@
             Width="25"
             Height="25" />
         <CustomControls:IconTextButtons
-            x:Name="referenceLegsFromClipboard"
             Grid.Row="2"
             Grid.Column="2"
             Height="25"
@@ -120,7 +115,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="referenceLegsFromFile"
             Grid.Row="2"
             Grid.Column="3"
             Height="25"
@@ -130,7 +124,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="generatorLegs"
             Grid.Row="2"
             Grid.Column="4"
             Height="25"
@@ -140,7 +133,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="setLegsEmpty"
             Grid.Row="2"
             Grid.Column="5"
             Height="25"
@@ -163,7 +155,6 @@
             Width="25"
             Height="25" />
         <CustomControls:IconTextButtons
-            x:Name="referenceChestFromClipboard"
             Grid.Row="3"
             Grid.Column="2"
             Height="25"
@@ -173,7 +164,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="referenceChestFromFile"
             Grid.Row="3"
             Grid.Column="3"
             Height="25"
@@ -183,7 +173,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="generatorChests"
             Grid.Row="3"
             Grid.Column="4"
             Height="25"
@@ -193,7 +182,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="setChestEmpty"
             Grid.Row="3"
             Grid.Column="5"
             Height="25"
@@ -216,7 +204,6 @@
             Width="25"
             Height="25" />
         <CustomControls:IconTextButtons
-            x:Name="referenceHelmetFromClipboard"
             Grid.Row="4"
             Grid.Column="2"
             Height="25"
@@ -226,7 +213,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="referenceHelmetFromFile"
             Grid.Row="4"
             Grid.Column="3"
             Height="25"
@@ -236,7 +222,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="generatorHelmet"
             Grid.Row="4"
             Grid.Column="4"
             Height="25"
@@ -246,7 +231,6 @@
             PressedBackground="{DynamicResource ButtonPressed}"
             Style="{DynamicResource IconTextButton}" />
         <CustomControls:IconTextButtons
-            x:Name="setHelmetEmpty"
             Grid.Row="4"
             Grid.Column="5"
             Height="25"

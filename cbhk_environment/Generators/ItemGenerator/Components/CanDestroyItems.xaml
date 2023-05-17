@@ -26,6 +26,7 @@
             Foreground="White"
             Text="方块ID" />
         <ComboBox
+            x:Name="ID"
             Grid.Column="1"
             Height="25"
             Background="Transparent"

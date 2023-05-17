@@ -34,6 +34,8 @@
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/TreeViewWithScrollBars.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/RichTabItems.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/TextTabItems.xaml" />
+                <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/TextToolTip.xaml" />
+                <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/RichToolTip.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/RepeatButtonWithBackground.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/TabControlWithScrollBar.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/RotationChartSetItem.xaml" />
