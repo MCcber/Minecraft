@@ -460,7 +460,13 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
             };
             if (Request.toolTip.Length > 0)
             {
-                displayText.ToolTip = Request.toolTip;
+                ToolTip toolTip = new()
+                {
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent")),
+                    Content = Request.toolTip
+                };
+                displayText.ToolTip = toolTip;
                 ToolTipService.SetInitialShowDelay(displayText, 0);
                 ToolTipService.SetBetweenShowDelay(displayText, 0);
             }

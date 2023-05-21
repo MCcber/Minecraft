@@ -30,67 +30,29 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
     public class armor_stand_datacontext: ObservableObject
     {
         #region 所有3D视图对象
-        private WpfCube Head_cube = new WpfCube(new Point3D(0.0, 12.5, 0.0), 1.0, 3.0, 1.0);
+        public GeometryModel3D HeadModel { get; set; }
+        public ModelVisual3D LeftArmModel { get; set; }
+        public ModelVisual3D RightArmModel { get; set; }
+        public GeometryModel3D LeftLegModel { get; set; }
+        public GeometryModel3D RightLegModel { get; set; }
+        public GeometryModel3D TopModel { get; set; }
+        public GeometryModel3D BottomModel { get; set; }
+        public GeometryModel3D LeftModel { get; set; }
+        public GeometryModel3D RightModel { get; set; }
+        public ModelVisual3D BasePlateModel { get; set; }
+        public ModelVisual3D ArmGroup { get; set; }
 
-        private WpfCube Lhand_cube = new WpfCube(new Point3D(3.0, 10.0, 0.0), 1.0, 5.0, 1.0);
+        public ModelVisual3D ModelGroup { get; set; }
 
-        private WpfCube Rhand_cube = new WpfCube(new Point3D(-3.0, 10.0, 0.0), 1.0, 5.0, 1.0);
+        Viewport3D axisViewer { get; set; }
 
-        private WpfCube Lleg_cube = new WpfCube(new Point3D(1.0, 5.0, 0.0), 1.0, 5.0, 1.0);
+        private double pos_x = 2.2;
 
-        private WpfCube Rleg_cube = new WpfCube(new Point3D(-1.0, 5.0, 0.0), 1.0, 5.0, 1.0);
+        private double pos_y = 4.0;
 
-        private WpfCube Top_cube = new WpfCube(new Point3D(-3.0, 10.0, 0.0), 7.0, 1.0, 1.0);
+        private double pos_z = 2.0;
 
-        private WpfCube Bottom_cube = new WpfCube(new Point3D(-1.5, 5.0, 0.0), 4.0, 1.0, 1.0);
-
-        private WpfCube Left_cube = new WpfCube(new Point3D(1.0, 5.0, 0.0), 1.0, -5.0, 1.0);
-
-        private WpfCube Right_cube = new WpfCube(new Point3D(-1.0, 5.0, 0.0), 1.0, -5.0, 1.0);
-
-        private WpfCube BasePlate_cube = new WpfCube(new Point3D(-4.5, 0.0, -4.5), 10.0, 1.0, 10.0);
-
-        private WpfCube X_axis_cube = new WpfCube(new Point3D(0.0, 0.0, 0.0), 100.0, 0.1, 0.1);
-
-        private WpfCube Y_axis_cube = new WpfCube(new Point3D(0.0, 0.0, 0.0), 0.1, -100.0, 0.1);
-
-        private WpfCube Z_axis_cube = new WpfCube(new Point3D(0.0, 0.0, 0.0), 0.1, 0.1, 100.0);
-
-        private GeometryModel3D Head_cubeModel;
-
-        private GeometryModel3D Lhand_cubeModel;
-
-        private GeometryModel3D Rhand_cubeModel;
-
-        private GeometryModel3D Lleg_cubeModel;
-
-        private GeometryModel3D Rleg_cubeModel;
-
-        private GeometryModel3D Top_cubeModel;
-
-        private GeometryModel3D Bottom_cubeModel;
-
-        private GeometryModel3D Left_cubeModel;
-
-        private GeometryModel3D Right_cubeModel;
-
-        private GeometryModel3D BasePlate_cubeModel;
-
-        private GeometryModel3D X_axis_cubeModel;
-
-        private GeometryModel3D Y_axis_cubeModel;
-
-        private GeometryModel3D Z_axis_cubeModel;
-
-        private Model3DGroup groupScene = new Model3DGroup();
-
-        private double pos_x = -15.0;
-
-        private double pos_y = -10.0;
-
-        private double pos_z = -15.0;
-
-        private Vector3D zero_pos = new Vector3D(0.0, 0.0, 0.0);
+        private Vector3D zero_pos = new(0.0, 0.0, 0.0);
 
         private double motion_x;
 
@@ -98,7 +60,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
 
         private double motion_z;
 
-        private double Camera_pos_x = 15.0;
+        private double Camera_pos_x = 5;
 
         private bool Mousedown = false;
 
@@ -113,8 +75,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         private double mouse_move_x;
 
         private double mouse_move_y;
-
-        private Viewport3D AS_model;
         #endregion
 
         #region 是否拥有副手权限
@@ -168,30 +128,21 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         Dictionary<string,string> KnownColorsInMc = new();
 
         List<int> KnownColorDifferenceSet = new List<int>();
-        /// <summary>
-        /// 盔甲架全身材质
-        /// </summary>
-        private BitmapImage armor_stand_material = null;
 
-        /// <summary>
-        /// 底座材质
-        /// </summary>
-        private BitmapImage base_plate_material = null;
-
-        /// <summary>
-        /// 盔甲架全身材质文件路径
-        /// </summary>
-        private string armor_stand_material_path = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\oak_planks.png";
-
-        /// <summary>
-        /// 底座材质文件路径
-        /// </summary>
-        private string base_plate_material_path = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\smooth_stone.png";
+        #region 为盔甲架和坐标轴映射纹理
+        public BitmapImage woodenImage { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\oak_planks.png"));
+        public BitmapImage stone { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\smooth_stone.png"));
+        public BitmapImage stoneSide { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\stoneSide.png"));
+        public BitmapImage axisRed { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\axisRed.png"));
+        public BitmapImage axisGreen { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\axisGreen.png"));
+        public BitmapImage axisBlue { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\axisBlue.png"));
+        public BitmapImage axisGray { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\axisGray.png"));
+        #endregion
 
         /// <summary>
         /// 当前视图模型
         /// </summary>
-        private Viewport3D CurrentViewModel = null;
+        private Viewport3D ArmorStandViewer = null;
 
         //as的所有NBT项
         List<string> as_nbts = new List<string> { };
@@ -254,7 +205,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <summary>
         /// 动画时间轴
         /// </summary>
-        TimeLine tl = new TimeLine(380, 200)
+        TimeLine tl = new(380, 200)
         {
             Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0))
         };
@@ -580,7 +531,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 head_x = value;
                 HeadXValue = HeadX != 0f?true:false;
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Head_cubeModel, 0.02, true, HeadX, HeadY, HeadZ);
                 OnPropertyChanged();
             }
         }
@@ -594,7 +544,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 head_y = value;
                 HeadYValue = HeadY != 0f ?true:false;
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Head_cubeModel, 0.02, true, HeadX, HeadY, HeadZ);
                 OnPropertyChanged();
             }
         }
@@ -608,7 +557,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 head_z = value;
                 HeadZValue = HeadZ != 0f ?true:false;
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Head_cubeModel, 0.02, true, HeadX, HeadY, HeadZ);
                 OnPropertyChanged();
             }
         }
@@ -623,10 +571,10 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 body_x = value;
                 BodyXValue = BodyX != 0f ?true:false;
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Top_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Bottom_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Left_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Right_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
+                //TurnModel(new Point3D(0.5, 9.5, 0.5), TopModel, 0.02, true, BodyX, BodyY, BodyZ);
+                //TurnModel(new Point3D(0.5, 9.5, 0.5), BottomModel, 0.02, true, BodyX, BodyY, BodyZ);
+                //TurnModel(new Point3D(0.5, 9.5, 0.5), LeftModel, 0.02, true, BodyX, BodyY, BodyZ);
+                //TurnModel(new Point3D(0.5, 9.5, 0.5), RightModel, 0.02, true, BodyX, BodyY, BodyZ);
                 OnPropertyChanged();
             }
         }
@@ -640,10 +588,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 body_y = value;
                 BodyYValue = BodyY != 0f ?true:false;
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Top_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Bottom_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Left_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Right_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
                 OnPropertyChanged();
             }
         }
@@ -657,10 +601,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 body_z = value;
                 BodyZValue = BodyZ != 0f ?true:false;
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Top_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Bottom_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Left_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
-                TurnModel(new Point3D(0.5, 9.5, 0.5), Right_cubeModel, 0.02, true, BodyX, BodyY, BodyZ);
                 OnPropertyChanged();
             }
         }
@@ -675,7 +615,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 larm_x = value;
                 LArmXValue = LArmX != 0f ?true:false;
-                TurnModel(new Point3D(3.5, 9.5, 0.5), Lhand_cubeModel, 0.02, true, LArmX, LArmY, LArmZ);
                 OnPropertyChanged();
             }
         }
@@ -689,7 +628,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 larm_y = value;
                 LArmYValue = LArmY != 0f ?true:false;
-                TurnModel(new Point3D(3.5, 9.5, 0.5), Lhand_cubeModel, 0.02, true, LArmX, LArmY, LArmZ);
                 OnPropertyChanged();
             }
         }
@@ -703,7 +641,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 larm_z = value;
                 LArmZValue = LArmZ != 0f ?true:false;
-                TurnModel(new Point3D(3.5, 9.5, 0.5), Lhand_cubeModel, 0.02, true, LArmX, LArmY, LArmZ);
                 OnPropertyChanged();
             }
         }
@@ -718,7 +655,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 rarm_x = value;
                 RArmXValue = RArmX != 0f ?true:false;
-                TurnModel(new Point3D(-2.5, 9.5, 0.5), Rhand_cubeModel, 0.02, true, RArmX, RArmY, RArmZ);
                 OnPropertyChanged();
             }
         }
@@ -732,7 +668,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 rarm_y = value;
                 RArmYValue = RArmY != 0f ?true:false;
-                TurnModel(new Point3D(-2.5, 9.5, 0.5), Rhand_cubeModel, 0.02, true, RArmX, RArmY, RArmZ);
                 OnPropertyChanged();
             }
         }
@@ -746,7 +681,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 rarm_z = value;
                 RArmZValue = RArmZ != 0f ?true:false;
-                TurnModel(new Point3D(-2.5, 9.5, 0.5), Rhand_cubeModel, 0.02, true, RArmX, RArmY, RArmZ);
                 OnPropertyChanged();
             }
         }
@@ -761,7 +695,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 lleg_x = value;
                 LLegXValue = LLegX != 0f ?true:false;
-                TurnModel(new Point3D(1.5, 4.5, 0.5), Lleg_cubeModel, 0.02, true, LLegX, LLegY, LLegZ);
                 OnPropertyChanged();
             }
         }
@@ -775,7 +708,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 lleg_y = value;
                 LLegYValue = LLegY != 0f ?true:false;
-                TurnModel(new Point3D(1.5, 4.5, 0.5), Lleg_cubeModel, 0.02, true, LLegX, LLegY, LLegZ);
                 OnPropertyChanged();
             }
         }
@@ -789,7 +721,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 lleg_z = value;
                 LLegZValue = LLegZ != 0f ?true:false;
-                TurnModel(new Point3D(1.5, 4.5, 0.5), Lleg_cubeModel, 0.02, true, LLegX, LLegY, LLegZ);
                 OnPropertyChanged();
             }
         }
@@ -804,7 +735,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 rleg_x = value;
                 RLegXValue = RLegX != 0f ?true:false;
-                TurnModel(new Point3D(-0.5, 4.5, 0.5), Rleg_cubeModel, 0.02, true, RLegX, RLegY, RLegZ);
                 OnPropertyChanged();
             }
         }
@@ -818,7 +748,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 rleg_y = value;
                 RLegYValue = RLegY != 0f ?true:false;
-                TurnModel(new Point3D(-0.5, 4.5, 0.5), Rleg_cubeModel, 0.02, true, RLegX, RLegY, RLegZ);
                 OnPropertyChanged();
             }
         }
@@ -832,7 +761,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
             {
                 rleg_z = value;
                 RLegZValue = RLegZ != 0f ?true:false;
-                TurnModel(new Point3D(-0.5, 4.5, 0.5), Rleg_cubeModel, 0.02, true, RLegX, RLegY, RLegZ);
                 OnPropertyChanged();
             }
         }
@@ -957,9 +885,9 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         private bool UsingThreeAxis = false;
 
         #region 三轴合一数据更新载体
-        TextBlock XAxis = new TextBlock();
-        TextBlock YAxis = new TextBlock();
-        TextBlock ZAxis = new TextBlock();
+        TextBlock XAxis = new();
+        TextBlock YAxis = new();
+        TextBlock ZAxis = new();
         
         //用于自增和自减
         float XAxisValue = 0f;
@@ -1980,8 +1908,8 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <param name="e"></param>
         private void HideArmsInModel(object sender, RoutedEventArgs e)
         {
-            groupScene.Children.Remove(Lhand_cubeModel);
-            groupScene.Children.Remove(Rhand_cubeModel);
+            ArmGroup.Children.Remove(LeftArmModel);
+            ArmGroup.Children.Remove(RightArmModel);
         }
 
         /// <summary>
@@ -1989,8 +1917,8 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// </summary>
         public void ShowArmsInModel(object sender, RoutedEventArgs e)
         {
-            groupScene.Children.Add(Lhand_cubeModel);
-            groupScene.Children.Add(Rhand_cubeModel);
+            ArmGroup.Children.Add(LeftArmModel);
+            ArmGroup.Children.Add(RightArmModel);
         }
 
         /// <summary>
@@ -2000,7 +1928,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <param name="e"></param>
         private void HaveBasePlateInModel(object sender, RoutedEventArgs e)
         {
-            groupScene.Children.Add(BasePlate_cubeModel);
+            ModelGroup.Children.Add(BasePlateModel);
         }
 
         /// <summary>
@@ -2008,7 +1936,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// </summary>
         public void NoBasePlateInModel(object sender, RoutedEventArgs e)
         {
-            groupScene.Children.Remove(BasePlate_cubeModel);
+            ModelGroup.Children.Remove(BasePlateModel);
         }
 
         /// <summary>
@@ -2053,51 +1981,32 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void ModelViewLoaded(object sender, RoutedEventArgs e)
+        public void ArmorStandLoaded(object sender, RoutedEventArgs e)
         {
-            if (sender is Viewport3D MainWindow)
-            {
-                if (File.Exists(armor_stand_material_path))
-                    armor_stand_material = BitmapImageConverter.ToBitmapImage(System.Drawing.Image.FromFile(armor_stand_material_path) as System.Drawing.Bitmap);
-                if (File.Exists(armor_stand_material_path))
-                    base_plate_material = BitmapImageConverter.ToBitmapImage(System.Drawing.Image.FromFile(base_plate_material_path) as System.Drawing.Bitmap);
+            ArmorStandViewer = sender as Viewport3D;
+        }
 
-                Head_cubeModel = Head_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Lhand_cubeModel = Lhand_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Rhand_cubeModel = Rhand_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Lleg_cubeModel = Lleg_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Rleg_cubeModel = Rleg_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Top_cubeModel = Top_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Bottom_cubeModel = Bottom_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Left_cubeModel = Left_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                Right_cubeModel = Right_cube.CreateModel(Color.FromRgb(176, 144, 86));
-                BasePlate_cubeModel = BasePlate_cube.CreateModel(Color.FromRgb(176, 176, 176));
-                X_axis_cubeModel = X_axis_cube.CreateModel(Color.FromRgb(255, 0, 0));
-                Y_axis_cubeModel = Y_axis_cube.CreateModel(Color.FromRgb(0, 255, 0));
-                Z_axis_cubeModel = Z_axis_cube.CreateModel(Color.FromRgb(0, 0, 255));
-                groupScene.Children.Add(Head_cubeModel);
-                groupScene.Children.Add(Lleg_cubeModel);
-                groupScene.Children.Add(Rleg_cubeModel);
-                groupScene.Children.Add(Top_cubeModel);
-                groupScene.Children.Add(Bottom_cubeModel);
-                groupScene.Children.Add(Left_cubeModel);
-                groupScene.Children.Add(Right_cubeModel);
-                groupScene.Children.Add(BasePlate_cubeModel);
-                groupScene.Children.Add(X_axis_cubeModel);
-                groupScene.Children.Add(Y_axis_cubeModel);
-                groupScene.Children.Add(Z_axis_cubeModel);
-                groupScene.Children.Add(PositionLight(new Point3D(-5.0, 10.0, 0.0)));
-                groupScene.Children.Add(new AmbientLight(Colors.LightGray));
-                ModelVisual3D visual = new()
-                {
-                    Content = groupScene
-                };
-                MainWindow.Children.Add(visual);
-                MainWindow.Camera = Camera(15.0, 10.0, 15.0, 90, new Vector3D(-15.0, -10.0, -15.0));
-                AS_model = MainWindow;
+        public void AxisCameraLoaded(object sender, RoutedEventArgs e)
+        {
+            axisViewer = sender as Viewport3D;
+        }
 
-                CurrentViewModel = sender as Viewport3D;
-            }
+        /// <summary>
+        /// 载入模型组
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ModelGroupLoaded(object sender, RoutedEventArgs e)
+        {
+            ModelGroup = sender as ModelVisual3D;
+        }
+
+        public void ArmGroupModelLoaded(object sender,RoutedEventArgs e)
+        {
+            ArmGroup = sender as ModelVisual3D;
+            LeftArmModel = ArmGroup.Children[0] as ModelVisual3D;
+            RightArmModel = ArmGroup.Children[1] as ModelVisual3D;
+            ArmGroup.Children.Clear();
         }
 
         /// <summary>
@@ -2107,11 +2016,9 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <param name="e"></param>
         public void ModelViewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (CurrentViewModel == null)
-                CurrentViewModel = sender as Viewport3D;
             Mousedown = true;
-            mouse_pos_x = e.GetPosition(CurrentViewModel).X;
-            mouse_pos_y = e.GetPosition(CurrentViewModel).Y;
+            mouse_pos_x = e.GetPosition(ArmorStandViewer).X;
+            mouse_pos_y = e.GetPosition(ArmorStandViewer).Y;
         }
 
         /// <summary>
@@ -2121,8 +2028,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <param name="e"></param>
         public void ModelViewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (CurrentViewModel == null)
-                CurrentViewModel = sender as Viewport3D;
             Mousedown = false;
             move_x = mouse_move_x;
             move_y = mouse_move_y;
@@ -2135,12 +2040,10 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// <param name="e"></param>
         public void ModelViewMouseMove(object sender, MouseEventArgs e)
         {
-            if (CurrentViewModel == null)
-                CurrentViewModel = sender as Viewport3D;
             if (Mousedown)
             {
-                mouse_move_x = 0.01 * (e.GetPosition(CurrentViewModel).X - mouse_pos_x) + move_x;
-                mouse_move_y = 0.01 * (e.GetPosition(CurrentViewModel).Y - mouse_pos_y) + move_y;
+                mouse_move_x = 0.01 * (e.GetPosition(ArmorStandViewer).X - mouse_pos_x) + move_x;
+                mouse_move_y = 0.01 * (e.GetPosition(ArmorStandViewer).Y - mouse_pos_y) + move_y;
 
                 pos_x = Camera_pos_x * Math.Cos(mouse_move_x) * Math.Cos(mouse_move_y);
                 pos_y = Camera_pos_x * Math.Sin(mouse_move_y) * -1.0;
@@ -2150,14 +2053,8 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
                 motion_y = zero_pos.Y - pos_y;
                 motion_z = zero_pos.Z - pos_z;
 
-                double degress = Vector3D.DotProduct(new Vector3D(motion_x,motion_y,motion_z), new Vector3D(0,1,0));
-
-                if(degress <= 14.99 || degress >= 14.99)
-                {
-
-                }
-
-                CurrentViewModel.Camera = Camera(pos_x, pos_y, pos_z, 90, new Vector3D(motion_x, motion_y, motion_z));
+                ArmorStandViewer.Camera = Camera(pos_x, pos_y, pos_z, 90, new Vector3D(motion_x, motion_y, motion_z));
+                axisViewer.Camera = Camera(pos_x, pos_y, pos_z, 90, new Vector3D(motion_x, motion_y, motion_z));
             }
         }
 
@@ -2176,7 +2073,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
                 pos_x += x_move * 0.1;
                 pos_y += y_move * 0.1;
                 pos_z += z_move * 0.1;
-                CurrentViewModel.Camera = Camera(pos_x, pos_y, pos_z, 60, new Vector3D(zero_pos.X - pos_x, zero_pos.Y - pos_y, zero_pos.Z - pos_z));
+                ArmorStandViewer.Camera = Camera(pos_x, pos_y, pos_z, 60, new Vector3D(zero_pos.X - pos_x, zero_pos.Y - pos_y, zero_pos.Z - pos_z));
                 Camera_pos_x = Math.Sqrt(Math.Pow(pos_x, 2.0) + Math.Pow(pos_y, 2.0) + Math.Pow(pos_z, 2.0));
             }
             else if (e.Delta < 0)
@@ -2184,7 +2081,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
                 pos_x -= x_move * 0.1;
                 pos_y -= y_move * 0.1;
                 pos_z -= z_move * 0.1;
-                CurrentViewModel.Camera = Camera(pos_x, pos_y, pos_z, 60, new Vector3D(zero_pos.X - pos_x, zero_pos.Y - pos_y, zero_pos.Z - pos_z));
+                ArmorStandViewer.Camera = Camera(pos_x, pos_y, pos_z, 60, new Vector3D(zero_pos.X - pos_x, zero_pos.Y - pos_y, zero_pos.Z - pos_z));
                 Camera_pos_x = Math.Sqrt(Math.Pow(pos_x, 2.0) + Math.Pow(pos_y, 2.0) + Math.Pow(pos_z, 2.0));
             }
         }
@@ -2254,346 +2151,6 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
                 LookDirection = xyz_rotation
             };
         }
-
-        public DirectionalLight PositionLight(Point3D position)
-        {
-            return new DirectionalLight
-            {
-                Color = Colors.Gray,
-                Direction = new Point3D(0.0, 0.0, 0.0) - position
-            };
-        }
         #endregion
-    }
-
-    public static class Rotate3DModel
-    {
-        public static Vector3D Rotate(this Vector3D vector3D, double x, double y, double z)
-        {
-            Matrix3D rotateX = new(1.0, 0.0, 0.0, 0.0, 0.0, Math.Cos(x), Math.Sin(x), 0.0, 0.0, 0.0 - Math.Sin(x), Math.Cos(x), 0.0, 0.0, 0.0, 0.0, 1.0);
-            Matrix3D rotateY = new(Math.Cos(y), 0.0, 0.0 - Math.Sin(y), 0.0, 0.0, 1.0, 0.0, 0.0, Math.Sin(y), 0.0, Math.Cos(y), 0.0, 0.0, 0.0, 0.0, 1.0);
-            Matrix3D rotateZ = new(Math.Cos(z), Math.Sin(z), 0.0, 0.0, 0.0 - Math.Sin(z), Math.Cos(z), 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-            return vector3D * rotateX * rotateY * rotateZ;
-        }
-    }
-    internal class WpfTriangle
-    {
-        private Point3D p1;
-
-        private Point3D p2;
-
-        private Point3D p3;
-
-        public WpfTriangle(Point3D P1, Point3D P2, Point3D P3)
-        {
-            p1 = P1;
-            p2 = P2;
-            p3 = P3;
-        }
-
-        public static void AddTriangleToMesh(Point3D p0, Point3D p1, Point3D p2, MeshGeometry3D mesh)
-        {
-            AddTriangleToMesh(p0, p1, p2, mesh, combine_vertices: false);
-        }
-
-        public static void AddPointCombined(Point3D point, MeshGeometry3D mesh, Vector3D normal)
-        {
-            bool found = false;
-            int i = 0;
-            foreach (Point3D position in mesh.Positions)
-            {
-                if (position.Equals(point))
-                {
-                    found = true;
-                    mesh.TriangleIndices.Add(i);
-                    mesh.Positions.Add(point);
-                    mesh.Normals.Add(normal);
-                    break;
-                }
-                i++;
-            }
-            if (!found)
-            {
-                mesh.Positions.Add(point);
-                mesh.TriangleIndices.Add(mesh.TriangleIndices.Count);
-                mesh.Normals.Add(normal);
-            }
-        }
-
-        public static void AddTriangleToMesh(Point3D p0, Point3D p1, Point3D p2, MeshGeometry3D mesh, bool combine_vertices)
-        {
-            Vector3D normal = CalculateNormal(p0, p1, p2);
-            if (combine_vertices)
-            {
-                AddPointCombined(p0, mesh, normal);
-                AddPointCombined(p1, mesh, normal);
-                AddPointCombined(p2, mesh, normal);
-                return;
-            }
-            mesh.Positions.Add(p0);
-            mesh.Positions.Add(p1);
-            mesh.Positions.Add(p2);
-            mesh.TriangleIndices.Add(mesh.TriangleIndices.Count);
-            mesh.TriangleIndices.Add(mesh.TriangleIndices.Count);
-            mesh.TriangleIndices.Add(mesh.TriangleIndices.Count);
-            mesh.Normals.Add(normal);
-            mesh.Normals.Add(normal);
-            mesh.Normals.Add(normal);
-        }
-
-        public GeometryModel3D CreateTriangleModel(Color color)
-        {
-            return CreateTriangleModel(p1, p2, p3, color);
-        }
-
-        public static GeometryModel3D CreateTriangleModel(Point3D P0, Point3D P1, Point3D P2, Color color)
-        {
-            MeshGeometry3D mesh = new MeshGeometry3D();
-            AddTriangleToMesh(P0, P1, P2, mesh);
-            Material material = new DiffuseMaterial(new SolidColorBrush(color));
-            return new GeometryModel3D(mesh, material);
-        }
-
-        public static Vector3D CalculateNormal(Point3D P0, Point3D P1, Point3D P2)
-        {
-            Vector3D v2 = new Vector3D(P1.X - P0.X, P1.Y - P0.Y, P1.Z - P0.Z);
-            Vector3D v = new Vector3D(P2.X - P1.X, P2.Y - P1.Y, P2.Z - P1.Z);
-            return Vector3D.CrossProduct(v2, v);
-        }
-    }
-    public class WpfRectangle
-    {
-        private Point3D p0;
-
-        private Point3D p1;
-
-        private Point3D p2;
-
-        private Point3D p3;
-
-        public WpfRectangle(Point3D P0, Point3D P1, Point3D P2, Point3D P3)
-        {
-            p0 = P0;
-            p1 = P1;
-            p2 = P2;
-            p3 = P3;
-        }
-
-        public WpfRectangle(Point3D P0, double w, double h, double d)
-        {
-            p0 = P0;
-            if (w != 0.0 && h != 0.0)
-            {
-                p1 = new Point3D(p0.X + w, p0.Y, p0.Z);
-                p2 = new Point3D(p0.X + w, p0.Y - h, p0.Z);
-                p3 = new Point3D(p0.X, p0.Y - h, p0.Z);
-            }
-            else if (w != 0.0 && d != 0.0)
-            {
-                p1 = new Point3D(p0.X, p0.Y, p0.Z + d);
-                p2 = new Point3D(p0.X + w, p0.Y, p0.Z + d);
-                p3 = new Point3D(p0.X + w, p0.Y, p0.Z);
-            }
-            else if (h != 0.0 && d != 0.0)
-            {
-                p1 = new Point3D(p0.X, p0.Y, p0.Z + d);
-                p2 = new Point3D(p0.X, p0.Y - h, p0.Z + d);
-                p3 = new Point3D(p0.X, p0.Y - h, p0.Z);
-            }
-        }
-
-        public void AddToMesh(MeshGeometry3D mesh)
-        {
-            WpfTriangle.AddTriangleToMesh(p0, p1, p2, mesh);
-            WpfTriangle.AddTriangleToMesh(p2, p3, p0, mesh);
-        }
-
-        public static void AddRectangleToMesh(Point3D p0, Point3D p1, Point3D p2, Point3D p3, MeshGeometry3D mesh)
-        {
-            WpfTriangle.AddTriangleToMesh(p0, p1, p2, mesh);
-            WpfTriangle.AddTriangleToMesh(p2, p3, p0, mesh);
-        }
-
-        public static GeometryModel3D CreateRectangleModel(Point3D p0, Point3D p1, Point3D p2, Point3D p3)
-        {
-            return CreateRectangleModel(p0, p1, p2, p3, texture: false);
-        }
-
-        public static GeometryModel3D CreateRectangleModel(Point3D p0, Point3D p1, Point3D p2, Point3D p3, bool texture)
-        {
-            MeshGeometry3D mesh = new MeshGeometry3D();
-            AddRectangleToMesh(p0, p1, p2, p3, mesh);
-            Material material = new DiffuseMaterial(new SolidColorBrush(Colors.White));
-            return new GeometryModel3D(mesh, material);
-        }
-    }
-    public class WpfCube
-    {
-        private Point3D origin;
-
-        private double width;
-
-        private double height;
-
-        private double depth;
-
-        public Point3D CenterBottom()
-        {
-            return new Point3D(origin.X + width / 2.0, origin.Y + height, origin.Z + depth / 2.0);
-        }
-
-        public Point3D Center()
-        {
-            return new Point3D(origin.X + width / 2.0, origin.Y - height / 2.0, origin.Z + depth / 2.0);
-        }
-
-        public Point3D CenterTop()
-        {
-            return new Point3D(origin.X + width / 2.0, origin.Y, origin.Z + depth / 2.0);
-        }
-
-        public WpfCube(Point3D P0, double w, double h, double d)
-        {
-            width = w;
-            height = h;
-            depth = d;
-            origin = P0;
-        }
-
-        public WpfCube(WpfCube cube)
-        {
-            width = cube.width;
-            height = cube.height;
-            depth = cube.depth;
-            origin = new Point3D(cube.origin.X, cube.origin.Y, cube.origin.Z);
-        }
-
-        public WpfRectangle Front()
-        {
-            return new WpfRectangle(origin, width, height, 0.0);
-        }
-
-        public WpfRectangle Back()
-        {
-            return new WpfRectangle(new Point3D(origin.X + width, origin.Y, origin.Z + depth), 0.0 - width, height, 0.0);
-        }
-
-        public WpfRectangle Left()
-        {
-            return new WpfRectangle(new Point3D(origin.X, origin.Y, origin.Z + depth), 0.0, height, 0.0 - depth);
-        }
-
-        public WpfRectangle Right()
-        {
-            return new WpfRectangle(new Point3D(origin.X + width, origin.Y, origin.Z), 0.0, height, depth);
-        }
-
-        public WpfRectangle Top()
-        {
-            return new WpfRectangle(origin, width, 0.0, depth);
-        }
-
-        public WpfRectangle Bottom()
-        {
-            return new WpfRectangle(new Point3D(origin.X + width, origin.Y - height, origin.Z), 0.0 - width, 0.0, depth);
-        }
-
-        public static void AddCubeToMesh(Point3D p0, double w, double h, double d, MeshGeometry3D mesh)
-        {
-            WpfCube cube = new(p0, w, h, d);
-            WpfRectangle front = cube.Front();
-            WpfRectangle back = cube.Back();
-            WpfRectangle right = cube.Right();
-            WpfRectangle left = cube.Left();
-            WpfRectangle top = cube.Top();
-            WpfRectangle bottom = cube.Bottom();
-            front.AddToMesh(mesh);
-            back.AddToMesh(mesh);
-            right.AddToMesh(mesh);
-            left.AddToMesh(mesh);
-            top.AddToMesh(mesh);
-            bottom.AddToMesh(mesh);
-        }
-
-        public GeometryModel3D CreateModel(BitmapImage image_material)
-        {
-            return CreateCubeModel(origin, width, height, depth, image_material);
-        }
-
-        public static GeometryModel3D CreateCubeModel(Point3D p0, double w, double h, double d, BitmapImage image_material)
-        {
-            MeshGeometry3D mesh = new();
-
-            #region 3DMaterialInformation
-            //mesh.Positions.Add(new Point3D(20, 0, 0));
-            //mesh.Positions.Add(new Point3D(20, 0, 3)); 
-            //mesh.Positions.Add(new Point3D(20, 20, 3)); 
-            //mesh.Positions.Add(new Point3D(20, 20, 0)); 
-            //mesh.Positions.Add(new Point3D(0, 20, 3)); 
-            //mesh.Positions.Add(new Point3D(0, 0, 0)); 
-            //mesh.Positions.Add(new Point3D(0, 20, 0)); 
-            //mesh.Positions.Add(new Point3D(0, 0, 3));
-
-            //mesh.TriangleIndices.Add(0);
-            //mesh.TriangleIndices.Add(1);
-            //mesh.TriangleIndices.Add(2);
-            //mesh.TriangleIndices.Add(3);
-            //mesh.TriangleIndices.Add(0);
-            //mesh.TriangleIndices.Add(2);
-            //mesh.TriangleIndices.Add(4);
-            //mesh.TriangleIndices.Add(5);
-            //mesh.TriangleIndices.Add(6);
-            //mesh.TriangleIndices.Add(4);
-            //mesh.TriangleIndices.Add(7);
-            //mesh.TriangleIndices.Add(5);
-            //mesh.TriangleIndices.Add(0);
-            //mesh.TriangleIndices.Add(5);
-            //mesh.TriangleIndices.Add(1);
-            //mesh.TriangleIndices.Add(1);
-            //mesh.TriangleIndices.Add(5);
-            //mesh.TriangleIndices.Add(7);
-            //mesh.TriangleIndices.Add(6);
-            //mesh.TriangleIndices.Add(3);
-            //mesh.TriangleIndices.Add(4);
-            //mesh.TriangleIndices.Add(4);
-            //mesh.TriangleIndices.Add(3);
-            //mesh.TriangleIndices.Add(2);
-
-            //mesh.TextureCoordinates.Add(new Point(0, 0));
-            //mesh.TextureCoordinates.Add(new Point(0, 1));
-            //mesh.TextureCoordinates.Add(new Point(1, 0));
-            //mesh.TextureCoordinates.Add(new Point(1, 1));
-            //mesh.TextureCoordinates.Add(new Point(0, 0));
-            //mesh.TextureCoordinates.Add(new Point(0, 1));
-            //mesh.TextureCoordinates.Add(new Point(1, 0));
-            //mesh.TextureCoordinates.Add(new Point(1, 1));
-            //mesh.TextureCoordinates.Add(new Point(0, 1));
-            //mesh.TextureCoordinates.Add(new Point(0, 1));
-            //mesh.TextureCoordinates.Add(new Point(1, 0));
-            //mesh.TextureCoordinates.Add(new Point(1, 1));
-
-            //mesh.TextureCoordinates.Add(new Point(0, 0));
-            //mesh.TextureCoordinates.Add(new Point(0, 1));
-            //mesh.TextureCoordinates.Add(new Point(1, 0));
-            //mesh.TextureCoordinates.Add(new Point(1, 1));
-            #endregion
-
-            AddCubeToMesh(p0, w, h, d, mesh);
-            Material material = new DiffuseMaterial(new ImageBrush(image_material));
-            return new GeometryModel3D(mesh, material);
-        }
-
-        public GeometryModel3D CreateModel(Color image_material)
-        {
-            return CreateCubeModel(origin, width, height, depth, image_material);
-        }
-
-        public static GeometryModel3D CreateCubeModel(Point3D p0, double w, double h, double d, Color image_material)
-        {
-            MeshGeometry3D mesh = new MeshGeometry3D();
-            AddCubeToMesh(p0, w, h, d, mesh);
-            Material material = new DiffuseMaterial(new SolidColorBrush(image_material));
-            return new GeometryModel3D(mesh, material);
-        }
     }
 }

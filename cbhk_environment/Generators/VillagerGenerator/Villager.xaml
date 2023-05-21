@@ -35,6 +35,9 @@
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
         <ImageBrush x:Key="LeftArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
         <ImageBrush x:Key="RightArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowRight.png" />
+        <ImageBrush x:Key="CloseWhite" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhite.png" />
+        <ImageBrush x:Key="CloseWhiteHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
+        <ImageBrush x:Key="Edit" ImageSource="/cbhk_environment;component/resources/common/images/Edit.png" />
     </Window.Resources>
 
     <Window.InputBindings>
@@ -136,26 +139,25 @@
                         Width="30"
                         Padding="0,-5,0,0"
                         HorizontalAlignment="Right"
-                        Background="{StaticResource ButtonNormal}"
+                        Background="{StaticResource CloseWhite}"
                         Command="{Binding ClearTransactionItem}"
-                        Content="🗙"
                         DockPanel.Dock="Right"
                         FontSize="25"
                         IconColor="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
+                        PressedBackground="{StaticResource CloseWhiteHover}"
                         Style="{DynamicResource IconTextButton}" />
                     <CustomControls:IconTextButtons
                         Width="30"
+                        Height="30"
                         Margin="0,0,10,0"
                         Padding="0,-5,0,0"
                         HorizontalAlignment="Right"
-                        Background="{StaticResource ButtonNormal}"
+                        Background="{StaticResource Edit}"
                         Command="{Binding AddTransactionItem}"
-                        Content="+"
                         DockPanel.Dock="Right"
-                        FontSize="25"
                         IconColor="Black"
-                        PressedBackground="{StaticResource ButtonPressed}"
+                        RenderOptions.BitmapScalingMode="NearestNeighbor"
+                        RenderOptions.EdgeMode="Aliased"
                         Style="{DynamicResource IconTextButton}" />
                 </DockPanel>
                 <ScrollViewer
@@ -727,62 +729,80 @@
                         </ScrollViewer>
                     </Grid>
                 </Grid>
-                <!--  背包  -->
-                <ListView
+                <!--  原版背包  -->
+                <TabControl
                     Grid.Row="2"
                     Margin="9,0,0,0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Top"
+                    Background="Transparent"
                     BorderThickness="0"
-                    IsSynchronizedWithCurrentItem="True"
-                    ItemsSource="{Binding Source={StaticResource BagItemSource}}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                    Style="{DynamicResource ListBoxScrollViewerStyle}"
-                    VirtualizingPanel.IsVirtualizing="true"
-                    VirtualizingPanel.ScrollUnit="Pixel"
-                    VirtualizingPanel.VirtualizationMode="Recycling">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Image
-                                x:Name="contentImage"
-                                Width="70"
-                                Height="70"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                RenderOptions.ClearTypeHint="Enabled"
-                                SnapsToDevicePixels="True"
-                                Source="{Binding Path=ImagePath, Converter={StaticResource UriToBitmapImage}, Mode=OneWay, IsAsync=True}"
-                                ToolTip="{Binding Path=IDAndName, Mode=OneWay, IsAsync=True}"
-                                ToolTipService.InitialShowDelay="0"
-                                ToolTipService.ShowDuration="1000"
-                                UseLayoutRounding="True" />
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                    <ListView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingWrapPanel:VirtualizingWrapPanel
-                                Background="#555956"
-                                ScrollViewer.CanContentScroll="True"
-                                VirtualizingPanel.CacheLength="200 200"
-                                VirtualizingPanel.CacheLengthUnit="Pixel"
-                                VirtualizingPanel.IsVirtualizing="True" />
-                        </ItemsPanelTemplate>
-                    </ListView.ItemsPanel>
+                    SelectedIndex="0"
+                    Style="{DynamicResource TabControlWithScrollBar}">
                     <behavior:Interaction.Triggers>
-                        <behavior:EventTrigger EventName="PreviewMouseLeftButtonDown">
-                            <behavior:CallMethodAction MethodName="SelectItemClickDown" TargetObject="{Binding}" />
-                        </behavior:EventTrigger>
-                        <behavior:EventTrigger EventName="MouseLeave">
-                            <behavior:CallMethodAction MethodName="ListBox_MouseLeave" TargetObject="{Binding}" />
-                        </behavior:EventTrigger>
                         <behavior:EventTrigger EventName="Loaded">
-                            <behavior:CallMethodAction MethodName="BagItemLoaded" TargetObject="{Binding}" />
+                            <behavior:CallMethodAction MethodName="ItemsLoaded" TargetObject="{Binding}" />
                         </behavior:EventTrigger>
                     </behavior:Interaction.Triggers>
-                </ListView>
+                    <CustomControls:TextTabItems
+                        Foreground="White"
+                        Header="原版物品库"
+                        Style="{DynamicResource TextTabItemStyle}">
+                        <ListView
+                            Grid.Row="2"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            BorderThickness="0"
+                            IsSynchronizedWithCurrentItem="True"
+                            ItemsSource="{Binding Source={StaticResource BagItemSource}}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{DynamicResource ListBoxScrollViewerStyle}"
+                            VirtualizingPanel.IsVirtualizing="true"
+                            VirtualizingPanel.ScrollUnit="Pixel"
+                            VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Image
+                                        x:Name="contentImage"
+                                        Width="70"
+                                        Height="70"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        RenderOptions.ClearTypeHint="Enabled"
+                                        SnapsToDevicePixels="True"
+                                        Source="{Binding Path=ImagePath, Converter={StaticResource UriToBitmapImage}, Mode=OneWay, IsAsync=True}"
+                                        ToolTipService.BetweenShowDelay="0"
+                                        ToolTipService.InitialShowDelay="0"
+                                        UseLayoutRounding="True">
+                                        <Image.ToolTip>
+                                            <ToolTip
+                                                Background="#424242"
+                                                Content="{Binding Path=IDAndName, Mode=OneWay, IsAsync=True}"
+                                                Foreground="White" />
+                                        </Image.ToolTip>
+                                    </Image>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingWrapPanel:VirtualizingWrapPanel
+                                        Background="#555956"
+                                        ScrollViewer.CanContentScroll="True"
+                                        VirtualizingPanel.CacheLength="200 200"
+                                        VirtualizingPanel.CacheLengthUnit="Pixel"
+                                        VirtualizingPanel.IsVirtualizing="True" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                        </ListView>
+                    </CustomControls:TextTabItems>
+                    <CustomControls:TextTabItems
+                        Foreground="White"
+                        Header="自定义物品库"
+                        Style="{DynamicResource TextTabItemStyle}" />
+                </TabControl>
                 <Grid
                     Grid.Row="3"
                     Margin="10,10,0,0"

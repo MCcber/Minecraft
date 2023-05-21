@@ -1,6 +1,4 @@
 ﻿using cbhk_environment.GeneralTools;
-using cbhk_environment.GeneralTools.ScrollViewerHelper;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -112,13 +110,23 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
             {
                 if (Buy.Tag != null)
                 {
+                    string buyItemCount = ModifyBuyItemCount.Value.ToString();
+                    string buyBItemCount = ModifyBuyBItemCount.Value.ToString();
+                    string sellItemCount = ModifySellItemCount.Value.ToString();
+                    if (buyItemCount.Contains('.'))
+                        buyItemCount = buyItemCount[..buyItemCount.IndexOf('.')];
+                    if (buyBItemCount.Contains('.'))
+                        buyBItemCount = buyBItemCount[..buyBItemCount.IndexOf('.')];
+                    if (sellItemCount.Contains('.'))
+                        sellItemCount = sellItemCount[..sellItemCount.IndexOf('.')];
+
                     string result;
                     string rewardExp = "rewardExp:" + (RewardExp ? 1 : 0) + "b,";
                     string maxUses = MaxUses.Trim() != "" ? "maxUses:" + MaxUses + "," : "";
                     string uses = Uses.Trim() != "" ? "uses:" + Uses + "," : "";
-                    string buy = "buy:" + (Buy.Tag.ToString().Contains("{") ? Buy.Tag.ToString() : "{id:\"minecraft:" + Buy.Tag.ToString().Split(' ')[0] + "\",Count:" + BuyItemCount.Text + "b}") + ",";
-                    string buyB = BuyB.Tag != null ? "buyB:" + (BuyB.Tag.ToString().Contains("{") ? BuyB.Tag.ToString() : "{id:\"minecraft:" + BuyB.Tag.ToString().Split(' ')[0] + "\",Count:" + BuybItemCount.Text + "b}") + "," : "";
-                    string sell = Sell.Tag != null ? "sell:" + (Sell.Tag.ToString().Contains("{") ? Sell.Tag.ToString() : "{id:\"minecraft:" + Sell.Tag.ToString().Split(' ')[0] + "\",Count:" + SellItemCount.Text + "b}") + "," : "";
+                    string buy = "buy:" + (Buy.Tag.ToString().Contains('{') ? Buy.Tag.ToString() : "{id:\"minecraft:" + Buy.Tag.ToString().Split(' ')[0] + "\",Count:" + buyItemCount + "b}") + ",";
+                    string buyB = BuyB.Tag != null ? "buyB:" + (BuyB.Tag.ToString().Contains('{') ? BuyB.Tag.ToString() : "{id:\"minecraft:" + BuyB.Tag.ToString().Split(' ')[0] + "\",Count:" + buyBItemCount + "b}") + "," : "";
+                    string sell = Sell.Tag != null ? "sell:" + (Sell.Tag.ToString().Contains('{') ? Sell.Tag.ToString() : "{id:\"minecraft:" + Sell.Tag.ToString().Split(' ')[0] + "\",Count:" + sellItemCount + "b}") + "," : "";
                     string xp = Xp.Trim() != "" ? "xp:" + Xp + "," : "";
                     string demand = Demand.Trim() != "" ? "demand:" + Demand + "," : "";
                     string specialPrice = SpecialPrice.Trim() != "" ? "specialPrice:" + SpecialPrice + "," : "";
@@ -212,20 +220,17 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         public void UpdateDiscountData(int minor_negative = 0,int trading = 0)
         {
             //获取原价
-            if (BuyItemCount.Text == "" || int.Parse(BuyItemCount.Text) < 2) return;
-            int original_price = int.Parse(BuyItemCount.Text);
+            int original_price = int.Parse(ModifyBuyItemCount.Value.ToString());
             int price = (int.Parse(Demand) * int.Parse(PriceMultiplier) * original_price) + (int.Parse(PriceMultiplier) * minor_negative) - (int.Parse(PriceMultiplier) * trading * 10) + int.Parse(SpecialPrice) + original_price;
 
             //如果最终价格不同于原价则开启打折效果
             if (price != original_price)
             {
-                BuyItemCount.TextDecorations = DiscountStyle.TextDecorations;
                 DisCount.Text = price.ToString();
                 DisCount.Visibility = Visibility.Visible;
             }
             else
             {
-                BuyItemCount.TextDecorations = null;
                 DisCount.Text = "";
             }
         }
@@ -237,12 +242,10 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         {
             if(Hide)
             {
-                BuyItemCount.TextDecorations = null;
                 DisCount.Visibility = Visibility.Collapsed;
             }
             else
             {
-                BuyItemCount.TextDecorations = DiscountStyle.TextDecorations;
                 DisCount.Visibility = Visibility.Visible;
             }
         }
@@ -258,70 +261,5 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
             TransactionItems template_parent = iconTextButtons.FindParent<TransactionItems>();
             villager_datacontext.transactionItems.Remove(template_parent);
         }
-
-        /// <summary>
-        /// 鼠标左击后抬起则开启1号物品数字编辑
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BuyItemCountMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            BuyItemCount.Visibility = Visibility.Collapsed;
-            ModifyBuyItemCount.Visibility = Visibility.Visible;
-            ModifyBuyItemCount.Value = int.Parse(BuyItemCount.Text);
-        }
-
-        /// <summary>
-        /// 鼠标左击后抬起则开启2号物品数字编辑
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BuyBItemCountMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            BuybItemCount.Visibility = Visibility.Collapsed;
-            ModifyBuyBItemCount.Visibility = Visibility.Visible;
-            ModifyBuyBItemCount.Value = int.Parse(BuybItemCount.Text);
-        }
-
-        /// <summary>
-        /// 鼠标左击后抬起则开启售卖物品数字编辑
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SellItemCountMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            SellItemCount.Visibility = Visibility.Collapsed;
-            ModifySellItemCount.Visibility = Visibility.Visible;
-            ModifySellItemCount.Value = int.Parse(SellItemCount.Text);
-        }
-
-        /// <summary>
-        /// 空白处左击按下后关闭数字编辑
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CloseNumberModifyMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            ModifyBuyItemCount.Visibility = ModifyBuyBItemCount.Visibility = ModifySellItemCount.Visibility = Visibility.Collapsed;
-            BuyItemCount.Text = ModifyBuyItemCount.Value.ToString();
-            BuybItemCount.Text = ModifyBuyBItemCount.Value.ToString();
-            SellItemCount.Text = ModifySellItemCount.Value.ToString();
-            BuyItemCount.Visibility = BuybItemCount.Visibility = SellItemCount.Visibility = Visibility.Visible;
-        }
-
-        //private void ModifyBuyItemCount_MouseEnter(object sender, MouseEventArgs e)
-        //{
-        //    Buy.IsHitTestVisible = false;
-        //}
-
-        //private void ModifyBuyItemCount_MouseLeave(object sender, MouseEventArgs e)
-        //{
-        //    Buy.IsHitTestVisible = true;
-        //}
-
-        //private void ModifyBuyItemCount_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        //{
-        //    Buy.IsHitTestVisible = ModifyBuyItemCount.Visibility == Visibility.Visible ? false : true;
-        //}
     }
 }

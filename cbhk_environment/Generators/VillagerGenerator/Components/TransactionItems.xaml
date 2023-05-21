@@ -13,6 +13,8 @@
     <UserControl.Resources>
         <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
+        <ImageBrush x:Key="Close" ImageSource="/cbhk_environment;component/resources/common/images/Close.png" />
+        <ImageBrush x:Key="CloseHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseHover.png" />
     </UserControl.Resources>
 
     <Border
@@ -21,12 +23,12 @@
         BorderThickness="2">
         <Grid
             Background="{StaticResource ButtonNormal}"
-            MouseLeftButtonDown="CloseNumberModifyMouseLeftButtonDown"
             RenderOptions.BitmapScalingMode="NearestNeighbor"
             RenderOptions.ClearTypeHint="Enabled"
             UseLayoutRounding="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -36,7 +38,10 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="DiscountStyle" Visibility="Collapsed">
+            <TextBlock
+                x:Name="DiscountStyle"
+                Grid.Row="0"
+                Visibility="Collapsed">
                 <TextBlock.TextDecorations>
                     <TextDecoration PenOffset="-5">
                         <TextDecoration.Pen>
@@ -55,7 +60,7 @@
                 Grid.Column="0"
                 Width="50"
                 Height="50"
-                Margin="15,0,0,10"
+                Margin="20,5,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Panel.ZIndex="-1"
@@ -67,40 +72,22 @@
                 SnapsToDevicePixels="True"
                 Source="/cbhk_environment;component/resources/cbhk_form/images/empty.png"
                 UseLayoutRounding="True" />
-            <TextBlock
-                x:Name="BuyItemCount"
-                Grid.Row="0"
-                Grid.Column="0"
-                Grid.ColumnSpan="2"
-                Width="25"
-                Margin="35,0,0,20"
-                Padding="0,5,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Panel.ZIndex="0"
-                FontSize="20"
-                Foreground="Black"
-                MouseLeftButtonUp="BuyItemCountMouseLeftButtonUp"
-                Text="1"
-                TextAlignment="Center" />
             <Slider
                 x:Name="ModifyBuyItemCount"
                 Grid.Row="0"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
-                Width="80"
-                Height="30"
-                Margin="30,0,0,18"
+                Width="50"
+                Height="25"
+                Margin="20,0,0,-20"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Panel.ZIndex="1"
                 BorderThickness="0"
-                FontSize="20"
                 Foreground="White"
                 Maximum="64"
                 Minimum="1"
                 Style="{DynamicResource NumberBoxStyle}"
-                Visibility="Collapsed"
                 Value="1" />
             <TextBlock
                 x:Name="DisCount"
@@ -122,7 +109,7 @@
                 Grid.Column="1"
                 Width="50"
                 Height="50"
-                Margin="20,0,0,10"
+                Margin="20,10,0,10"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center"
                 Panel.ZIndex="-1"
@@ -134,43 +121,23 @@
                 SnapsToDevicePixels="True"
                 Source="/cbhk_environment;component/resources/cbhk_form/images/empty.png"
                 UseLayoutRounding="True" />
-            <TextBlock
-                x:Name="BuybItemCount"
-                Grid.Row="0"
-                Grid.Column="1"
-                Grid.ColumnSpan="2"
-                Width="30"
-                Height="30"
-                Margin="40,0,0,20"
-                Padding="0,5,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Panel.ZIndex="0"
-                FontSize="20"
-                Foreground="Black"
-                MouseLeftButtonUp="BuyBItemCountMouseLeftButtonUp"
-                Text="1"
-                TextAlignment="Center" />
             <Slider
                 x:Name="ModifyBuyBItemCount"
-                Grid.Row="0"
+                Grid.Row="1"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
-                Width="80"
-                Height="30"
-                Margin="43,0,0,20"
-                Padding="0,5,0,0"
+                Width="50"
+                Height="25"
+                Margin="20,-5,0,20"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Panel.ZIndex="1"
                 Background="Transparent"
                 BorderThickness="0"
-                FontSize="20"
                 Foreground="White"
                 Maximum="64"
                 Minimum="1"
                 Style="{DynamicResource NumberBoxStyle}"
-                Visibility="Collapsed"
                 Value="1" />
             <Image
                 x:Name="TradeArrow"
@@ -178,7 +145,7 @@
                 Grid.Column="2"
                 Width="45"
                 Height="45"
-                Margin="10,0,0,5"
+                Margin="10,10,0,0"
                 HorizontalAlignment="Left"
                 Panel.ZIndex="-1"
                 RenderOptions.BitmapScalingMode="NearestNeighbor"
@@ -202,56 +169,35 @@
                 SnapsToDevicePixels="True"
                 Source="/cbhk_environment;component/resources/cbhk_form/images/empty.png"
                 UseLayoutRounding="True" />
-            <TextBlock
-                x:Name="SellItemCount"
-                Grid.Row="0"
-                Grid.Column="3"
-                Grid.ColumnSpan="2"
-                Width="30"
-                Height="30"
-                Margin="30,5,0,0"
-                Padding="0,5,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center"
-                Panel.ZIndex="0"
-                FontSize="20"
-                Foreground="Black"
-                MouseLeftButtonUp="SellItemCountMouseLeftButtonUp"
-                Text="1"
-                TextAlignment="Center" />
             <Slider
                 x:Name="ModifySellItemCount"
                 Grid.Row="0"
                 Grid.Column="3"
                 Grid.ColumnSpan="2"
-                Width="80"
-                Height="30"
-                Margin="35,0,0,15"
-                Padding="0,5,0,0"
+                Width="50"
+                Height="25"
+                Margin="15,0,0,-20"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Panel.ZIndex="1"
                 Background="Transparent"
                 BorderThickness="0"
-                FontSize="20"
                 Foreground="White"
                 Maximum="64"
                 Minimum="1"
                 Style="{DynamicResource NumberBoxStyle}"
-                Visibility="Collapsed"
                 Value="1" />
             <CustomControls:IconTextButtons
                 Grid.Row="0"
                 Grid.Column="4"
-                Height="50"
-                Margin="0,0,30,0"
-                Padding="0,-10,0,0"
+                Width="25"
+                Height="25"
+                Margin="0,0,25,-20"
                 HorizontalAlignment="Right"
-                Background="Transparent"
+                VerticalAlignment="Bottom"
+                Background="{StaticResource Close}"
                 Click="DeleteClick"
-                Content="🗙"
-                FontSize="40"
-                Foreground="Black"
+                PressedBackground="{StaticResource CloseHover}"
                 Style="{DynamicResource IconTextButton}" />
         </Grid>
     </Border>

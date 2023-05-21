@@ -11,13 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -66,7 +65,7 @@ namespace cbhk_environment.Generators.RecipeGenerator
         //本生成器的图标路径
         string icon_path = "pack://application:,,,/cbhk_environment;component/resources/common/images/spawnerIcons/IconRecipes.png";
         //右侧缓存区引用
-        public ListBox ItemZone = null;
+        public ListView originalItemViewer = null;
         //滚动视图
         public ScrollViewer scrollViewer = null;
         //拖拽源
@@ -100,7 +99,7 @@ namespace cbhk_environment.Generators.RecipeGenerator
             set
             {
                 searchText = value;
-                if(ItemZone != null)
+                if(originalItemViewer != null)
                 {
                     ReciptItemSource.View.Refresh();
                 }
@@ -262,6 +261,21 @@ namespace cbhk_environment.Generators.RecipeGenerator
             //Displayer displayer = Displayer.GetContentDisplayer();
             //displayer.GeneratorResult(result ,"配方",icon_path);
             //displayer.Show();
+        }
+
+        /// <summary>
+        /// 载入物品库
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ItemsLoaded(object sender, RoutedEventArgs e)
+        {
+            TabControl tabControl = sender as TabControl;
+            originalItemViewer = (tabControl.Items[0] as TextTabItems).Content as ListView;
+            originalItemViewer.DataContext = this;
+            originalItemViewer.MouseMove += Bag_MouseMove;
+            originalItemViewer.PreviewMouseLeftButtonDown += SelectItemClickDown;
+            originalItemViewer.MouseLeave += ListBox_MouseLeave;
         }
 
         /// <summary>
@@ -517,12 +531,6 @@ namespace cbhk_environment.Generators.RecipeGenerator
             SelectedItem = null;
         }
 
-        public void ListBox_Loaded(object sender, RoutedEventArgs e)
-        {
-            ItemZone = sender as ListBox;
-            ItemZone.MouseMove += Bag_MouseMove;
-        }
-
         /// <summary>
         /// 鼠标移入背包后选中对应的成员
         /// </summary>
@@ -531,7 +539,7 @@ namespace cbhk_environment.Generators.RecipeGenerator
         /// <exception cref="NotImplementedException"></exception>
         private void Bag_MouseMove(object sender, MouseEventArgs e)
         {
-            HitTestResult hitTestResult = VisualTreeHelper.HitTest(ItemZone, Mouse.GetPosition(ItemZone));
+            HitTestResult hitTestResult = VisualTreeHelper.HitTest(originalItemViewer, Mouse.GetPosition(originalItemViewer));
             if(hitTestResult != null)
             {
                 var item = hitTestResult.VisualHit;
@@ -540,9 +548,9 @@ namespace cbhk_environment.Generators.RecipeGenerator
 
                 if (item != null)
                 {
-                    int i = ItemZone.Items.IndexOf(((ListViewItem)item).DataContext);
-                    if (i >= 0 && i < ItemZone.Items.Count)
-                        ItemZone.SelectedIndex = i;
+                    int i = originalItemViewer.Items.IndexOf(((ListViewItem)item).DataContext);
+                    if (i >= 0 && i < originalItemViewer.Items.Count)
+                        originalItemViewer.SelectedIndex = i;
                 }
             }
         }

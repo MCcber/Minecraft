@@ -38,9 +38,15 @@
             HeaderHeight="20"
             HeaderWidth="20"
             Style="{DynamicResource IconCheckBox}"
-            ToolTip="表示物品是否无法破坏。"
             ToolTipService.BetweenShowDelay="0"
-            ToolTipService.InitialShowDelay="0" />
+            ToolTipService.InitialShowDelay="0">
+            <CustomControls:IconCheckBoxs.ToolTip>
+                <ToolTip
+                    Background="#424242"
+                    Content="表示物品是否无法破坏。"
+                    Foreground="White" />
+            </CustomControls:IconCheckBoxs.ToolTip>
+        </CustomControls:IconCheckBoxs>
         <CustomControls:IconCheckBoxs
             x:Name="CustomCreativeLock"
             Grid.Row="1"
@@ -54,9 +60,15 @@
             HeaderHeight="20"
             HeaderWidth="20"
             Style="{DynamicResource IconCheckBox}"
-            ToolTip="无子标签。在创造模式保存的物品栏中拥有此标签的物品将无法交互，但仍可通过快捷键存储或加载到快捷栏，除此之外与正常物品没有区别。此标签默认附加到“已保存的快捷栏”中代表没有快捷栏信息的纸物品上。"
             ToolTipService.BetweenShowDelay="0"
-            ToolTipService.InitialShowDelay="0" />
+            ToolTipService.InitialShowDelay="0">
+            <CustomControls:IconCheckBoxs.ToolTip>
+                <ToolTip
+                    Background="#424242"
+                    Content="无子标签。在创造模式保存的物品栏中拥有此标签的物品将无法交互，但仍可通过快捷键存储或加载到快捷栏，除此之外与正常物品没有区别。此标签默认附加到“已保存的快捷栏”中代表没有快捷栏信息的纸物品上。"
+                    Foreground="White" />
+            </CustomControls:IconCheckBoxs.ToolTip>
+        </CustomControls:IconCheckBoxs>
         <TextBlock
             Grid.Row="2"
             Grid.Column="0"

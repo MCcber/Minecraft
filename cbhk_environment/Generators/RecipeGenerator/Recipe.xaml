@@ -135,54 +135,63 @@
                     </behavior:Interaction.Triggers>
                 </TextBox>
             </DockPanel>
-            <ListView
+            <TabControl
                 Grid.Row="2"
                 HorizontalAlignment="Stretch"
-                BorderBrush="Black"
-                ItemsSource="{Binding Source={StaticResource RecipeItemSource}}"
-                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                Style="{DynamicResource ListBoxScrollViewerStyle}">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingWrapPanel:VirtualizingWrapPanel
-                            Background="#555956"
-                            ScrollViewer.CanContentScroll="True"
-                            VirtualizingPanel.CacheLength="200 200"
-                            VirtualizingPanel.CacheLengthUnit="Pixel"
-                            VirtualizingPanel.IsVirtualizing="True" />
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel>
-                            <Image
-                                Width="50"
-                                Height="50"
-                                RenderOptions.BitmapScalingMode="HighQuality"
-                                RenderOptions.ClearTypeHint="Enabled"
-                                SnapsToDevicePixels="True"
-                                Source="{Binding Path=ImagePath, IsAsync=True, Converter={StaticResource UriToBitmapImage}, Mode=OneWay}"
-                                ToolTip="{Binding IsAsync=True, Path=IDAndName, Mode=OneWay}"
-                                ToolTipService.InitialShowDelay="0"
-                                ToolTipService.ShowDuration="1000"
-                                UseLayoutRounding="True" />
-                        </DockPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
+                Background="Transparent"
+                BorderThickness="0"
+                Style="{DynamicResource TabControlWithScrollBar}">
                 <behavior:Interaction.Triggers>
                     <behavior:EventTrigger EventName="Loaded">
-                        <behavior:CallMethodAction MethodName="ListBox_Loaded" TargetObject="{Binding}" />
-                    </behavior:EventTrigger>
-                    <behavior:EventTrigger EventName="PreviewMouseLeftButtonDown">
-                        <behavior:CallMethodAction MethodName="SelectItemClickDown" TargetObject="{Binding}" />
-                    </behavior:EventTrigger>
-                    <behavior:EventTrigger EventName="MouseLeave">
-                        <behavior:CallMethodAction MethodName="ListBox_MouseLeave" TargetObject="{Binding}" />
+                        <behavior:CallMethodAction MethodName="ItemsLoaded" TargetObject="{Binding}" />
                     </behavior:EventTrigger>
                 </behavior:Interaction.Triggers>
-            </ListView>
+                <CustomControls:TextTabItems Header="原版物品库" Style="{DynamicResource TextTabItemStyle}">
+                    <ListView
+                        HorizontalAlignment="Stretch"
+                        BorderBrush="Black"
+                        ItemsSource="{Binding Source={StaticResource RecipeItemSource}}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{DynamicResource ListBoxScrollViewerStyle}">
+                        <ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingWrapPanel:VirtualizingWrapPanel
+                                    Background="#555956"
+                                    ScrollViewer.CanContentScroll="True"
+                                    VirtualizingPanel.CacheLength="200 200"
+                                    VirtualizingPanel.CacheLengthUnit="Pixel"
+                                    VirtualizingPanel.IsVirtualizing="True" />
+                            </ItemsPanelTemplate>
+                        </ListView.ItemsPanel>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <DockPanel>
+                                    <Image
+                                        Width="50"
+                                        Height="50"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        RenderOptions.ClearTypeHint="Enabled"
+                                        SnapsToDevicePixels="True"
+                                        Source="{Binding Path=ImagePath, IsAsync=True, Converter={StaticResource UriToBitmapImage}, Mode=OneWay}"
+                                        ToolTipService.BetweenShowDelay="0"
+                                        ToolTipService.InitialShowDelay="0"
+                                        UseLayoutRounding="True">
+                                        <Image.ToolTip>
+                                            <ToolTip
+                                                Background="#484848"
+                                                Content="{Binding IsAsync=True, Path=IDAndName, Mode=OneWay}"
+                                                Foreground="White" />
+                                        </Image.ToolTip>
+                                    </Image>
+                                </DockPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </CustomControls:TextTabItems>
+                <CustomControls:TextTabItems Header="自定义物品库" Style="{DynamicResource TextTabItemStyle}" />
+            </TabControl>
         </Grid>
     </Grid>
 </local_window:CommonWindow>

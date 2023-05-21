@@ -823,7 +823,13 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             };
             if (Request.toolTip.Length > 0)
             {
-                displayText.ToolTip = Request.toolTip;
+                ToolTip toolTip = new()
+                {
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                    Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#484848")),
+                    Content = Request.toolTip
+                };
+                displayText.ToolTip = toolTip;
                 ToolTipService.SetInitialShowDelay(displayText, 0);
                 ToolTipService.SetBetweenShowDelay(displayText, 0);
             }
@@ -1980,7 +1986,13 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         if(Request.dataType == "TAG_String_List")
                         {
                             string NewToolTip = Request.toolTip + "(以,分割成员,请遵守NBT语法)";
-                            displayText.ToolTip = NewToolTip;
+                            ToolTip toolTip = new()
+                            {
+                                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#484848")),
+                                Content = NewToolTip
+                            };
+                            displayText.ToolTip = toolTip;
                         }
                         result.Add(stringBox);
                         #region 分析是否需要代入导入的数据
@@ -2054,7 +2066,13 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         Grid.SetColumnSpan(textCheckBoxs,2);
                         if (Request.toolTip.Length > 0)
                         {
-                            textCheckBoxs.ToolTip = Request.toolTip;
+                            ToolTip toolTip = new()
+                            {
+                                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#484848")),
+                                Content = Request.toolTip
+                            };
+                            textCheckBoxs.ToolTip = toolTip;
                             ToolTipService.SetBetweenShowDelay(textCheckBoxs,0);
                             ToolTipService.SetInitialShowDelay(textCheckBoxs, 0);
                         }

@@ -16,6 +16,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Threading.Tasks;
 using cbhk_environment.GeneralTools.Displayer;
+using cbhk_environment.CustomControls;
 
 namespace cbhk_environment.Generators.VillagerGenerator
 {
@@ -197,6 +198,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 selectedItem = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -212,12 +214,13 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 searchText = value;
-                if(BagViewSource != null)
-                BagViewSource.View.Refresh();
+                BagViewSource?.View.Refresh();
             }
         }
         #endregion
 
+        //鼠标已进入原版物品库范围
+        bool enteredOriginalVersionItemZone = false;
         //言论搜索类型数据源
         ObservableCollection<string> gossipSearchType = new ObservableCollection<string> { };
         //言论搜索类型配置文件路径
@@ -934,8 +937,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         {
             TransactionItems transaction = new TransactionItems()
             {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                Height = 75
+                HorizontalAlignment = HorizontalAlignment.Stretch
             };
             transaction.MouseLeftButtonDown += BuyItemDataUpdater;
             transactionItems.Add(transaction);
@@ -1005,14 +1007,28 @@ namespace cbhk_environment.Generators.VillagerGenerator
         }
 
         /// <summary>
-        /// 载入背包引用
+        /// 载入物品库
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void BagItemLoaded(object sender, RoutedEventArgs e)
+        public void ItemsLoaded(object sender, RoutedEventArgs e)
         {
-            Bag = sender as ListView;
+            Bag = ((sender as TabControl).Items[0] as TextTabItems).Content as ListView;
+            Bag.DataContext = this;
+            Bag.PreviewMouseLeftButtonDown += SelectItemClickDown;
+            Bag.MouseEnter += Bag_MouseEnter;
             Bag.MouseMove += Bag_MouseMove;
+            Bag.MouseLeave += ListBox_MouseLeave;
+        }
+
+        /// <summary>
+        /// 鼠标移入背包
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Bag_MouseEnter(object sender, MouseEventArgs e)
+        {
+            enteredOriginalVersionItemZone = true;
         }
 
         /// <summary>
@@ -1133,6 +1149,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
 
         public void ListBox_MouseLeave(object sender, MouseEventArgs e)
         {
+            enteredOriginalVersionItemZone = false;
             SelectedItem = null;
         }
 
