@@ -104,12 +104,6 @@ namespace cbhk_environment
         public static Dictionary<string, string> BlockNameAndID = new();
         public static Dictionary<string, string> EnchantmentNameAndID = new();
 
-        //标签生成器的复选框列表
-        public static ObservableCollection<RichCheckBoxs> TagSpawnerItemCheckBoxList = new ();
-        public static ObservableCollection<RichCheckBoxs> BlockCheckBoxList = new () { };
-        public static ObservableCollection<RichCheckBoxs> TagSpawnerBiomeCheckBoxList = new () { };
-        public static ObservableCollection<RichCheckBoxs> EntityCheckBoxList = new () { };
-
         //粒子列表数据源
         public static ObservableCollection<string> ParticleDataBase = new() { };
 
@@ -156,7 +150,6 @@ namespace cbhk_environment
         private void ReadDataSource()
         {
             #region 获取所有物品的id和对应的中文
-            SolidColorBrush white_brush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
             if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json") && ItemDataBase.Count == 0)
             {
                 string items_json = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\items.json");
@@ -173,7 +166,7 @@ namespace cbhk_environment
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png"))
                     {
                         image = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.RelativeOrAbsolute));
-                        ItemIdSource.Add(new IconComboBoxItem() { ComboBoxItemText = item_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.RelativeOrAbsolute)) });
+                        ItemIdSource.Add(new IconComboBoxItem() { ComboBoxItemId = item_id, ComboBoxItemText = item_name, ComboBoxItemIcon = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png", UriKind.RelativeOrAbsolute)) });
                         RenderOptions.SetBitmapScalingMode(image,BitmapScalingMode.NearestNeighbor);
                         RenderOptions.SetClearTypeHint(image,ClearTypeHint.Enabled);
 
@@ -192,27 +185,9 @@ namespace cbhk_environment
                         ToolTipService.SetShowDuration(recipeImage, 1000);
                         RecipeImageList.Add(recipeImage);
                         #endregion
-
                     }
                     if (!ItemDataBase.ContainsKey(item_id + ":" + item_name))
                         ItemDataBase.Add(item_id + ":" + item_name, image);
-
-                    TagSpawnerItemCheckBoxList.Add(new RichCheckBoxs()
-                    {
-                        Uid = "Item",
-                        Height = 50,
-                        Margin = new Thickness(10, 0, 0, 0),
-                        FontSize = 15,
-                        Foreground = white_brush,
-                        Tag = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png",
-                        HeaderHeight = 20,
-                        HeaderWidth = 20,
-                        ContentImage = null,
-                        ImageWidth = 50,
-                        ImageHeight = 50,
-                        HeaderText = item_id + " " + item_name,
-                        TextMargin = new Thickness(40, 0, 0, 0)
-                    });
                 }
             }
             #endregion
@@ -245,23 +220,6 @@ namespace cbhk_environment
                         BlockDataBase.Add(block_id + ":" + block_name, image);
                         BlockNameAndID.Add(block_name,block_id);
                     }
-
-                    BlockCheckBoxList.Add(new RichCheckBoxs()
-                    {
-                        Uid = "Block",
-                        Height = 50,
-                        Margin = new Thickness(10, 0, 0, 0),
-                        FontSize = 15,
-                        Foreground = white_brush,
-                        Tag = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + block_id + ".png",
-                        HeaderHeight = 20,
-                        HeaderWidth = 20,
-                        ContentImage = null,
-                        ImageWidth = 50,
-                        ImageHeight = 50,
-                        HeaderText = block_id + " " + block_name,
-                        TextMargin = new Thickness(40, 0, 0, 0)
-                    });
                 }
             }
             #endregion
@@ -404,7 +362,7 @@ namespace cbhk_environment
                         RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
                         RenderOptions.SetClearTypeHint(image, ClearTypeHint.Enabled);
 
-                        EntityIdSource.Add(new IconComboBoxItem() { ComboBoxItemText = entity_name, ComboBoxItemIcon = image });
+                        EntityIdSource.Add(new IconComboBoxItem() { ComboBoxItemId = entity_id, ComboBoxItemText = entity_name, ComboBoxItemIcon = image });
                     }
                     else
                     if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + entity_id + ".png"))
@@ -414,27 +372,10 @@ namespace cbhk_environment
                         RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.NearestNeighbor);
                         RenderOptions.SetClearTypeHint(image, ClearTypeHint.Enabled);
 
-                        EntityIdSource.Add(new IconComboBoxItem() { ComboBoxItemText = entity_name, ComboBoxItemIcon = image });
+                        EntityIdSource.Add(new IconComboBoxItem() { ComboBoxItemId = entity_id, ComboBoxItemText = entity_name, ComboBoxItemIcon = image });
                     }
                     if (!EntityDataBase.ContainsKey(entity_id + ":" + entity_name))
                         EntityDataBase.Add(entity_id + ":" + entity_name, image);
-
-                    EntityCheckBoxList.Add(new RichCheckBoxs()
-                    {
-                        Uid = "Entity",
-                        Height = 50,
-                        Margin = new Thickness(10, 0, 0, 0),
-                        FontSize = 15,
-                        Foreground = white_brush,
-                        Tag = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + entity_id + "_spawn_egg.png",
-                        HeaderHeight = 20,
-                        HeaderWidth = 20,
-                        ContentImage = null,
-                        ImageWidth = 50,
-                        ImageHeight = 50,
-                        HeaderText = entity_id + " " + entity_name,
-                        TextMargin = new Thickness(40, 0, 0, 0)
-                    });
                 }
             }
             #endregion

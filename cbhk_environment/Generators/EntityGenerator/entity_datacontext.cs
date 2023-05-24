@@ -227,6 +227,7 @@ namespace cbhk_environment.Generators.EntityGenerator
                         //清除数值型数据的单位
                         nbt = Regex.Replace(nbt, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
                     }
+                    if (nbt.Length == 0) return;
                     JObject resultJSON = JObject.Parse(nbt);
                     string entityIDPath = "";
                     if (result.StartsWith("give"))
@@ -242,14 +243,18 @@ namespace cbhk_environment.Generators.EntityGenerator
             System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
             {
                 Description = "请选择要保存的目录",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                ShowHiddenFiles = true,
+                ShowNewFolderButton = true,
+                UseDescriptionForTitle = true
             };
             if(folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                for (int i = 0; i < Result.Count; i++)
                 {
-                    for (int i = 0; i < Result.Count; i++)
-                        File.WriteAllText(folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
+                    if (Directory.Exists(folderBrowserDialog.SelectedPath))
+                        _ = File.WriteAllTextAsync(folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
+                    _ = File.WriteAllTextAsync(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Entity\\" + folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
                 }
             }
         }

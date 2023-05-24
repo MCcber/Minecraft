@@ -1,7 +1,11 @@
 ﻿using cbhk_environment.GeneralTools;
+using cbhk_environment.GeneralTools.Displayer;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Media;
 
 namespace cbhk_environment.Generators.VillagerGenerator.Components
 {
@@ -124,9 +128,38 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
                     string rewardExp = "rewardExp:" + (RewardExp ? 1 : 0) + "b,";
                     string maxUses = MaxUses.Trim() != "" ? "maxUses:" + MaxUses + "," : "";
                     string uses = Uses.Trim() != "" ? "uses:" + Uses + "," : "";
-                    string buy = "buy:" + (Buy.Tag.ToString().Contains('{') ? Buy.Tag.ToString() : "{id:\"minecraft:" + Buy.Tag.ToString().Split(' ')[0] + "\",Count:" + buyItemCount + "b}") + ",";
-                    string buyB = BuyB.Tag != null ? "buyB:" + (BuyB.Tag.ToString().Contains('{') ? BuyB.Tag.ToString() : "{id:\"minecraft:" + BuyB.Tag.ToString().Split(' ')[0] + "\",Count:" + buyBItemCount + "b}") + "," : "";
-                    string sell = Sell.Tag != null ? "sell:" + (Sell.Tag.ToString().Contains('{') ? Sell.Tag.ToString() : "{id:\"minecraft:" + Sell.Tag.ToString().Split(' ')[0] + "\",Count:" + sellItemCount + "b}") + "," : "";
+
+                    #region 购入物品AB与卖出物品数据
+                    ItemStructure buyItemData = Buy.Tag as ItemStructure;
+                    ItemStructure buyBItemData = BuyB.Tag as ItemStructure;
+                    ItemStructure sellItemData = Sell.Tag as ItemStructure;
+
+                    //补齐双引号对
+                    string buyData = buyItemData != null ? Regex.Replace(buyItemData.NBT, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":") : "{id:\"minecraft:air\",Count:1}";
+                    string buyBData = buyBItemData != null ? Regex.Replace(buyBItemData.NBT, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":") : "{}";
+                    string sellData = sellItemData != null ? Regex.Replace(sellItemData.NBT, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":") : "{id:\"minecraft:air\",Count:1}";
+                    //清除数值型数据的单位
+                    buyData = Regex.Replace(buyData, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+                    buyBData = Regex.Replace(buyBData, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+                    sellData = Regex.Replace(sellData, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+
+                    JObject buyObj = JObject.Parse(buyData);
+                    JObject buybObj = JObject.Parse(buyBData);
+                    JObject sellObj = JObject.Parse(sellData);
+
+                    buyObj["Count"] = int.Parse(buyItemCount);
+                    buybObj["Count"] = int.Parse(buyBItemCount);
+                    sellObj["Count"] = int.Parse(sellItemCount);
+
+                    //去除双引号对
+                    string buy = "buy:" + Regex.Replace(buyObj.ToString(), @"([\{\[,])([\s+]?\w+[\s+]?):", "$1$2:").Replace("\r","").Replace("\n","") + ",";
+                    buy = Regex.Replace(buy, @"\s+", "");
+                    string buyB = "buyB:" + Regex.Replace(buybObj.ToString(), @"([\{\[,])([\s+]?\w+[\s+]?):", "$1$2:").Replace("\r", "").Replace("\n", "") + ",";
+                    buyB = Regex.Replace(buyB, @"\s+", "");
+                    string sell = "sell:" + Regex.Replace(sellObj.ToString(), @"([\{\[,])([\s+]?\w+[\s+]?):", "$1$2:").Replace("\r", "").Replace("\n", "") + ",";
+                    sell = Regex.Replace(sell, @"\s+", "");
+                    #endregion
+
                     string xp = Xp.Trim() != "" ? "xp:" + Xp + "," : "";
                     string demand = Demand.Trim() != "" ? "demand:" + Demand + "," : "";
                     string specialPrice = SpecialPrice.Trim() != "" ? "specialPrice:" + SpecialPrice + "," : "";
@@ -155,21 +188,17 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         {
             int startIndex = new_image.Source.ToString().LastIndexOf('/') + 1;
             int endIndex = new_image.Source.ToString().LastIndexOf('.');
-            string itemID = new_image.Source.ToString().Substring(startIndex, endIndex - startIndex);
-            string toolTip = "";
-            foreach (var item in MainWindow.ItemDataBase)
-            {
-                if (item.Key.Substring(0, item.Key.IndexOf(':')) == itemID)
-                {
-                    toolTip = item.Key.Replace(":", " ");
-                    break;
-                }
-            }
-
+            string itemID = new_image.Source.ToString()[startIndex..endIndex];
+            string toolTip = MainWindow.ItemIdSource.Where(item=>item.ComboBoxItemId == itemID).Select(item=>item.ComboBoxItemText).First();
             old_image.Source = new_image.Source;
-            old_image.Tag = toolTip.Substring(0,toolTip.IndexOf(' '));
-            old_image.ToolTip = toolTip;
-            ToolTipService.SetShowDuration(old_image, 1000);
+            ToolTip tooltipObj = new()
+            {
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#484848")),
+                Content = toolTip
+            };
+            old_image.ToolTip = tooltipObj;
+            ToolTipService.SetBetweenShowDelay(old_image, 0);
             ToolTipService.SetInitialShowDelay(old_image, 0);
         }
 
@@ -182,6 +211,7 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         {
             Image image = e.Data.GetData(typeof(Image).ToString()) as Image;
             Image current_image = sender as Image;
+            current_image.Tag = image.Tag;
             UpdateItem(current_image,image);
         }
 
@@ -194,6 +224,7 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         {
             Image image = e.Data.GetData(typeof(Image).ToString()) as Image;
             Image current_image = sender as Image;
+            current_image.Tag = image.Tag;
             UpdateItem(current_image, image);
         }
 
@@ -206,6 +237,7 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         {
             Image image = e.Data.GetData(typeof(Image).ToString()) as Image;
             Image current_image = sender as Image;
+            current_image.Tag = image.Tag;
             UpdateItem(current_image, image);
         }
 
@@ -259,7 +291,8 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
         {
             CustomControls.IconTextButtons iconTextButtons = sender as CustomControls.IconTextButtons;
             TransactionItems template_parent = iconTextButtons.FindParent<TransactionItems>();
-            villager_datacontext.transactionItems.Remove(template_parent);
+            villager_datacontext context = (Window.GetWindow(iconTextButtons) as Villager).DataContext as villager_datacontext;
+            context.transactionItems.Remove(template_parent);
         }
     }
 }

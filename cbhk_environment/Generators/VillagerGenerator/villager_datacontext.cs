@@ -17,6 +17,8 @@ using System.Windows.Media;
 using System.Threading.Tasks;
 using cbhk_environment.GeneralTools.Displayer;
 using cbhk_environment.CustomControls;
+using Newtonsoft.Json.Linq;
+using cbhk_environment.GeneralTools;
 
 namespace cbhk_environment.Generators.VillagerGenerator
 {
@@ -28,9 +30,12 @@ namespace cbhk_environment.Generators.VillagerGenerator
         Image GrabedImage = null;
         #endregion
 
-        #region 生成与返回
+        #region 生成、返回、保存指令
         public RelayCommand RunCommand { get; set; }
         public RelayCommand<CommonWindow> ReturnCommand { get; set; }
+        public RelayCommand Save { get; set; }
+        public RelayCommand ImportFromClipboard { get; set; }
+        public RelayCommand ImportFromFile { get; set; }
         #endregion
 
         #region 版本源
@@ -47,33 +52,43 @@ namespace cbhk_environment.Generators.VillagerGenerator
                 if ((CanEditBrain || CanEditGossips) && selectedVersion == "1.13-")
                     CanEditBrain = CanEditGossips = false;
                 CanTouchBrain = CanTouchGossips = selectedVersion != "1.13-";
+                OnPropertyChanged();
             }
         }
 
         private ObservableCollection<string> VersionSource = new ObservableCollection<string> { "1.13-","1.14+" };
         #endregion
 
+        #region 是否显示结果
+        public bool ShowResult { get; set; }
+        #endregion
+
+        #region 存储生成结果
+        public string Result { get; set; }
+        #endregion
+
+        #region 字段与引用
         //本生成器的图标路径
         string icon_path = "pack://application:,,,/cbhk_environment;component/resources/common/images/spawnerIcons/IconVillagers.png";
 
         //左侧交易项数据源
-        public static ObservableCollection<TransactionItems> transactionItems { get; set; } = new ObservableCollection<TransactionItems> { };
+        public ObservableCollection<TransactionItems> transactionItems { get; set; } = new ObservableCollection<TransactionItems> { };
         //言论数据源
-        public static ObservableCollection<GossipsItems> gossipItems { get; set; } = new ObservableCollection<GossipsItems> { };
+        public ObservableCollection<GossipsItems> gossipItems { get; set; } = new ObservableCollection<GossipsItems> { };
 
         //是否显示物品数据页
         bool IsDisplayItemInfoWindow = false;
         //物品数据页
-        public static TransactionItemDataForm transactionItemDataForm = new TransactionItemDataForm();
+        public TransactionItemDataForm transactionItemDataForm = new TransactionItemDataForm();
         //物品数据页容器
-        public static Popup popup = new Popup
+        public static Popup popup = new()
         {
             AllowDrop = false,
             IsOpen = false
         };
-
         //当前选中的物品
-        public static TransactionItems CurrentItem = null;
+        public TransactionItems CurrentItem = null;
+        #endregion
 
         #region 言论面板收放
         private Visibility isEditGossips = Visibility.Collapsed;
@@ -175,18 +190,6 @@ namespace cbhk_environment.Generators.VillagerGenerator
         }
         #endregion
 
-        //言论搜索目标引用
-        TextBox GossipSearchTarget = null;
-        //言论搜索类型引用
-        ComboBox GossipSearchType = null;
-        //言论数据源所在视图引用
-        ScrollViewer GossipViewer = null;
-
-        //物品引用
-        public ObservableCollection<ItemStructure> BagItems { get; set; } = new ObservableCollection<ItemStructure>();
-        //物品描述引用
-        public ObservableCollection<string> BagItemToolTips { get; set; } = new ObservableCollection<string> { };
-
         #region 已选中的成员
         private ItemStructure selectedItem = null;
         public ItemStructure SelectedItem
@@ -218,19 +221,6 @@ namespace cbhk_environment.Generators.VillagerGenerator
             }
         }
         #endregion
-
-        //鼠标已进入原版物品库范围
-        bool enteredOriginalVersionItemZone = false;
-        //言论搜索类型数据源
-        ObservableCollection<string> gossipSearchType = new ObservableCollection<string> { };
-        //言论搜索类型配置文件路径
-        string gossipSearchTypeFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Villager\\data\\GossipSearchTypes.ini";
-        //维度数据源
-        ObservableCollection<string> DimensionTypeSource = new ObservableCollection<string> { };
-        //维度数据源配置文件路径
-        string dimensionTypeFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Villager\\data\\DimensionTypes.ini";
-        //维度类型数据库
-        Dictionary<string, string> DimensionDataBase = new Dictionary<string, string> { };
 
         #region 村民数据
 
@@ -268,16 +258,13 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string meeting_pointX = "";
         public string MeetingPointX
         {
-            set { meeting_pointX = value; }
-            get
-            {
-                return meeting_pointX;
-            }
+            set { meeting_pointX = value; OnPropertyChanged(); }
+            get{ return meeting_pointX; }
         }
         private string meeting_pointY = "";
         public string MeetingPointY
         {
-            set { meeting_pointY = value; }
+            set { meeting_pointY = value; OnPropertyChanged(); }
             get
             {
                 return meeting_pointY;
@@ -286,7 +273,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string meeting_pointZ = "";
         public string MeetingPointZ
         {
-            set { meeting_pointZ = value; }
+            set { meeting_pointZ = value; OnPropertyChanged(); }
             get
             {
                 return meeting_pointZ;
@@ -299,6 +286,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 meetingPointDimension = value;
+                OnPropertyChanged();
             }
         }
         private string MeetingPointDimensionString
@@ -327,7 +315,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string homeX = "";
         public string HomeX
         {
-            set { homeX = value; }
+            set { homeX = value; OnPropertyChanged(); }
             get
             {
                 return homeX;
@@ -336,7 +324,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string homeY = "";
         public string HomeY
         {
-            set { homeY = value; }
+            set { homeY = value; OnPropertyChanged(); }
             get
             {
                 return homeY;
@@ -345,7 +333,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string homeZ = "";
         public string HomeZ
         {
-            set { homeZ = value; }
+            set { homeZ = value; OnPropertyChanged(); }
             get
             {
                 return homeZ;
@@ -358,6 +346,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 homeDimension = value;
+                OnPropertyChanged();
             }
         }
         private string HomeDimensionString
@@ -386,7 +375,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string job_siteX = "";
         public string JobSiteX
         {
-            set { job_siteX = value; }
+            set { job_siteX = value; OnPropertyChanged(); }
             get
             {
                 return job_siteX;
@@ -395,7 +384,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string job_siteY = "";
         public string JobSiteY
         {
-            set { job_siteY = value; }
+            set { job_siteY = value; OnPropertyChanged(); }
             get
             {
                 return job_siteY;
@@ -404,7 +393,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         private string job_siteZ = "";
         public string JobSiteZ
         {
-            set { job_siteZ = value; }
+            set { job_siteZ = value; OnPropertyChanged(); }
             get
             {
                 return job_siteZ;
@@ -417,6 +406,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 jobSiteDimension = value;
+                OnPropertyChanged();
             }
         }
         private string JobSiteDimensionString
@@ -464,8 +454,8 @@ namespace cbhk_environment.Generators.VillagerGenerator
         string VillagerProfessionsSourceFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Villager\\data\\VillagerProfessionTypes.ini";
         string VillagerLevelSourceFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Villager\\data\\VillagerLevels.ini";
 
-        Dictionary<string, string> VillagerTypeDataBase = new Dictionary<string, string> { };
-        Dictionary<string, string> VillagerProfessionTypeDataBase = new Dictionary<string, string> { };
+        public Dictionary<string, string> VillagerTypeDataBase = new Dictionary<string, string> { };
+        public Dictionary<string, string> VillagerProfessionTypeDataBase = new Dictionary<string, string> { };
 
         ObservableCollection<string> VillagerTypeSource = new ObservableCollection<string> { };
         ObservableCollection<string> VillagerProfessionTypeSource = new ObservableCollection<string> { };
@@ -473,7 +463,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         #endregion
 
         #region 村民种类
-        string villagerType = null;
+        private string villagerType = "";
         public string VillagerType
         {
             get
@@ -483,6 +473,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 villagerType = value;
+                OnPropertyChanged();
             }
         }
         private string VillagerTypeString
@@ -497,13 +488,14 @@ namespace cbhk_environment.Generators.VillagerGenerator
         #endregion
 
         #region 村民职业
-        string villagerProfessionType = null;
+        private string villagerProfessionType = "";
         public string VillagerProfessionType
         {
             get { return villagerProfessionType; }
             set
             {
                 villagerProfessionType = value;
+                OnPropertyChanged();
             }
         }
         private string VillagerProfessionTypeString
@@ -511,20 +503,21 @@ namespace cbhk_environment.Generators.VillagerGenerator
             get
             {
                 string result = "profession:\"minecraft:";
-                result = result + VillagerProfessionTypeDataBase.Where(item => item.Value == villagerProfessionType).First().Key + "\",";
+                result = result + VillagerProfessionTypeDataBase.Where(item => item.Value == VillagerProfessionType).First().Key + "\",";
                 return result;
             }
         }
         #endregion
 
         #region 村民交易等级
-        private string villagerLevel = null;
+        private string villagerLevel = "0";
         public string VillagerLevel
         {
             get { return villagerLevel; }
             set
             {
                 villagerLevel = value;
+                OnPropertyChanged();
             }
         }
         private string VillagerLevelString
@@ -562,6 +555,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             set
             {
                 willing = value;
+                OnPropertyChanged();
             }
         }
         private string WillingString
@@ -573,34 +567,34 @@ namespace cbhk_environment.Generators.VillagerGenerator
         }
         #endregion
 
-        #region 此村民最后一次前往工作站点重新供应交易的刻。
-        private string lastRestock = "0";
-        public string LastRestock
+        #region 此村民最后一次前往工作站点重新供应交易的刻
+        private double lastRestock = 0;
+        public double LastRestock
         {
             get { return lastRestock; }
-            set { lastRestock = value; }
+            set { lastRestock = value; OnPropertyChanged(); }
         }
         private string LastRestockString
         {
             get
             {
-                return LastRestock.Trim() != ""? "LastRestock:" +LastRestock+",":"";
+                return LastRestock.ToString().Trim() != ""? "LastRestock:" +LastRestock+",":"";
             }
         }
         #endregion
 
-        #region 此村民当前的经验值。
-        private string xp = "1";
-        public string Xp
+        #region 此村民当前的经验值
+        private double xp = 1;
+        public double Xp
         {
             get { return xp; }
-            set { xp = value; }
+            set { xp = value; OnPropertyChanged(); }
         }
         private string XpString
         {
             get
             {
-                return Xp.Trim() != "" ? "Xp:" + Xp + "," : "";
+                return Xp.ToString().Trim() != "" ? "Xp:" + Xp + "," : "";
             }
         }
         #endregion
@@ -622,6 +616,28 @@ namespace cbhk_environment.Generators.VillagerGenerator
         public RelayCommand ClearGossipItem { get; set; }
         #endregion
 
+        #region 字段与引用
+        //言论搜索目标引用
+        TextBox GossipSearchTarget = null;
+        //言论搜索类型引用
+        ComboBox GossipSearchType = null;
+        //言论数据源所在视图引用
+        ScrollViewer GossipViewer = null;
+        //原版物品库
+        public ObservableCollection<ItemStructure> BagItems { get; set; } = new ObservableCollection<ItemStructure>();
+        public ObservableCollection<ItemStructure> CustomItems { get; set; } = new ObservableCollection<ItemStructure>();
+        //物品描述引用
+        public ObservableCollection<string> BagItemToolTips { get; set; } = new ObservableCollection<string> { };
+        //言论搜索类型数据源
+        ObservableCollection<string> gossipSearchType = new ObservableCollection<string> { };
+        //言论搜索类型配置文件路径
+        string gossipSearchTypeFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Villager\\data\\GossipSearchTypes.ini";
+        //维度数据源
+        ObservableCollection<string> DimensionTypeSource = new ObservableCollection<string> { };
+        //维度数据源配置文件路径
+        string dimensionTypeFilePath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Villager\\data\\DimensionTypes.ini";
+        //维度类型数据库
+        Dictionary<string, string> DimensionDataBase = new Dictionary<string, string> { };
         //物品加载进程锁
         object itemLoadLock = new object();
 
@@ -637,6 +653,8 @@ namespace cbhk_environment.Generators.VillagerGenerator
 
         //背包引用
         ListView Bag = null;
+        ListView CustomBag = null;
+        #endregion
 
         public villager_datacontext()
         {
@@ -647,6 +665,9 @@ namespace cbhk_environment.Generators.VillagerGenerator
             ClearTransactionItem = new RelayCommand(ClearTransactionItemCommand);
             AddGossipItem = new RelayCommand(AddGossipItemCommand);
             ClearGossipItem = new RelayCommand(ClearGossipItemCommand);
+            Save = new RelayCommand(SaveCommand);
+            ImportFromFile = new RelayCommand(ImportFromFileCommand);
+            ImportFromClipboard = new RelayCommand(ImportFromClipboardCommand);
             #endregion
 
             #region 把交易数据页放入容器中，用于定位出现位置
@@ -655,7 +676,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
             popup.PlacementTarget = CurrentItem;
             #endregion
 
-            #region 异步载入物品序列
+            #region 异步载入原版物品序列
             BindingOperations.EnableCollectionSynchronization(BagItems, itemLoadLock);
             //加载物品集合
             Task.Run(() =>
@@ -664,15 +685,93 @@ namespace cbhk_environment.Generators.VillagerGenerator
                 {
                     string uriDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\";
                     string urlPath = "";
-                    foreach (var item in MainWindow.ItemDataBase)
+                    foreach (var item in MainWindow.ItemIdSource)
                     {
-                        urlPath = uriDirectoryPath + item.Key[..item.Key.IndexOf(":")] + ".png";
+                        urlPath = uriDirectoryPath + item.ComboBoxItemId + ".png";
                         if (File.Exists(urlPath))
-                            BagItems.Add(new ItemStructure(new Uri(urlPath, UriKind.Absolute), item.Key));
+                            BagItems.Add(new ItemStructure(new Uri(urlPath, UriKind.Absolute), item.ComboBoxItemId + ":" + item.ComboBoxItemText,"{id:\"minecraft:"+item.ComboBoxItemId+"\",Count:1b}"));
                     }
                 }
             });
             #endregion
+
+            #region 异步载入自定义物品序列
+            BindingOperations.EnableCollectionSynchronization(CustomItems, itemLoadLock);
+            //加载物品集合
+            Task.Run(() =>
+            {
+                lock (itemLoadLock)
+                {
+                    string uriDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Item\\";
+                    string[] itemFileList = Directory.GetFiles(uriDirectoryPath);
+                    foreach (var item in itemFileList)
+                    {
+                        if (File.Exists(item))
+                        {
+                            string nbt = GeneralTools.ExternalDataImportManager.GetItemDataHandler(item);
+                            if (nbt.Length > 0)
+                            {
+                                JObject data = JObject.Parse(nbt);
+                                JToken id = data.SelectToken("id");
+                                if (id == null) continue;
+                                string itemID = id.ToString().Replace("\"","").Replace("minecraft:","");
+                                string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID + ".png";
+                                string itemName = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemId == itemID).Select(item => item.ComboBoxItemText).First();
+                                CustomItems.Add(new ItemStructure(new Uri(iconPath, UriKind.Absolute), itemID + ":" + itemName, nbt));
+                            }
+                        }
+                    }
+                }
+            });
+            #endregion
+        }
+
+        /// <summary>
+        /// 从文件导入
+        /// </summary>
+        private void ImportFromFileCommand()
+        {
+            Microsoft.Win32.OpenFileDialog dialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                RestoreDirectory = true,
+                DefaultExt = ".command",
+                Multiselect = false,
+                Title = "请选择一个Minecraft村民数据文件"
+            };
+            if (dialog.ShowDialog().Value && File.Exists(dialog.FileName))
+                ExternalDataImportManager.ImportVillagerDataHandler(dialog.FileName, this);
+        }
+
+        /// <summary>
+        /// 从剪切板导入
+        /// </summary>
+        private void ImportFromClipboardCommand()
+        {
+            ExternalDataImportManager.ImportVillagerDataHandler(Clipboard.GetText(),this,false);
+        }
+
+        /// <summary>
+        /// 保存村民
+        /// </summary>
+        private void SaveCommand()
+        {
+            run_command(false);
+            Microsoft.Win32.SaveFileDialog saveFileDialog = new()
+            {
+                Title = "请选择村民保存路径",
+                AddExtension = true,
+                DefaultExt = ".command",
+                Filter = "Command文件|*.command;",
+                CheckPathExists = true,
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                RestoreDirectory = true
+            };
+            if(saveFileDialog.ShowDialog().Value)
+            {
+                _ = File.WriteAllTextAsync(saveFileDialog.FileName, Result);
+                _ = File.WriteAllTextAsync(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Villager\\" + Path.GetFileName(saveFileDialog.FileName), Result);
+            }
         }
 
         /// <summary>
@@ -850,16 +949,42 @@ namespace cbhk_environment.Generators.VillagerGenerator
         }
 
         /// <summary>
+        /// 为保存行为执行生成
+        /// </summary>
+        /// <param name="showResult"></param>
+        private void run_command(bool showResult)
+        {
+            Result = "";
+            Result += WillingString + VillagerData + Offers + Gossips + Brain + LastRestockString + XpString;
+            Result = "/summon villager ~ ~1 ~ {" + Result.TrimEnd(',') + "}";
+
+            if (showResult)
+            {
+                GenerateResultDisplayer.Displayer displayer = GenerateResultDisplayer.Displayer.GetContentDisplayer();
+                displayer.GeneratorResult(Result, "村民", icon_path);
+                displayer.Show();
+            }
+            else
+                Clipboard.SetText(Result);
+        }
+
+        /// <summary>
         /// 执行生成
         /// </summary>
         private void run_command()
         {
-            string result = "";
-            result += WillingString + VillagerData + Offers + Gossips + Brain + LastRestockString + XpString;
-            result = "/summon villager ~ ~1 ~ {" + result.TrimEnd(',') + "}";
-            GenerateResultDisplayer.Displayer displayer = GenerateResultDisplayer.Displayer.GetContentDisplayer();
-            displayer.GeneratorResult(result,"村民",icon_path);
-            displayer.Show();
+            Result = "";
+            Result += WillingString + VillagerData + Offers + Gossips + Brain + LastRestockString + XpString;
+            Result = "/summon villager ~ ~1 ~ {" + Result.TrimEnd(',') + "}";
+
+            if (ShowResult)
+            {
+                GenerateResultDisplayer.Displayer displayer = GenerateResultDisplayer.Displayer.GetContentDisplayer();
+                displayer.GeneratorResult(Result, "村民", icon_path);
+                displayer.Show();
+            }
+            else
+                Clipboard.SetText(Result);
         }
 
         /// <summary>
@@ -933,9 +1058,9 @@ namespace cbhk_environment.Generators.VillagerGenerator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddTransactionItemCommand()
+        public void AddTransactionItemCommand()
         {
-            TransactionItems transaction = new TransactionItems()
+            TransactionItems transaction = new()
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch
             };
@@ -986,7 +1111,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AddGossipItemCommand()
+        public void AddGossipItemCommand()
         {
             GossipsItems gossipsItem = new GossipsItems()
             {
@@ -1014,47 +1139,18 @@ namespace cbhk_environment.Generators.VillagerGenerator
         public void ItemsLoaded(object sender, RoutedEventArgs e)
         {
             Bag = ((sender as TabControl).Items[0] as TextTabItems).Content as ListView;
+            CustomBag = ((sender as TabControl).Items[1] as TextTabItems).Content as ListView;
+
             Bag.DataContext = this;
+            CustomBag.DataContext = this;
+
             Bag.PreviewMouseLeftButtonDown += SelectItemClickDown;
-            Bag.MouseEnter += Bag_MouseEnter;
             Bag.MouseMove += Bag_MouseMove;
             Bag.MouseLeave += ListBox_MouseLeave;
-        }
 
-        /// <summary>
-        /// 鼠标移入背包
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Bag_MouseEnter(object sender, MouseEventArgs e)
-        {
-            enteredOriginalVersionItemZone = true;
-        }
-
-        /// <summary>
-        /// 鼠标移入背包后选中对应的成员
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        private void Bag_MouseMove(object sender, MouseEventArgs e)
-        {
-            HitTestResult hitTestResult = VisualTreeHelper.HitTest(Bag, Mouse.GetPosition(Bag));
-
-            if (hitTestResult != null)
-            {
-                var item = hitTestResult.VisualHit;
-
-                while (item != null && item is not ListViewItem)
-                    item = VisualTreeHelper.GetParent(item);
-
-                if (item != null)
-                {
-                    int i = Bag.Items.IndexOf(((ListViewItem)item).DataContext);
-                    if (i >= 0 && i < Bag.Items.Count)
-                        Bag.SelectedIndex = i;
-                }
-            }
+            CustomBag.PreviewMouseLeftButtonDown += SelectItemClickDown;
+            CustomBag.MouseMove += Bag_MouseMove;
+            CustomBag.MouseLeave += ListBox_MouseLeave;
         }
 
         /// <summary>
@@ -1147,9 +1243,35 @@ namespace cbhk_environment.Generators.VillagerGenerator
             }
         }
 
+        /// <summary>
+        /// 鼠标移入背包后选中对应的成员
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void Bag_MouseMove(object sender, MouseEventArgs e)
+        {
+            ListView listView = sender as ListView;
+            HitTestResult hitTestResult = VisualTreeHelper.HitTest(listView, Mouse.GetPosition(listView));
+
+            if (hitTestResult != null)
+            {
+                var item = hitTestResult.VisualHit;
+
+                while (item != null && item is not ListViewItem)
+                    item = VisualTreeHelper.GetParent(item);
+
+                if (item != null)
+                {
+                    int i = listView.Items.IndexOf(((ListViewItem)item).DataContext);
+                    if (i >= 0 && i < listView.Items.Count)
+                        listView.SelectedIndex = i;
+                }
+            }
+        }
+
         public void ListBox_MouseLeave(object sender, MouseEventArgs e)
         {
-            enteredOriginalVersionItemZone = false;
             SelectedItem = null;
         }
 
@@ -1177,7 +1299,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
                 drag_source = new Image
                 {
                     Source = new BitmapImage(SelectedItem.ImagePath),
-                    Tag = itemStructure.IDAndName
+                    Tag = itemStructure
                 };
                 GrabedImage = drag_source;
 

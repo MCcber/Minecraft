@@ -30,7 +30,7 @@
         Style="{DynamicResource TabControlWithScrollBar}"
         TabStripPlacement="Left">
         <CustomControls:IconTabItems
-            Width="50"
+            Width="55"
             Height="25"
             Background="{StaticResource DataButtonBackground}"
             Foreground="White"
@@ -40,7 +40,7 @@
             <Image MouseLeftButtonDown="OpenBasicClasses" Source="pack://application:,,,/cbhk_environment;component/resources/cbhk_form/images/command_classes/basic.png" />
         </CustomControls:IconTabItems>
         <CustomControls:IconTabItems
-            Width="50"
+            Width="55"
             Height="25"
             Background="{StaticResource DataButtonBackground}"
             Foreground="White"
@@ -50,10 +50,10 @@
             <Image MouseLeftButtonDown="OpenAdvanceClasses" Source="pack://application:,,,/cbhk_environment;component/resources/cbhk_form/images/command_classes/advance.png" />
         </CustomControls:IconTabItems>
         <CustomControls:IconTabItems
-            Width="50"
+            Width="55"
             Height="25"
             Background="{StaticResource DataButtonBackground}"
-            FontSize="8"
+            FontSize="10"
             Foreground="White"
             Header="原版模组"
             Selectedbackground="{StaticResource DataButtonPressedBackground}"

@@ -1,11 +1,8 @@
 ﻿using Hardcodet.Wpf.TaskbarNotification;
 using NLog;
 using System;
-using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Threading;
 
 namespace cbhk_signin
 {
@@ -15,6 +12,7 @@ namespace cbhk_signin
     public partial class App : Application
     {
         public static TaskbarIcon TaskbarIcon;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

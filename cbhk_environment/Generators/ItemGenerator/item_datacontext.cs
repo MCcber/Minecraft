@@ -219,8 +219,12 @@ namespace cbhk_environment.Generators.ItemGenerator
             {
                 if (Directory.Exists(folderBrowserDialog.SelectedPath))
                 {
+                    Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Item\\");
                     for (int i = 0; i < Result.Count; i++)
-                        File.WriteAllText(folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
+                    {
+                        _ = File.WriteAllTextAsync(folderBrowserDialog.SelectedPath + FileNameList[i] + ".command", Result[i]);
+                        _ = File.WriteAllTextAsync(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Item\\" + FileNameList[i] + ".command", Result[i]);
+                    }
                 }
             }
         }

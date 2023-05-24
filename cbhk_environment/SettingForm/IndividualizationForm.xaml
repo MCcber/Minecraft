@@ -8,9 +8,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="个性化"
     Width="500"
-    Height="250"
+    Height="136"
     MinWidth="460"
-    MinHeight="120"
+    MinHeight="136"
+    Background="#2F2F2F"
     Closing="SettingForm_Closing"
     ResizeMode="CanResizeWithGrip"
     WindowStyle="None"
@@ -21,48 +22,55 @@
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
     </Window.Resources>
 
-    <Viewbox HorizontalAlignment="Stretch" VerticalAlignment="Top">
-        <DockPanel Background="Transparent">
-            <StackPanel Orientation="Vertical">
-                <DockPanel Margin="0,5">
-                    <TextBlock
-                        Margin="10,5"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Background="Transparent"
-                        FontSize="15"
-                        Foreground="White"
-                        Text="字体"
-                        TextAlignment="Center" />
-                    <ComboBox
-                        Width="130"
-                        Height="35"
-                        HorizontalAlignment="Left"
-                        VerticalAlignment="Top"
-                        Foreground="White"
-                        Style="{DynamicResource TextComboBoxStyle}" />
-                    <customcontrols:IconTextButtons
-                        Width="35"
-                        Height="35"
-                        Background="{StaticResource ButtonNormal}"
-                        Content="..."
-                        PressedBackground="{StaticResource ButtonPressed}"
-                        Style="{StaticResource IconTextButton}" />
-                </DockPanel>
-                <customcontrols:IconTextButtons
-                    Width="100"
-                    Height="35"
-                    Margin="10,0,0,0"
-                    Padding="0,0,0,5"
+    <DockPanel Background="Transparent">
+        <StackPanel Orientation="Vertical">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    Margin="10,5"
                     HorizontalAlignment="Left"
-                    VerticalAlignment="Top"
-                    Background="{StaticResource ButtonNormal}"
-                    Click="SetLinks"
-                    Content="设置轮播图"
+                    VerticalAlignment="Center"
+                    Background="Transparent"
                     FontSize="15"
+                    Foreground="White"
+                    Text="字体"
+                    TextAlignment="Center" />
+                <ComboBox
+                    x:Name="FontBox"
+                    Grid.Column="1"
+                    Height="25"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    FontSize="15"
+                    Foreground="White"
+                    Style="{DynamicResource TextComboBoxStyle}" />
+                <customcontrols:IconTextButtons
+                    Grid.Column="2"
+                    Width="35"
+                    Height="25"
+                    Background="{StaticResource ButtonNormal}"
+                    Content="..."
                     PressedBackground="{StaticResource ButtonPressed}"
                     Style="{StaticResource IconTextButton}" />
-            </StackPanel>
-        </DockPanel>
-    </Viewbox>
+            </Grid>
+            <customcontrols:IconTextButtons
+                Width="100"
+                Height="25"
+                Margin="10,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                Background="{StaticResource ButtonNormal}"
+                Click="SetLinks"
+                Content="设置轮播图"
+                FontSize="15"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{StaticResource IconTextButton}" />
+        </StackPanel>
+    </DockPanel>
+
 </local_window:CommonWindow>

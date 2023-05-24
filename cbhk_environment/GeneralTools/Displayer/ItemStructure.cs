@@ -10,10 +10,13 @@ namespace cbhk_environment.GeneralTools.Displayer
         public Uri ImagePath { get; set; }
         public string IDAndName { get; set; }
 
-        public ItemStructure(Uri ImagePath, string IDAndName)
+        public string NBT { get; set; }
+
+        public ItemStructure(Uri ImagePath, string IDAndName, string NBT = "")
         {
             this.ImagePath = ImagePath;
             this.IDAndName = IDAndName;
+            this.NBT = NBT;
         }
     }
 }

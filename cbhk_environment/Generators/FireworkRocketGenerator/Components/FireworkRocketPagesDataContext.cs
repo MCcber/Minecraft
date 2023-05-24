@@ -666,18 +666,6 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
         {
             run_command(false);
 
-            //string nbt = "";
-            //if (Result.Contains('{'))
-            //{
-            //    nbt = Result[Result.IndexOf('{')..(Result.IndexOf('}') + 1)];
-            //    //补齐缺失双引号对的key
-            //    nbt = Regex.Replace(nbt, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
-            //    //清除数值型数据的单位
-            //    nbt = Regex.Replace(nbt, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
-            //}
-
-            string FileName = Summon ? "FireworkRocket" : "FireworkStar";
-
             Microsoft.Win32.SaveFileDialog saveFileDialog = new()
             {
                 AddExtension = true,
@@ -688,8 +676,12 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
                 Title = "保存为命令文件"
             };
-            if (saveFileDialog.ShowDialog().Value && Directory.Exists(Path.GetDirectoryName(saveFileDialog.FileName)))
-                File.WriteAllText(Path.GetDirectoryName(saveFileDialog.FileName) + FileName + ".command", Result);
+            if (saveFileDialog.ShowDialog().Value)
+            {
+                if(Directory.Exists(Path.GetDirectoryName(saveFileDialog.FileName)))
+                _ = File.WriteAllTextAsync(saveFileDialog.FileName, Result);
+                _ = File.WriteAllTextAsync(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Entity\\" + Path.GetFileName(saveFileDialog.FileName), Result);
+            }
         }
 
         /// <summary>
@@ -1175,6 +1167,7 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
             {
                 colorID = item.Split(':')[0];
                 colorString = item.Split(':')[1];
+                if(!OriginColorDictionary.ContainsKey(colorID))
                 OriginColorDictionary.Add(colorID, colorString);
             }
         }

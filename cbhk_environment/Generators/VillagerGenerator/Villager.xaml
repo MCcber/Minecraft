@@ -28,6 +28,7 @@
 
     <Window.Resources>
         <CollectionViewSource x:Key="BagItemSource" Source="{Binding BagItems, IsAsync=True}" />
+        <CollectionViewSource x:Key="CustomItemSource" Source="{Binding CustomItems, IsAsync=True}" />
         <GeneralTools:UriToBitmapConverter x:Key="UriToBitmapImage" />
         <GeneralTools:ToolTipToString x:Key="ToolTipToString" />
         <GeneralTools:UriHelper x:Key="UriHelper" />
@@ -38,6 +39,7 @@
         <ImageBrush x:Key="CloseWhite" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhite.png" />
         <ImageBrush x:Key="CloseWhiteHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
         <ImageBrush x:Key="Edit" ImageSource="/cbhk_environment;component/resources/common/images/Edit.png" />
+        <ImageBrush x:Key="SaveIcon" ImageSource="/cbhk_environment;component/resources/common/images/Save.png" />
     </Window.Resources>
 
     <Window.InputBindings>
@@ -95,7 +97,7 @@
                 HorizontalAlignment="Left"
                 FontSize="20"
                 SelectedIndex="1"
-                SelectedItem="{Binding SelectedVersion}"
+                SelectedItem="{Binding SelectedVersion, Mode=OneWay}"
                 Style="{DynamicResource TextComboBoxStyle}">
                 <behavior:Interaction.Triggers>
                     <behavior:EventTrigger EventName="Loaded">
@@ -103,6 +105,39 @@
                     </behavior:EventTrigger>
                 </behavior:Interaction.Triggers>
             </ComboBox>
+            <CustomControls:IconTextButtons
+                Width="25"
+                Height="25"
+                Margin="5,0,0,0"
+                HorizontalAlignment="Left"
+                Background="{StaticResource SaveIcon}"
+                Command="{Binding Save}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Margin="5,0,0,0"
+                Padding="5"
+                Background="{StaticResource ButtonNormal}"
+                Command="{Binding ImportFromClipboard}"
+                Content="从剪切板导入"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Margin="5,0,0,0"
+                Padding="5"
+                Background="{StaticResource ButtonNormal}"
+                Command="{Binding ImportFromFile}"
+                Content="从文件导入"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:RadiusToggleButtons
+                Margin="5,5,0,0"
+                Foreground="White"
+                IsChecked="{Binding ShowResult, Mode=OneWayToSource}"
+                SelectedToggleText="显示结果"
+                Style="{DynamicResource RadiusToggleButton}"
+                ToggleHeight="26"
+                ToggleWidth="46"
+                UnSelectedToggleText="隐藏结果" />
         </DockPanel>
         <Grid
             Grid.Row="1"
@@ -201,6 +236,7 @@
                         VerticalContentAlignment="Center"
                         AllowDrop="False"
                         FontSize="18"
+                        SelectedIndex="0"
                         SelectedItem="{Binding VillagerType, Mode=TwoWay}"
                         Style="{DynamicResource TextComboBoxStyle}">
                         <behavior:Interaction.Triggers>
@@ -222,6 +258,7 @@
                         VerticalContentAlignment="Center"
                         AllowDrop="False"
                         FontSize="18"
+                        SelectedIndex="0"
                         SelectedItem="{Binding VillagerProfessionType, Mode=TwoWay}"
                         Style="{DynamicResource TextComboBoxStyle}">
                         <behavior:Interaction.Triggers>
@@ -243,6 +280,7 @@
                         VerticalContentAlignment="Center"
                         AllowDrop="False"
                         FontSize="18"
+                        SelectedIndex="0"
                         SelectedItem="{Binding VillagerLevel, Mode=TwoWay}"
                         Style="{DynamicResource TextComboBoxStyle}">
                         <behavior:Interaction.Triggers>
@@ -749,7 +787,6 @@
                         Header="原版物品库"
                         Style="{DynamicResource TextTabItemStyle}">
                         <ListView
-                            Grid.Row="2"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Top"
                             BorderThickness="0"
@@ -801,7 +838,57 @@
                     <CustomControls:TextTabItems
                         Foreground="White"
                         Header="自定义物品库"
-                        Style="{DynamicResource TextTabItemStyle}" />
+                        Style="{DynamicResource TextTabItemStyle}">
+                        <ListView
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Top"
+                            BorderThickness="0"
+                            IsSynchronizedWithCurrentItem="True"
+                            ItemsSource="{Binding Source={StaticResource CustomItemSource}}"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectedItem="{Binding SelectedItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{DynamicResource ListBoxScrollViewerStyle}"
+                            VirtualizingPanel.IsVirtualizing="true"
+                            VirtualizingPanel.ScrollUnit="Pixel"
+                            VirtualizingPanel.VirtualizationMode="Recycling">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Image
+                                        x:Name="contentImage"
+                                        Width="70"
+                                        Height="70"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        RenderOptions.BitmapScalingMode="HighQuality"
+                                        RenderOptions.ClearTypeHint="Enabled"
+                                        SnapsToDevicePixels="True"
+                                        Source="{Binding Path=ImagePath, Converter={StaticResource UriToBitmapImage}, Mode=OneWay, IsAsync=True}"
+                                        Tag="{Binding Path=NBT, Mode=OneWay, IsAsync=True}"
+                                        ToolTipService.BetweenShowDelay="0"
+                                        ToolTipService.InitialShowDelay="0"
+                                        UseLayoutRounding="True">
+                                        <Image.ToolTip>
+                                            <ToolTip
+                                                Background="#424242"
+                                                Content="{Binding Path=IDAndName, Mode=OneWay, IsAsync=True}"
+                                                Foreground="White" />
+                                        </Image.ToolTip>
+                                    </Image>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingWrapPanel:VirtualizingWrapPanel
+                                        Background="#555956"
+                                        ScrollViewer.CanContentScroll="True"
+                                        VirtualizingPanel.CacheLength="200 200"
+                                        VirtualizingPanel.CacheLengthUnit="Pixel"
+                                        VirtualizingPanel.IsVirtualizing="True" />
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
+                        </ListView>
+                    </CustomControls:TextTabItems>
                 </TabControl>
                 <Grid
                     Grid.Row="3"
@@ -829,6 +916,7 @@
                             Margin="10,0"
                             FontSize="15"
                             Foreground="White"
+                            SelectedIndex="0"
                             Style="{DynamicResource TextComboBoxStyle}">
                             <behavior:Interaction.Triggers>
                                 <behavior:EventTrigger EventName="Loaded">
@@ -902,7 +990,6 @@
                             AllowDrop="False"
                             Background="Transparent"
                             BorderThickness="0"
-                            FontSize="25"
                             Foreground="White"
                             Maximum="2147483647"
                             Minimum="-2147483648"
@@ -925,7 +1012,6 @@
                             AllowDrop="False"
                             Background="Transparent"
                             BorderThickness="0"
-                            FontSize="25"
                             Foreground="White"
                             Maximum="2147483647"
                             Minimum="-2147483648"

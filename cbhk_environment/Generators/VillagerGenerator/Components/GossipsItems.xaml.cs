@@ -1,6 +1,8 @@
-﻿using System;
+﻿using cbhk_environment.CustomControls;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace cbhk_environment.Generators.VillagerGenerator.Components
@@ -39,9 +41,9 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
             InitializeComponent();
         }
 
-        private void TypeLoaded(object sender, System.Windows.RoutedEventArgs e)
+        private void TypeLoaded(object sender, RoutedEventArgs e)
         {
-            CustomControls.TextComboBoxs textComboBoxs = sender as CustomControls.TextComboBoxs;
+            TextComboBoxs textComboBoxs = sender as TextComboBoxs;
             //读取言论类型
             if (File.Exists(TypeFilePath))
             {
@@ -54,9 +56,10 @@ namespace cbhk_environment.Generators.VillagerGenerator.Components
             }
         }
 
-        private void IconTextButtons_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void IconTextButtons_Click(object sender, RoutedEventArgs e)
         {
-            villager_datacontext.gossipItems.Remove(this);
+            villager_datacontext context = (Window.GetWindow(sender as IconTextButtons) as Villager).DataContext as villager_datacontext;
+            context.gossipItems.Remove(this);
         }
     }
 }

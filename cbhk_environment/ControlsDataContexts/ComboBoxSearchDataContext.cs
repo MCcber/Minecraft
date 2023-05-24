@@ -7,12 +7,14 @@ using System.Linq;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System;
+using System.Text.RegularExpressions;
 
 namespace cbhk_environment.ControlsDataContexts
 {
     public class ComboBoxSearchDataContext
     {
-        public Popup pop = new Popup();
+        public Popup pop = new();
 
         ComboBox current_box;
         public void ItemSearcher(object sender, KeyEventArgs e)
@@ -31,19 +33,24 @@ namespace cbhk_environment.ControlsDataContexts
 
                 #region 打开下拉框
                 ObservableCollection<IconComboBoxItem> dataGroup = current_box.ItemsSource as ObservableCollection<IconComboBoxItem>;
-                var target_data_groups = dataGroup.Where(item => item.ComboBoxItemText.StartsWith(box.Text.Trim()));
+                string[] searchList = box.Text.Split(' ');
+                bool HaveIDAndName = false;
+                if(searchList.Length > 1)
+                if (Regex.IsMatch(searchList[0], @"[a-zA-Z0-9_]+") && Regex.IsMatch(searchList[1], @"[\u4e00-\u9fa5]+"))
+                    HaveIDAndName = true;
+
+                var target_data_groups = dataGroup.Where(item => (HaveIDAndName && item.ComboBoxItemId.StartsWith(searchList[0]) && item.ComboBoxItemText.StartsWith(searchList[1])) || item.ComboBoxItemId.StartsWith(box.Text.Trim()) || item.ComboBoxItemText.StartsWith(box.Text.Trim()) || item.ComboBoxItemId.Contains(box.Text.Trim()) || item.ComboBoxItemText.Contains(box.Text.Trim()));
                 if (target_data_groups.Count() > 1 && box.Text.Trim().Length > 0)
                 {
                     pop = CreatePop(pop, target_data_groups, current_box, current_box.ItemTemplate);
                     pop.IsOpen = true;
                 }
-                #endregion
-
-                #region 搜索目标成员
-                IEnumerable<IconComboBoxItem> item_source = current_box.ItemsSource as IEnumerable<IconComboBoxItem>;
-                IEnumerable<IconComboBoxItem> select_item = item_source.Where(item => item.ComboBoxItemText == box.Text);
-                if (select_item.Count() == 1)
-                    current_box.SelectedItem = select_item.First();
+                else
+                    if(target_data_groups.Count() == 1 && box.Text.Trim().Length > 0)
+                {
+                    current_box.SelectedItem = target_data_groups.First();
+                    pop.IsOpen = false;
+                }
                 #endregion
             }
         }
@@ -58,27 +65,30 @@ namespace cbhk_environment.ControlsDataContexts
         /// <returns></returns>
         public Popup CreatePop(Popup pop, IEnumerable<IconComboBoxItem> listSource, FrameworkElement element, DataTemplate display_template)
         {
-            Border border = new Border
+            Border border = new()
             {
+                Background = new SolidColorBrush(Colors.Transparent),
                 BorderBrush = new SolidColorBrush(Colors.Black),
                 BorderThickness = new Thickness(0)
             };
 
-            ScrollViewer viewer = new ScrollViewer()
+            ScrollViewer viewer = new()
             {
+                Background = new SolidColorBrush(Colors.Transparent),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto
             };
 
-            ListBox listbox = new ListBox
+            ListBox listbox = new()
             {
-                Background = null,
+                Background = new ImageBrush(new BitmapImage(new Uri("pack://application:,,,/cbhk_environment;component/resources/common/images/Frame.png"))),
                 Foreground = new SolidColorBrush(Color.FromRgb(255, 255, 255)),
                 MinWidth = 200,
                 MaxHeight = 250,
                 ItemsSource = listSource,
                 ItemTemplate = display_template
             };
+            RenderOptions.SetBitmapScalingMode(listbox,BitmapScalingMode.NearestNeighbor);
 
             VirtualizingPanel.SetIsVirtualizing(listbox, true);
             VirtualizingPanel.SetVirtualizationMode(listbox, VirtualizationMode.Recycling);
@@ -86,15 +96,10 @@ namespace cbhk_environment.ControlsDataContexts
             ScrollViewer.SetHorizontalScrollBarVisibility(listbox, ScrollBarVisibility.Disabled);
 
             viewer.Content = listbox;
-
             listbox.MouseDoubleClick += Listbox_MouseDoubleClick;
-
             border.Child = viewer;
-
             pop.Child = border;
-
             pop.Placement = PlacementMode.Bottom;
-
             pop.PlacementTarget = element;
 
             return pop;

@@ -29,48 +29,48 @@
             <Setter Property="Foreground" Value="White" />
         </Style>
     </Window.Resources>
-    <Viewbox Width="{Binding Path=Width, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" Height="{Binding Path=Height, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}">
-        <DockPanel
-            Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}"
-            Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}"
-            VerticalAlignment="Top"
-            Background="Transparent">
-            <StackPanel Background="Transparent" DockPanel.Dock="Top">
-                <DockPanel FlowDirection="LeftToRight">
-                    <customcontrols:TextCheckBoxs
-                        x:Name="CloseToTray"
-                        Margin="10,10,0,0"
-                        Content=""
-                        FontSize="15"
-                        Foreground="White"
-                        HeaderHeight="20"
-                        HeaderText="关闭后缩小到托盘"
-                        HeaderWidth="20"
-                        IsChecked="True"
-                        Style="{StaticResource TextCheckBox}" />
-                </DockPanel>
-                <DockPanel>
-                    <TextBlock
-                        Width="100"
-                        Margin="10,10,0,0"
-                        HorizontalAlignment="Left"
-                        FontSize="15"
-                        Foreground="White"
-                        Text="启动器可见性" />
-                    <ComboBox
-                        x:Name="StateComboBox"
-                        Margin="0,0,50,0"
-                        FontSize="20"
-                        SelectedIndex="0"
-                        Style="{DynamicResource TextComboBoxStyle}">
-                        <behavior:Interaction.Triggers>
-                            <behavior:EventTrigger EventName="Loaded">
-                                <behavior:CallMethodAction MethodName="StateItemLoaded" TargetObject="{Binding}" />
-                            </behavior:EventTrigger>
-                        </behavior:Interaction.Triggers>
-                    </ComboBox>
-                </DockPanel>
-            </StackPanel>
-        </DockPanel>
-    </Viewbox>
+
+    <DockPanel
+        Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}"
+        Height="{Binding Path=ActualHeight, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}"
+        VerticalAlignment="Top"
+        Background="Transparent">
+        <StackPanel Background="Transparent" DockPanel.Dock="Top">
+            <DockPanel FlowDirection="LeftToRight">
+                <customcontrols:TextCheckBoxs
+                    x:Name="CloseToTray"
+                    Margin="10,10,0,0"
+                    Content=""
+                    FontSize="15"
+                    Foreground="White"
+                    HeaderHeight="20"
+                    HeaderText="关闭后缩小到托盘"
+                    HeaderWidth="20"
+                    IsChecked="True"
+                    Style="{StaticResource TextCheckBox}" />
+            </DockPanel>
+            <DockPanel>
+                <TextBlock
+                    Width="100"
+                    Margin="10,10,0,0"
+                    HorizontalAlignment="Left"
+                    FontSize="15"
+                    Foreground="White"
+                    Text="启动器可见性" />
+                <ComboBox
+                    x:Name="StateComboBox"
+                    Margin="0,0,50,0"
+                    FontSize="20"
+                    SelectedIndex="0"
+                    Style="{DynamicResource TextComboBoxStyle}">
+                    <behavior:Interaction.Triggers>
+                        <behavior:EventTrigger EventName="Loaded">
+                            <behavior:CallMethodAction MethodName="StateItemLoaded" TargetObject="{Binding}" />
+                        </behavior:EventTrigger>
+                    </behavior:Interaction.Triggers>
+                </ComboBox>
+            </DockPanel>
+        </StackPanel>
+    </DockPanel>
+
 </local_window:CommonWindow>

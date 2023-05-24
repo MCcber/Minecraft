@@ -3,6 +3,11 @@ using System.Threading.Tasks;
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using System.Windows.Controls;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.IO;
+using System.Drawing.Text;
 
 namespace cbhk_environment
 {
@@ -11,11 +16,25 @@ namespace cbhk_environment
     /// </summary>
     public partial class App : Application
     {
-        //首先注册开始和退出事件
-        public App()
+        public static string targetFamilyFilePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + "resources\\Fonts\\Selected.ttf";
+        public static string targetSystemFamilyIndexFilePath { get; set; } = AppDomain.CurrentDomain.BaseDirectory + "resources\\Fonts\\Selected.txt";
+
+        static App()
         {
-            //Startup += new StartupEventHandler(App_Startup);
-            //Exit += new ExitEventHandler(App_Exit);
+            if(File.Exists(targetFamilyFilePath))
+            {
+                FontFamily family = new(targetFamilyFilePath);
+                TextElement.FontFamilyProperty.OverrideMetadata(typeof(TextElement), new FrameworkPropertyMetadata(family));
+                TextBlock.FontFamilyProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata(family));
+            }
+            else
+            if(File.Exists(targetSystemFamilyIndexFilePath))
+            {
+                InstalledFontCollection fontCollection = new();
+                FontFamily fontFamily = new(fontCollection.Families[int.Parse(File.ReadAllText(targetSystemFamilyIndexFilePath))].Name);
+                TextElement.FontFamilyProperty.OverrideMetadata(typeof(TextElement), new FrameworkPropertyMetadata(fontFamily));
+                TextBlock.FontFamilyProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata(fontFamily));
+            }
         }
         void App_Startup(object sender, StartupEventArgs e)
         {

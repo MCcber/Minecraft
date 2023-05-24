@@ -249,15 +249,28 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                 nbt.Remove(0, 1);
             while (nbt.ToString().EndsWith(','))
                 nbt.Remove(nbt.ToString().Length - 1, 1);
+
+            if (Summon)
+            {
+                nbt.Insert(0, "id:\"minecraft:" + SelectedItemIdString + "\",tag:{");
+                nbt.Append("},Count:" + Data.ItemCount.Value + "b");
+            }
+
             if (nbt.ToString().Length > 0)
             {
                 nbt.Insert(0, '{');
                 nbt.Append('}');
             }
-            if (SelectedVersion == "1.12-")
-                Result = "give @p " + SelectedItemIdString + " " + Data.ItemCount.Value + " " + Data.ItemDamage.Value + " " + nbt;
+
+            if (Give)
+            {
+                if (SelectedVersion == "1.12-")
+                    Result = "give @p " + SelectedItemIdString + " " + Data.ItemCount.Value + " " + Data.ItemDamage.Value + " " + nbt;
+                else
+                    Result = "give @p " + SelectedItemIdString + nbt + " " + Data.ItemCount.Value;
+            }
             else
-                Result = "give @p " + SelectedItemIdString + nbt + " " + Data.ItemCount.Value;
+                Result = "summon item" + " ~ ~ ~ {Item:" + nbt + "}";
 
             if (bool.Parse(MultipleOrExtern.ToString()))
             {
@@ -291,13 +304,18 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                 AddExtension = true,
                 RestoreDirectory = true,
                 CheckPathExists = true,
-                DefaultExt = "command",
+                DefaultExt = ".command",
                 Filter = "Command files (*.command;)|*.command;",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
                 Title = "保存为命令文件"
             };
-            if (saveFileDialog.ShowDialog().Value && Directory.Exists(Path.GetDirectoryName(saveFileDialog.FileName)))
-                File.WriteAllText(saveFileDialog.FileName, Result);
+            if (saveFileDialog.ShowDialog().Value)
+            {
+                if (Directory.Exists(Path.GetDirectoryName(saveFileDialog.FileName)))
+                    File.WriteAllText(saveFileDialog.FileName, Result);
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Item\\");
+                File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Item\\" + Path.GetFileName(saveFileDialog.FileName), Result);
+            }
         }
 
         /// <summary>
@@ -316,6 +334,7 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
                 nbt.Remove(0, 1);
             while (nbt.ToString().EndsWith(','))
                 nbt.Remove(nbt.ToString().Length - 1, 1);
+
             if (Summon)
             {
                 nbt.Insert(0,"id:\"minecraft:"+ SelectedItemIdString + "\",tag:{");

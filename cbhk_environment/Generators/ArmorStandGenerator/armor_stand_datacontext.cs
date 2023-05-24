@@ -127,7 +127,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         /// </summary>
         Dictionary<string,string> KnownColorsInMc = new();
 
-        List<int> KnownColorDifferenceSet = new List<int>();
+        List<int> KnownColorDifferenceSet = new();
 
         #region 为盔甲架和坐标轴映射纹理
         public BitmapImage woodenImage { get; set; } = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\ArmorStand\\images\\oak_planks.png"));
@@ -145,7 +145,7 @@ namespace cbhk_environment.Generators.ArmorStandGenerator
         private Viewport3D ArmorStandViewer = null;
 
         //as的所有NBT项
-        List<string> as_nbts = new List<string> { };
+        List<string> as_nbts = new () { };
 
         /// <summary>
         /// 生成盔甲架数据

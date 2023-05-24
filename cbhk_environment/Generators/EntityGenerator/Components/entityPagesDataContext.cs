@@ -443,10 +443,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         {
             get
             {
-                string result = "";
-                result = MainWindow.EntityDataBase.Where(item => item.Key[(item.Key.IndexOf(':') + 1)..] == SelectedEntityId.ComboBoxItemText).First().Key;
-                result = GetEntityID().Match(result).ToString();
-                return result.Trim() != "" ? result : "";
+                string result = SelectedEntityId.ComboBoxItemId;
+                return result;
             }
         }
         #endregion
@@ -533,7 +531,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         //特殊标签面板
         ScrollViewer SpecialViewer = null;
         //存储最终的结果
-        private string Result { get; set; }
+        public string Result { get; set; }
         #endregion
 
         public entityPagesDataContext()
@@ -553,25 +551,24 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             string SpecialData = File.ReadAllText(SpecialNBTStructureFilePath);
             JArray specialArray = JArray.Parse(SpecialData);
             string entityID;
-            string entityName = "";
             for (int i = 0; i < specialArray.Count; i++)
             {
                 IconComboBoxItem item = new();
                 entityID = specialArray[i]["type"].ToString();
-                string iconPath = File.Exists(entityImageFolderPath + entityID + "_spawn_egg.png") ? entityImageFolderPath + entityID + "_spawn_egg.png" : entityImageFolderPath + entityID + ".png";
-                List<string> entityNameObj = MainWindow.EntityDataBase.Where(item => item.Key[..item.Key.IndexOf(':')] == entityID).Select(item=>item.Key).ToList();
-                if (entityNameObj.Count > 0)
-                    entityName = entityNameObj[0][(entityNameObj[0].IndexOf(':') + 1)..];
-                else
-                    entityName = "";
-                if (entityName.Length > 0)
+                bool haveEntity = MainWindow.EntityIdSource.Any(item => item.ComboBoxItemId == entityID);
+                if (haveEntity)
                 {
-                    item.ComboBoxItemText = entityName;
+                    #region 设置实体图标、名称和ID
+                    string iconPath = File.Exists(entityImageFolderPath + entityID + "_spawn_egg.png") ? entityImageFolderPath + entityID + "_spawn_egg.png" : entityImageFolderPath + entityID + ".png";
+                    if (File.Exists(iconPath))
+                        item.ComboBoxItemIcon = new BitmapImage(new Uri(iconPath, UriKind.RelativeOrAbsolute));
+                    item.ComboBoxItemText = MainWindow.EntityIdSource.Where(item => item.ComboBoxItemId == entityID).Select(item => item.ComboBoxItemText).First();
+                    item.ComboBoxItemId = entityID;
+                    #endregion
                     EntityIds.Add(item);
                 }
-                if (File.Exists(iconPath))
-                    item.ComboBoxItemIcon = new BitmapImage(new Uri(iconPath, UriKind.RelativeOrAbsolute));
             }
+            SpecialTagsResult.Add(EntityIds[0].ComboBoxItemId,new ObservableCollection<NBTDataStructure>());
             #endregion
         }
         
@@ -667,13 +664,18 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 AddExtension = true,
                 RestoreDirectory = true,
                 CheckPathExists = true,
-                DefaultExt = "command",
+                DefaultExt = ".command",
                 Filter = "Command files (*.command;)|*.command;",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
                 Title = "保存为命令文件"
             };
-            if (saveFileDialog.ShowDialog().Value && Directory.Exists(Path.GetDirectoryName(saveFileDialog.FileName)))
-                File.WriteAllText(saveFileDialog.FileName, Result);
+            if (saveFileDialog.ShowDialog().Value)
+            {
+                if (Directory.Exists(Path.GetDirectoryName(saveFileDialog.FileName)))
+                    _ = File.WriteAllTextAsync(saveFileDialog.FileName, Result);
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Entity\\");
+                _ = File.WriteAllTextAsync(AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Entity\\" + Path.GetFileName(saveFileDialog.FileName), Result);
+            }
         }
 
         /// <summary>
@@ -682,12 +684,13 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void run_command()
         {
             CollectionCommonTagsMark();
-            Result = string.Join(",",SpecialTagsResult[SelectedEntityIdString].Select(item =>
+
+            Result = (SpecialTagsResult.ContainsKey(SelectedEntityIdString)? string.Join(",",SpecialTagsResult[SelectedEntityIdString].Select(item =>
             {
                 if (item != null && item.Result.Length > 0)
                     return item.Result;
                 return "";
-            })) + "," + string.Join(",", CommonResult.Select(item =>
+            })) + ",":"") + string.Join(",", CommonResult.Select(item =>
             {
                 if (CurrentCommonTags.Contains(item.NBTGroup) && item.Result.Length > 0)
                     return item.Result;
@@ -698,8 +701,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 
             if (UseForTool)
             {
-                Result = "";
-                Result = "{id:\"minecraft:" + SelectedEntityIdString + "\"" + (Result.Length > 0 ? "," + Result : "") + "}";
+                Result = "{id:\"minecraft:" + SelectedEntityIdString + "\"" + (Result != null && Result.Length > 0 ? "," + Result : "") + "}";
                 Entity entity = Window.GetWindow(currentEntityPage) as Entity;
                 entity.DialogResult = true;
                 return;
@@ -739,6 +741,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         public string run_command(bool showResult)
         {
             CollectionCommonTagsMark();
+            Result = "";
             string AttributesData = AttributeResult.Count > 0 ? "Attributes:[" + string.Join(",", AttributeResult.Select(item => item.Result)).Trim(',') + "]" : "";
             AttributesData = AttributesData == "Attributes:[]" ? "" : AttributesData;
             string PassengersData = PassengerResult.Count > 0 ? "Passengers:[" + string.Join(",", PassengerResult.Select(item => item.Result)).Trim(',') + "]" : "";

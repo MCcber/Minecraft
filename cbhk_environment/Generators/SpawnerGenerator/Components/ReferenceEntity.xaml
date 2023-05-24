@@ -1,0 +1,52 @@
+﻿<UserControl
+    x:Class="cbhk_environment.Generators.SpawnerGenerator.Components.ReferenceEntity"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <DockPanel>
+        <Border
+            Width="30"
+            Height="30"
+            BorderBrush="Orange"
+            BorderThickness="1">
+            <Image x:Name="EntityIcon" HorizontalAlignment="Left" />
+        </Border>
+        <CustomControls:IconTextButtons
+            Padding="5"
+            HorizontalAlignment="Left"
+            Background="{StaticResource ButtonNormal}"
+            Click="SetEmpty_Click"
+            Content="设置为空"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Padding="5"
+            HorizontalAlignment="Left"
+            Background="{StaticResource ButtonNormal}"
+            Click="ImportFromClipboard_Click"
+            Content="从剪切板读取"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Padding="5"
+            HorizontalAlignment="Left"
+            Background="{StaticResource ButtonNormal}"
+            Click="ImportFromFile_Click"
+            Content="从文件读取"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+        <CustomControls:IconTextButtons
+            Padding="5"
+            HorizontalAlignment="Stretch"
+            Background="{StaticResource ButtonNormal}"
+            Click="Spawn_Click"
+            Content="生成"
+            PressedBackground="{StaticResource ButtonPressed}"
+            Style="{DynamicResource IconTextButton}" />
+    </DockPanel>
+</UserControl>
