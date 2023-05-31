@@ -95,19 +95,11 @@
 
     </Window.Resources>
 
-    <!--  Source="resources/cbhk_form/images/TopLeft.png"  -->
     <Grid
         Width="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=ActualWidth}"
         Height="{Binding RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}, Path=ActualHeight}"
-        Background="Transparent"
+        Background="#242424"
         ClipToBounds="True">
-        <!--<Grid.Clip>
-            <GeometryGroup>
-                <RectangleGeometry Rect="13 4 775 592" />
-                <RectangleGeometry Rect="4 13 9 574" />
-                <RectangleGeometry Rect="788 13 8 575" />
-            </GeometryGroup>
-        </Grid.Clip>-->
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />
             <RowDefinition Height="18*" />
@@ -364,7 +356,7 @@
             Grid.Column="1"
             Margin="0,0,15,35"
             Panel.ZIndex="1"
-            Background="#595959"
+            Background="Transparent"
             BorderThickness="0"
             SelectedIndex="0"
             SelectionChanged="TabControl_SelectionChanged"

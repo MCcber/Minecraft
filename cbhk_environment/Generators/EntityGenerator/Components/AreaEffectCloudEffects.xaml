@@ -159,9 +159,15 @@
                             FontSize="15"
                             Foreground="White"
                             Text="渲染效果改变的时间"
-                            ToolTip="不小于0。"
                             ToolTipService.BetweenShowDelay="0"
-                            ToolTipService.InitialShowDelay="0" />
+                            ToolTipService.InitialShowDelay="0">
+                            <TextBlock.ToolTip>
+                                <ToolTip
+                                    Background="#484848"
+                                    Content="不小于0。"
+                                    Foreground="White" />
+                            </TextBlock.ToolTip>
+                        </TextBlock>
                         <Slider
                             Uid="effect_changed_timestamp"
                             Grid.Row="1"
@@ -178,9 +184,15 @@
                             FontSize="15"
                             Foreground="White"
                             Text="渲染效果的时间周期"
-                            ToolTip="不小于0。"
                             ToolTipService.BetweenShowDelay="0"
-                            ToolTipService.InitialShowDelay="0" />
+                            ToolTipService.InitialShowDelay="0">
+                            <TextBlock.ToolTip>
+                                <ToolTip
+                                    Background="#484848"
+                                    Content="不小于0。"
+                                    Foreground="White" />
+                            </TextBlock.ToolTip>
+                        </TextBlock>
                         <Slider
                             Uid="padding_duration"
                             Grid.Row="2"

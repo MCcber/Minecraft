@@ -1,422 +1,523 @@
-﻿using cbhk_environment.CustomControls;
+﻿using cbhk_environment.GeneralTools.Displayer;
+using cbhk_environment.GeneralTools;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections.ObjectModel;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.IO;
+using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace cbhk_environment.Generators.RecipeGenerator.Components
 {
     /// <summary>
-    /// CampFire.xaml 的交互逻辑
+    /// Campfire.xaml 的交互逻辑
     /// </summary>
-    public partial class CampFire : UserControl
+    public partial class Campfire : UserControl
     {
-        //单元格文件路径
-        string cell_path = AppDomain.CurrentDomain.BaseDirectory+ "resources\\configs\\Recipe\\images\\cell.png";
-        //箭头文件路径
-        string arrow_path = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Recipe\\images\\arrow.png";
-
-        //获取被烹饪物品的引用
-        Image CookedItem = null;
-        //获取多选模式引用
-        TextToggleButtons MultipleMode = null;
-        //空内容图像
-        ImageSource empty_image = null;
-        //物品编辑模式
-        recipe_datacontext.RecipeModifyTypes modifyTypes = new recipe_datacontext.RecipeModifyTypes();
-        //熔炼物品列表
-        private List<Image> CookedItemList = new List<Image> { };
-        //显示物品信息的窗体
-        public ItemsDisplayer ItemInfomationWindow = new ItemsDisplayer();
-        //是否显示物品信息窗体
-        bool DisplayCurrentItem;
-
-        //获取经验的引用
-        Slider RecipeExp = null;
-        //获取烧制时间的引用
-        Slider RecipeCookingTime = null;
-        //获取文件名引用
-        public TextBox RecipeFileName = null;
-
-        #region 当前槽位被点击子级物品,用于绑定单个物品的标签
-        private Image currentSubItem = null;
-        public Image CurrentSubItem
-        {
-            get { return currentSubItem; }
-            set { currentSubItem = value; }
-        }
-        #endregion
-
-        #region 当前选中的物品
-        private Image currentItemImage = null;
-        public Image CurrentItemImage
-        {
-            get { return currentItemImage; }
-            set { currentItemImage = value; }
-        }
-        #endregion
-
-        #region 知识之书图标
-        System.Drawing.Bitmap KnowLedgeBook = null;
-        BitmapImage KnowLedgeBookImage = null;
-        #endregion
-
-        #region 生成结果
-        private string recipe_result = "";
-        public string RecipeResult
-        {
-            get
-            {
-                string result;
-
-                string ExperienceData = "\"experience\":";
-                string CookingtimeData = "\"cookingtime\":";
-
-                RecipeExp.Value = int.Parse(RecipeExp.Value.ToString().Contains(".") ? RecipeExp.Value.ToString().Split('.')[0].Replace("-", "") : RecipeExp.Value.ToString());
-                RecipeCookingTime.Value = int.Parse(RecipeCookingTime.Value.ToString().Contains(".") ? RecipeCookingTime.Value.ToString().Split('.')[0].Replace("-", "") : RecipeCookingTime.Value.ToString());
-
-                ExperienceData += ExperienceData + ",";
-                CookingtimeData += CookingtimeData + ",";
-
-                result = ExperienceData + CookingtimeData + "\"result\":{\"item\":\"minecraft:" + recipe_result + "\"}";
-                return result;
-            }
-            set { recipe_result = value; }
-        }
-        #endregion
-
-        #region 最终数据
-        public string RecipeData
-        {
-            get
-            {
-                string result = "{\"type\":\"minecraft:campfire_cooking\"," + (GroupId.Text.Trim() != "" ? "\"group\":\"" + GroupId.Text + "\"," : "");
-                string IngredientData = "\"ingredient\":";
-                if (CookedItemList.Count > 1 && MultipleMode.IsChecked.Value)
-                {
-                    IngredientData += "[";
-                    IngredientData += string.Join("", CookedItemList.Select(item => "{\"item\":\"minecraft:" + item.Tag.ToString() + "\""+ (item.Name.Trim() != "" ? ",\"tag\":\"" + item.Name + "\"" : "") + "},"));
-                    IngredientData = IngredientData.TrimEnd(',') + "],";
-                }
-                else
-                if (CookedItemList.Count >= 1)
-                {
-                    IngredientData += "{\"item\":\"minecraft:" + CookedItemList.First().Tag.ToString() + "\""+ (CookedItemList.First().Name.Trim() != "" ? ",\"tag\":\"" + CookedItemList.First().Name + "\"" : "") + "},";
-                }
-                result += CookedItemList.Count > 0 ? IngredientData + RecipeResult + "}" : RecipeResult + "}";
-                return result;
-            }
-        }
-        #endregion
-
-        public CampFire()
+        public Campfire()
         {
             InitializeComponent();
-
-            ItemInfomationWindow.DataContext = this;
-
-            #region 初始化知识之书
-            KnowLedgeBook = new System.Drawing.Bitmap(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Recipe\\images\\knowledge_book.png");
-            KnowLedgeBook = GeneralTools.ChangeBitmapSize.Magnifier(KnowLedgeBook, 10);
-            KnowLedgeBookImage = GeneralTools.BitmapImageConverter.ToBitmapImage(KnowLedgeBook);
-            #endregion
         }
+    }
+
+    public class campfireDataContext : ObservableObject
+    {
+        /// <summary>
+        /// 运行配方
+        /// </summary>
+        public RelayCommand Run { get; set; }
+
+        #region 字段与引用
+        /// <summary>
+        /// 存储最终结果
+        /// </summary>
+        public string Result { get; set; } = "";
+
+        #region 存储外部导入的数据
+        public bool ImportMode { get; set; } = false;
+        public JObject ExternalData { get; set; } = null;
+        #endregion
 
         /// <summary>
-        /// 载入单元格
+        /// 需要保存
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CellLoaded(object sender, RoutedEventArgs e)
-        {
-            Image current_image = sender as Image;
-            current_image.Source = new BitmapImage(new Uri(cell_path,UriKind.Absolute));
-        }
-
+        public bool NeedSave { get; set; } = true;
+        public Image MaterialItem = null;
         /// <summary>
-        /// 载入箭头
+        /// 结果物品
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ArrowLoaded(object sender, RoutedEventArgs e)
-        {
-            Image current_image = sender as Image;
-            current_image.Source = new BitmapImage(new Uri(arrow_path, UriKind.Absolute));
-        }
-
+        public Image ResultItem = null;
         /// <summary>
-        /// 被烹饪物品
+        /// 材料列表
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CookedLoaded(object sender, RoutedEventArgs e)
-        {
-            CookedItem = sender as Image;
-        }
-
+        public ObservableCollection<ItemStructure> MaterialList { get; set; } = new();
+        public ObservableCollection<string> MaterialTag { get; set; } = new();
+        BitmapImage emptyImage = new(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Recipe\\images\\Empty.png"));
+        SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+        SolidColorBrush grayBrush = new((Color)ColorConverter.ConvertFromString("#484848"));
         /// <summary>
-        /// 是否开启多选模式
+        /// 多选材质面板
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MultipleModeLoaded(object sender, RoutedEventArgs e)
-        {
-            MultipleMode = sender as TextToggleButtons;
-        }
-
+        private Grid MultiMaterialGrid = null;
         /// <summary>
-        /// 移除Tag中的非法字符
+        /// 多选材质视图
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RemoveIllegalCharacter(object sender, KeyEventArgs e)
-        {
-            TextBox current_box = sender as TextBox;
-            current_box.Text = Regex.Replace(current_box.Text, @"[\\/:*?" + "\"" + "<>|]", "").ToString();
-            //current_box.Text = Regex.Replace(current_box.Text, @"^\d+", "").ToString();
-        }
-
+        private ListView MultiMaterialViewer = null;
         /// <summary>
-        /// 绑定单个物品的tag数据
+        /// 记录多选模式当前选中的物品索引,用于设置Tag数据
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ItemTagBinder(object sender, MouseButtonEventArgs e)
+        int MultiModeCurrentSelectedItemIndex = 0;
+        /// <summary>
+        /// 多选模式材料视图数据源
+        /// </summary>
+        private CollectionViewSource MultiMaterialSource = new();
+        #region 记录当前的Tag
+        private string currentTag = "";
+        public string CurrentTag
         {
-            #region 动态绑定每个槽位的标签信息
-            CurrentSubItem = sender as Image;
-            Binding tag_binder = new Binding()
+            get => currentTag;
+            set => SetProperty(ref currentTag, value);
+        }
+        #endregion
+        #region 物品搜索字符串
+        private string searchText = "";
+        public string SearchText
+        {
+            get => searchText;
+            set
             {
-                Path = new PropertyPath("CurrentSubItem.Name"),
-                Mode = BindingMode.TwoWay,
-                UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                FallbackValue = ""
-            };
-            BindingOperations.SetBinding(ItemInfomationWindow.TagBox, TextBox.TextProperty, tag_binder);
-            #endregion
+                SetProperty(ref searchText, value);
+                if (MultiMaterialGrid?.Visibility == Visibility.Visible && MultiMaterialViewer?.Visibility == Visibility.Visible)
+                    MultiMaterialSource.View?.Refresh();
+            }
         }
-
-        /// <summary>
-        /// 删除对应槽位的物品
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteCacheImage(object sender, MouseButtonEventArgs e)
+        #endregion
+        #endregion
+        #region 多选与单选
+        private bool multiSelect = false;
+        public bool MultiSelect
         {
-            Image current_image = sender as Image;
-            modifyTypes = recipe_datacontext.RecipeModifyTypes.Delete;
-            if (current_image.Uid == "0")
+            get => multiSelect;
+            set
             {
-                UpdateMultipleItemView(current_image, modifyTypes, CookedItemList);
-                if (CookedItemList.Count == 0)
-                    CookedItem.Source = empty_image;
+                multiSelect = value;
+                OnPropertyChanged();
+                if (MaterialList.Count > 0 && !MultiSelect)
+                {
+                    MaterialItem.Source = new BitmapImage(MaterialList[0].ImagePath);
+                    ToolTip toolTip = new()
+                    {
+                        Foreground = whiteBrush,
+                        Background = grayBrush,
+                        Content = MaterialList[0].IDAndName
+                    };
+                    MaterialItem.ToolTip = toolTip;
+                }
                 else
-                    if (CookedItemList.Count == 1)
+                if (MaterialList.Count > 1 && MultiSelect)
                 {
-                    CookedItem.Source = (ItemInfomationWindow.CurrentItemInfomation.Children[0] as Image).Source;
+                    GenerateBubbleChart.Generator(ref MaterialItem, MaterialList);
+                    ToolTip toolTip = new()
+                    {
+                        Foreground = whiteBrush,
+                        Background = grayBrush,
+                        Content = "物品组，左击编辑"
+                    };
+                    MaterialItem.ToolTip = toolTip;
                 }
             }
         }
+        #endregion
+        #region 组标识符
+        private string groupName = "";
+        public string GroupName
+        {
+            get => groupName;
+            set => SetProperty(ref groupName, value);
+        }
+        #endregion
+        #region 配方文件名
+        private string fileName = "";
+        public string FileName
+        {
+            get => fileName;
+            set => SetProperty(ref fileName, value);
+        }
+        #endregion
+        #region 烧制时间
+        private double cookingtime = 10;
+        public double Cookingtime
+        {
+            get => cookingtime;
+            set => SetProperty(ref cookingtime, value);
+        }
+        #endregion
+        #region 获得的经验
+        private double experience = 0;
+        public double Experience
+        {
+            get => experience;
+            set => SetProperty(ref experience, value);
+        }
+        #endregion
+
+        public campfireDataContext()
+        {
+            #region 绑定指令
+            Run = new RelayCommand(RunCommand);
+            #endregion
+            #region 初始化数据
+            MaterialTag.Add("");
+            #endregion
+        }
 
         /// <summary>
-        /// 检测预览视图是否有内容重叠
+        /// 执行配方
         /// </summary>
-        private int CheckOverLap(Image image)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void RunCommand()
         {
-            int index = -1;
-            int count = ItemInfomationWindow.CurrentItemInfomation.Children.Count;
-            Image current_image;
-            for (int i = 0; i < count; i++)
+            #region 合成最终数据
+            Result = "{\r\n  \"type\": \"minecraft:campfire_cooking\",";
+            #region 组标识符
+            string groupData = GroupName.Length > 0 ? "\"group\":\"" + GroupName + "\"," : "";
+            #endregion
+            #region 根据配方类型合并材料数据
+            StringBuilder keyData = new();
+            #region 合并无序数据
+            if (MultiSelect)
             {
-                current_image = ItemInfomationWindow.CurrentItemInfomation.Children[i] as Image;
-                if (current_image.Tag == image.Tag)
+                keyData.Append("\"ingredient\":[");
+                for (int i = 0; i < MaterialList.Count; i++)
                 {
-                    index = i;
-                    break;
+                    string itemID = MaterialList[i].IDAndName[..MaterialList[i].IDAndName.IndexOf(':')];
+                    keyData.Append("{\"item\":\"minecraft:" + itemID + "\"" + (MaterialTag.Count > 0 && i < MaterialTag.Count && MaterialTag[i].Length > 0 ? ",\"tag\":\"" + MaterialTag[i] + "\"}," : "},"));
                 }
-            }
-            return index;
-        }
-
-        /// <summary>
-        /// 更新右侧多选预览视图
-        /// </summary>
-        /// <param name="image">图像控件</param>
-        /// <param name="delete">是否删除</param>
-        /// <param name="cover">是否覆盖</param>
-        public void UpdateMultipleItemView(Image image, recipe_datacontext.RecipeModifyTypes modifyTypes, List<Image> images)
-        {
-            int index = CheckOverLap(image);
-            switch (modifyTypes)
-            {
-                case recipe_datacontext.RecipeModifyTypes.Add:
-                    if (MultipleMode.IsChecked.Value || ItemInfomationWindow.CurrentItemInfomation.Children.Count == 0)
-                        ItemInfomationWindow.CurrentItemInfomation.Children.Add(image);
-                    else
-                    {
-                        ItemInfomationWindow.CurrentItemInfomation.Children.Clear();
-                        ItemInfomationWindow.CurrentItemInfomation.Children.Add(image);
-                    }
-                    break;
-                case recipe_datacontext.RecipeModifyTypes.Delete:
-                    images.Remove(image);
-                    ItemInfomationWindow.CurrentItemInfomation.Children.RemoveAt(index);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 更新物品
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ItemUpdate(object sender, DragEventArgs e)
-        {
-            recipe_datacontext.IsGrabingItem = !recipe_datacontext.IsGrabingItem;
-
-            #region 放大当前图像
-            Image current_item = sender as Image;
-            string item_id = recipe_datacontext.GrabedImage.Tag.ToString();
-            string image_path = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + item_id + ".png";
-            System.Drawing.Bitmap bitmap = new System.Drawing.Bitmap(image_path);
-            bitmap = GeneralTools.ChangeBitmapSize.Magnifier(bitmap, 10);
-            BitmapImage bitmapImage = GeneralTools.BitmapImageConverter.ToBitmapImage(bitmap);
-            #endregion
-
-            #region 获取空图像引用
-            if (empty_image == null)
-                empty_image = current_item.Source;
-            #endregion
-
-            #region 右侧预览新增图像
-            Image cache_image = new Image()
-            {
-                Height = current_item.Height,
-                Cursor = Cursors.Hand,
-                Width = current_item.Width,
-                Tag = item_id,
-                ToolTip = item_id + " 右击删除",
-                Uid = current_item.Uid
-            };
-            ToolTipService.SetInitialShowDelay(cache_image, 0);
-            ToolTipService.SetShowDuration(cache_image, 1000);
-            cache_image.MouseRightButtonDown += DeleteCacheImage;
-            cache_image.MouseLeftButtonDown += ItemTagBinder;
-            #endregion
-
-            current_item.Tag = item_id;
-            modifyTypes = recipe_datacontext.RecipeModifyTypes.Add;
-            switch (current_item.Uid)
-            {
-                case "0":
-                    if (MultipleMode.IsChecked.Value || CookedItemList.Count == 0)
-                    {
-                        if (CookedItemList.Where(item => item.Tag == cache_image.Tag).Count() == 0)
-                            CookedItemList.Add(cache_image);
-                        current_item.Source = CookedItemList.Count < 2 ? bitmapImage : KnowLedgeBookImage;
-                        cache_image.Source = bitmapImage;
-                        UpdateMultipleItemView(cache_image, modifyTypes, CookedItemList);
-                    }
-                    else
-                    {
-                        current_item.Source = bitmapImage;
-                        CookedItemList[0] = cache_image;
-                        cache_image.Source = current_item.Source;
-                        UpdateMultipleItemView(cache_image, modifyTypes, CookedItemList);
-                    }
-                    break;
-                case "1":
-                    current_item.Source = bitmapImage;
-                    RecipeResult = current_item.Tag.ToString();
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// 选中物品,更新数据
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void SelectItemClick(object sender, MouseButtonEventArgs e)
-        {
-            DisplayCurrentItem = !DisplayCurrentItem;
-            Image image = sender as Image;
-            Border border = image.Parent as Border;
-            if (image != CurrentItemImage && CurrentItemImage != null)
-            {
-                Border last_parent = CurrentItemImage.Parent as Border;
-                last_parent.BorderThickness = new Thickness(0);
-                DisplayCurrentItem = true;
-            }
-            border.BorderThickness = DisplayCurrentItem ? new Thickness(5) : new Thickness(0);
-            CurrentItemImage = image;
-
-            if (DisplayCurrentItem)
-            {
-                if (CookedItemList.Count == 1 && ItemInfomationWindow.KeyBox.Text.Trim() == "")
-                    ItemInfomationWindow.KeyBox.Text = "m";
-                Window window = Window.GetWindow(image);
-                Point point = image.TransformToAncestor(window).Transform(new Point(0, 0));
-                point = PointToScreen(point);
-                ItemInfomationWindow.Left = point.X - 180;
-                ItemInfomationWindow.Top = point.Y - 400;
-                ItemInfomationWindow.Show();
+                //去除末尾逗号并追加闭中括号
+                if (keyData.ToString().EndsWith(","))
+                    keyData.Remove(keyData.ToString().Length - 1, 1);
+                keyData.Append("],");
             }
             else
-                ItemInfomationWindow.Hide();
+            {
+                keyData.Append("\"ingredient\":");
+                string itemID = MaterialList[0].IDAndName[..MaterialList[0].IDAndName.IndexOf(':')];
+                keyData.Append("{\"item\":\"minecraft:" + itemID + "\"" + (MaterialTag.Count > 0 && MaterialTag[0].Length > 0 ? ",\"tag\":\"" + MaterialTag[0] + "\"}," : "},"));
+            }
+            ItemStructure resultItemStructure = ResultItem.Tag as ItemStructure;
+            string resultItemID = resultItemStructure.IDAndName[..resultItemStructure.IDAndName.IndexOf(':')];
+            string cookingTimeData = ",\"cookingtime\":" + int.Parse(Cookingtime.ToString());
+            string experienceData = ",\"experience\":" + int.Parse(Experience.ToString()) + "}";
+            string resultData = "\"item\":\"minecraft:" + resultItemID + "\"";
+            #endregion
+            #endregion
+            #region 合并最终结果
+            Result += groupData + keyData + resultData + cookingTimeData + experienceData;
+            #endregion
+            #endregion
+            #region 选择生成路径，执行生成
+            if (NeedSave)
+            {
+                Microsoft.Win32.SaveFileDialog saveFileDialog = new()
+                {
+                    AddExtension = true,
+                    Filter = "Json文件|*.json;",
+                    DefaultExt = ".json",
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                    RestoreDirectory = true,
+                    Title = "选择配方文件存储路径"
+                };
+                if (saveFileDialog.ShowDialog().Value)
+                {
+                    _ = File.WriteAllTextAsync(saveFileDialog.FileName, Result);
+                    OpenFolderThenSelectFiles.ExplorerFile(saveFileDialog.FileName);
+                }
+            }
+            #endregion
         }
 
         /// <summary>
-        /// 获取文件名引用
+        /// 载入多选材质面板
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RecipeFileNameLoaded(object sender, RoutedEventArgs e)
+        public void MultiMaterialGrid_Loaded(object sender, RoutedEventArgs e)
         {
-            RecipeFileName = sender as TextBox;
+            MultiMaterialGrid = sender as Grid;
+            Campfire campfire = MultiMaterialGrid.FindParent<Campfire>();
+            MultiMaterialSource = campfire.Resources["MultiModeItemViewSource"] as CollectionViewSource;
+            MultiMaterialSource.Filter += MultiMaterialSource_Filter;
         }
 
         /// <summary>
-        /// 获取经验引用
+        /// 载入材料
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RecipeExpLoaded(object sender, RoutedEventArgs e)
+        public async void Material_Loaded(object sender, RoutedEventArgs e)
         {
-            RecipeExp = sender as Slider;
+            MaterialItem = sender as Image;
+            if (ImportMode)
+                await MaterialsLoaded();
+            else
+                MaterialItem.Source ??= emptyImage;
         }
 
         /// <summary>
-        /// 获取烧制时间引用
+        /// 异步载入外部材料数据
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RecipeCookingTimeLoaded(object sender, RoutedEventArgs e)
+        /// <returns></returns>
+        private async Task MaterialsLoaded()
         {
-            RecipeCookingTime = sender as Slider;
+            Campfire campfire = MaterialItem.FindParent<Campfire>();
+            await campfire.Dispatcher.InvokeAsync(() =>
+            {
+                if (ExternalData.SelectToken("ingredient") is JObject ingredient)
+                {
+                    JToken itemIDObj = ExternalData.SelectToken("ingredient.item");
+                    JToken itemTagObj = ExternalData.SelectToken("ingredient.tag");
+                    if (itemIDObj != null)
+                    {
+                        string itemID = itemIDObj.ToString().Replace("minecraft:", "");
+                        Uri iconUri = new(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png");
+                        string itemName = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemId == itemID.ToString()).Select(item => item.ComboBoxItemText).First();
+                        MaterialList.Add(new ItemStructure(iconUri, itemID + ":" + itemName));
+                        if (itemTagObj != null)
+                            MaterialTag.Add(itemTagObj.ToString());
+                    }
+                }
+                else
+                    if (ExternalData.SelectToken("ingredient") is JArray ingredients)
+                {
+                    foreach (JToken item in ingredients)
+                    {
+                        JToken itemIDObj = item.SelectToken("item");
+                        JToken itemTagObj = item.SelectToken("tag");
+                        if (itemIDObj != null)
+                        {
+                            string itemID = itemIDObj.ToString().Replace("minecraft:", "");
+                            Uri iconUri = new(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID + ".png");
+                            string itemName = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemId == itemID.ToString()).Select(item => item.ComboBoxItemText).First();
+                            MaterialList.Add(new ItemStructure(iconUri, itemID + ":" + itemName));
+                            if (itemTagObj != null)
+                                MaterialTag.Add(itemTagObj.ToString());
+                        }
+                    }
+                    GenerateBubbleChart.Generator(ref MaterialItem, MaterialList);
+                }
+            });
         }
 
         /// <summary>
-        /// 抬起右键后删除合成结果
+        /// 载入结果物品
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void DeleteRecipeResultClick(object sender, MouseButtonEventArgs e)
+        public void ResultItem_Loaded(object sender, RoutedEventArgs e)
         {
-            Image image = sender as Image;
-            image.Source = empty_image;
-            RecipeResult = "";
+            ResultItem = sender as Image;
+            ResultItem.Source ??= emptyImage;
+            if (ImportMode)
+                ResultItemLoaded();
+        }
+
+        /// <summary>
+        /// 异步载入外部结果数据
+        /// </summary>
+        /// <returns></returns>
+        private void ResultItemLoaded()
+        {
+            if (ExternalData.SelectToken("result") is JToken recipeResult)
+            {
+                string itemID = recipeResult.ToString().Replace("minecraft:", "");
+                Uri iconUri = new(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png");
+                string itemName = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemId == itemID.ToString()).Select(item => item.ComboBoxItemText).First();
+                ResultItem.Source = new BitmapImage(iconUri);
+                ResultItem.Tag = new ItemStructure(iconUri, itemID + ":" + itemName);
+            }
+        }
+
+        /// <summary>
+        /// 载入多选模式视图
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MultiMaterialViewer_Loaded(object sender, RoutedEventArgs e)
+        {
+            MultiMaterialViewer = sender as ListView;
+        }
+
+        /// <summary>
+        /// 处理被拖拽的物品数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void GetDropData(object sender, DragEventArgs e)
+        {
+            Image image = e.Data.GetData(typeof(Image).ToString()) as Image;
+            Image currentImage = sender as Image;
+            ItemStructure itemStructure = image.Tag as ItemStructure;
+
+            ToolTip toolTip = new()
+            {
+                Foreground = whiteBrush,
+                Background = grayBrush,
+                Content = itemStructure.IDAndName
+            };
+            ToolTipService.SetBetweenShowDelay(currentImage, 0);
+            ToolTipService.SetInitialShowDelay(currentImage, 0);
+            if (!MultiSelect)
+            {
+                if (currentImage.Uid.Length > 0 && MaterialList.Count > 0)
+                    MaterialList[0] = itemStructure;
+                else
+                    if (currentImage.Uid.Length > 0)
+                    MaterialList.Add(itemStructure);
+                currentImage.Source = image.Source;
+            }
+            else
+            {
+                if (currentImage.Uid.Length > 0)
+                    MaterialList.Add(itemStructure);
+                if (MaterialList.Count > 1 && currentImage.Uid.Length > 0)
+                {
+                    GenerateBubbleChart.Generator(ref currentImage, MaterialList);
+                    toolTip.Content = "物品组，左击编辑";
+                }
+                else
+                    currentImage.Source = image.Source;
+            }
+            currentImage.Tag = itemStructure;
+            currentImage.ToolTip = toolTip;
+        }
+
+        /// <summary>
+        /// 左击槽位打开槽位数据页面
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void SetSlotData_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            MultiMaterialViewer.SelectedIndex = MultiModeCurrentSelectedItemIndex = 0;
+            CurrentTag = MaterialTag[0];
+            MultiMaterialGrid.Visibility = Visibility.Visible;
+            MultiMaterialViewer.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// 更新并关闭多选模式面板
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void UpdateAndCloseSlotGrid_Click(object sender, RoutedEventArgs e)
+        {
+            MultiMaterialGrid.Visibility = Visibility.Collapsed;
+            if (!MultiSelect)
+                MaterialTag[0] = CurrentTag;
+            else
+                MaterialTag[MultiModeCurrentSelectedItemIndex] = CurrentTag;
+        }
+
+        /// <summary>
+        /// 选中物品设置Tag数据
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void SelectItemToSetTag_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // 获取鼠标指针下的元素
+            var element = e.OriginalSource as DependencyObject;
+
+            // 遍历可视化树，直到找到ListView的子项
+            while (element != null && element is not ListViewItem)
+                element = VisualTreeHelper.GetParent(element);
+
+            // 获取子项
+            if (element is ListViewItem item)
+            {
+                // 获取子项在ListView中的索引
+                int index = MultiMaterialViewer.ItemContainerGenerator.IndexFromContainer(item);
+                //切换时赋值Tag数据
+                if (MultiModeCurrentSelectedItemIndex >= 0 && MultiModeCurrentSelectedItemIndex < MaterialTag.Count)
+                    MaterialTag[MultiModeCurrentSelectedItemIndex] = CurrentTag;
+                //填充标签集合
+                while ((MaterialTag.Count - 1) < index)
+                    MaterialTag.Add("");
+                //更新当前选中的Tag进行编辑
+                CurrentTag = MaterialTag[index];
+                MultiModeCurrentSelectedItemIndex = index;
+            }
+        }
+
+        /// <summary>
+        /// 右击删除多选库中的指定物品
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void DeleteAppointItem_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // 获取鼠标指针下的元素
+            var element = e.OriginalSource as DependencyObject;
+
+            // 遍历可视化树，直到找到ListView的子项
+            while (element != null && element is not ListViewItem)
+                element = VisualTreeHelper.GetParent(element);
+
+            // 获取子项
+            if (element is ListViewItem item)
+            {
+                // 获取子项在ListView中的索引
+                int index = MultiMaterialViewer.ItemContainerGenerator.IndexFromContainer(item);
+                if (index >= 0 && index < MaterialList.Count)
+                    MaterialList.RemoveAt(index);
+            }
+
+            GenerateBubbleChart.Generator(ref MaterialItem, MaterialList);
+            if (MaterialList.Count == 1)
+            {
+                MaterialItem.Source = new BitmapImage(MaterialList[0].ImagePath);
+                ToolTip toolTip = new()
+                {
+                    Foreground = whiteBrush,
+                    Background = grayBrush,
+                    Content = MaterialList[0].IDAndName
+                };
+                MaterialItem.ToolTip = toolTip;
+            }
+            else
+                if (MaterialList.Count == 0)
+                MaterialItem.ToolTip = null;
+        }
+
+        /// <summary>
+        /// 多选模式物品过滤事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public void MultiMaterialSource_Filter(object sender, FilterEventArgs e)
+        {
+            if (MultiMaterialGrid?.Visibility == Visibility.Collapsed || MultiMaterialViewer?.Visibility == Visibility.Collapsed) return;
+            if (SearchText.Length > 0)
+            {
+                string[] searchList = SearchText.ToString().Split(' ');
+                ItemStructure itemStructure = e.Item as ItemStructure;
+                string itemID = itemStructure.IDAndName.Split(':')[0];
+                bool result = (searchList.Length > 1 && (itemStructure.IDAndName.StartsWith(searchList[0]) || itemStructure.IDAndName.EndsWith(searchList[1]))) || (searchList.Length == 1 && itemID.Contains(SearchText.ToString()));
+                e.Accepted = result;
+            }
+            else
+                e.Accepted = true;
         }
     }
 }

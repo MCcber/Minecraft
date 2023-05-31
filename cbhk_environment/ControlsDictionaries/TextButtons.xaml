@@ -27,7 +27,8 @@
                         <Border
                             x:Name="border"
                             Background="Transparent"
-                            BorderThickness="0"
+                            BorderBrush="#424242"
+                            BorderThickness="1"
                             SnapsToDevicePixels="true">
                             <ContentPresenter
                                 x:Name="contentPresenter"
@@ -46,11 +47,12 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="true">
-                            <Setter Property="Cursor" Value="Hand" />
                             <Setter TargetName="BackgroundGrid" Property="Background" Value="{Binding MouseOverBackground, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="{Binding MouseOverBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="true">
                             <Setter TargetName="BackgroundGrid" Property="Background" Value="{Binding MouseLeftDownBackground, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
+                            <Setter TargetName="border" Property="BorderBrush" Value="{Binding MouseOverBorderBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Disabled.Background}" />

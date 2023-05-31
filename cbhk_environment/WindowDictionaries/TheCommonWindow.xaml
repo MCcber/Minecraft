@@ -3,276 +3,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local_window="clr-namespace:cbhk_environment.WindowDictionaries">
 
-    <!--<Setter.Value>
-        <ControlTemplate TargetType="{x:Type local_window:CommonWindow}">
-            <Border x:Name="WindowBorder">
-                <Border.Effect>
-                    <DropShadowEffect Opacity="0.2" ShadowDepth="0" />
-                </Border.Effect>
-                <Grid
-                            x:Name="LayoutRoot"
-                            VerticalAlignment="Stretch"
-                            Background="{TemplateBinding Background}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid
-                                x:Name="PART_WindowTitleGrid"
-                                Grid.Row="0"
-                                Height="30"
-                                Background="Transparent">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Orientation="Horizontal">
-    -->
-    <!--<Image
-                                        Margin="7,0,5,0"
-                                        VerticalAlignment="Center"
-                                        Source="{TemplateBinding Icon}" />-->
-    <!--
-                            <Button
-                                        Width="{x:Static SystemParameters.SmallIconWidth}"
-                                        Height="{x:Static SystemParameters.SmallIconHeight}"
-                                        Margin="7,0,5,0"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding Icon}"
-                                        IsTabStop="False"
-                                        WindowChrome.IsHitTestVisibleInChrome="True">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="{x:Type Button}">
-                                        <Image Source="{TemplateBinding Content}" />
-                                    </ControlTemplate>
-                                </Button.Template>
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <i:InvokeCommandAction Command="{x:Static SystemCommands.ShowSystemMenuCommand}" />
-                                    </i:EventTrigger>
-                                    <i:EventTrigger EventName="MouseDoubleClick">
-                                        <i:InvokeCommandAction Command="{x:Static SystemCommands.CloseWindowCommand}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-
-                            </Button>
-                            <ContentControl
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Content="{TemplateBinding Title}"
-                                        FontSize="{DynamicResource {x:Static SystemFonts.CaptionFontSize}}"
-                                        Foreground="White"
-                                        IsTabStop="False" />
-                        </StackPanel>
-                        <StackPanel
-                                    x:Name="WindowCommandButtonsStackPanel"
-                                    Grid.Column="1"
-                                    Margin="0,-1,-1,0"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Stretch"
-                                    Background="Transparent"
-                                    Orientation="Horizontal"
-                                    WindowChrome.IsHitTestVisibleInChrome="True">
-    -->
-    <!--<Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="10*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>-->
-    <!--
-                            <Button
-                                        x:Name="Minimize"
-                                        Panel.ZIndex="1"
-                                        Background="Transparent"
-                                        Command="{Binding Source={x:Static SystemCommands.MinimizeWindowCommand}}"
-                                        ContentTemplate="{StaticResource MinimizeWhite}"
-                                        IsTabStop="False"
-                                        Style="{StaticResource TitleBarButtonStyle}"
-                                        WindowChrome.IsHitTestVisibleInChrome="True" />
-                            <Grid Panel.ZIndex="1" Background="Transparent">
-                                <Button
-                                            x:Name="Restore"
-                                            Background="Transparent"
-                                            Command="{Binding Source={x:Static SystemCommands.RestoreWindowCommand}}"
-                                            ContentTemplate="{StaticResource RestoreWhite}"
-                                            IsTabStop="False"
-                                            Style="{StaticResource TitleBarButtonStyle}"
-                                            Visibility="Collapsed"
-                                            WindowChrome.IsHitTestVisibleInChrome="True" />
-                                <Button
-                                            x:Name="Maximize"
-                                            Background="Transparent"
-                                            Command="{Binding Source={x:Static SystemCommands.MaximizeWindowCommand}}"
-                                            ContentTemplate="{StaticResource MaximizeWhite}"
-                                            IsTabStop="False"
-                                            Style="{StaticResource TitleBarButtonStyle}"
-                                            WindowChrome.IsHitTestVisibleInChrome="True" />
-                            </Grid>
-                            <Button
-                                        x:Name="Close"
-                                        Panel.ZIndex="1"
-                                        Background="Transparent"
-                                        Command="{Binding Source={x:Static SystemCommands.CloseWindowCommand}}"
-                                        ContentTemplate="{StaticResource CloseWhite}"
-                                        IsTabStop="False"
-                                        Style="{StaticResource TitleBarButtonStyle}"
-                                        WindowChrome.IsHitTestVisibleInChrome="True" />
-                        </StackPanel>
-                    </Grid>
-                    <AdornerDecorator Grid.Row="1" KeyboardNavigation.IsTabStop="False">
-    -->
-    <!--<ContentPresenter x:Name="MainContentPresenter" KeyboardNavigation.TabNavigation="Cycle" />-->
-    <!--
-                        <Grid Background="#2F2F2F">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="40" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Width="65"
-                                        Height="45"
-                                        Panel.ZIndex="1"
-                                        Background="{StaticResource BorderTopLeft}" />
-                            <Grid
-                                        Grid.Row="0"
-                                        Grid.RowSpan="3"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="3"
-                                        Width="20"
-                                        Margin="0,30,0,30"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Stretch"
-                                        Panel.ZIndex="0"
-                                        Background="{StaticResource BorderLeft}" />
-                            <Grid
-                                        Grid.Row="2"
-                                        Grid.Column="0"
-                                        Width="38"
-                                        Height="38"
-                                        HorizontalAlignment="Left"
-                                        Panel.ZIndex="1"
-                                        Background="{StaticResource BorderBottomLeft}" />
-                            <Grid
-                                        Grid.Row="0"
-                                        Grid.Column="2"
-                                        Width="85"
-                                        Height="45"
-                                        HorizontalAlignment="Left"
-                                        Panel.ZIndex="1"
-                                        Background="{StaticResource BorderTopRight}" />
-                            <Grid
-                                        Grid.Row="0"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="3"
-                                        Height="22"
-                                        Margin="20,0,50,0"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Top"
-                                        Panel.ZIndex="0"
-                                        Background="{StaticResource BorderTop}" />
-                            <Grid
-                                        Grid.Row="0"
-                                        Grid.RowSpan="3"
-                                        Grid.Column="2"
-                                        Width="20.5"
-                                        Margin="0,20,0,20"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Stretch"
-                                        Panel.ZIndex="0"
-                                        Background="{StaticResource BorderRight}" />
-                            <Grid
-                                        Grid.Row="2"
-                                        Grid.Column="0"
-                                        Grid.ColumnSpan="3"
-                                        Height="20.5"
-                                        Margin="20,0,20,0"
-                                        HorizontalAlignment="Stretch"
-                                        VerticalAlignment="Bottom"
-                                        Panel.ZIndex="0"
-                                        Background="{StaticResource BorderBottom}" />
-                            <Grid
-                                        Grid.Row="2"
-                                        Grid.Column="2"
-                                        Width="38"
-                                        Height="38"
-                                        HorizontalAlignment="Right"
-                                        Panel.ZIndex="1"
-                                        Background="{StaticResource BorderBottomRight}" />
-                            <ContentPresenter
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        Margin="-45,1,-65,1"
-                                        Panel.ZIndex="2" />
-                            <local_window:TransitioningContentControl
-                                        x:Name="MainContentPresenter"
-                                        Grid.Row="1"
-                                        Grid.Column="1"
-                                        Margin="-45,1,-65,1"
-                                        Panel.ZIndex="2"
-                                        Content="{TemplateBinding Content}"
-                                        KeyboardNavigation.TabNavigation="Cycle" />
-                            <ResizeGrip
-                                        x:Name="ResizeGrip"
-                                        Grid.Row="2"
-                                        Grid.Column="2"
-                                        HorizontalAlignment="Right"
-                                        VerticalAlignment="Bottom"
-                                        IsTabStop="False"
-                                        Style="{DynamicResource HollowResizeGrip}"
-                                        Visibility="Hidden"
-                                        WindowChrome.ResizeGripDirection="BottomRight" />
-                        </Grid>
-                    </AdornerDecorator>
-                </Grid>
-            </Border>
-            <ControlTemplate.Triggers>
-                <Trigger Property="IsActive" Value="False">
-                    <Setter Property="BorderBrush" Value="#FF6F7785" />
-                </Trigger>
-                <Trigger Property="WindowState" Value="Maximized">
-                    <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed" />
-                    <Setter TargetName="Restore" Property="Visibility" Value="Visible" />
-                    <Setter TargetName="LayoutRoot" Property="Margin" Value="7" />
-                </Trigger>
-                <Trigger Property="WindowState" Value="Normal">
-                    <Setter TargetName="Maximize" Property="Visibility" Value="Visible" />
-                    <Setter TargetName="Restore" Property="Visibility" Value="Collapsed" />
-                </Trigger>
-                <Trigger Property="ResizeMode" Value="NoResize">
-                    <Setter TargetName="Minimize" Property="Visibility" Value="Collapsed" />
-                    <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed" />
-                    <Setter TargetName="Restore" Property="Visibility" Value="Collapsed" />
-                </Trigger>
-
-                <MultiTrigger>
-                    <MultiTrigger.Conditions>
-                        <Condition Property="ResizeMode" Value="CanResizeWithGrip" />
-                        <Condition Property="WindowState" Value="Normal" />
-                    </MultiTrigger.Conditions>
-                    <Setter TargetName="ResizeGrip" Property="Visibility" Value="Visible" />
-                </MultiTrigger>
-            </ControlTemplate.Triggers>
-        </ControlTemplate>
-    </Setter.Value>-->
-
     <DataTemplate x:Key="RestoreWhite">
         <Grid UseLayoutRounding="True">
-            <!--<Path
-                Width="12"
-                Height="12"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Data="M1,3 L1,11 L9,11 L9,3 z M3,1 L3,2 L10,2 L10,9 L11,9 L11,1 z M2 ,0 L12,0 L12,10 L10,10 L10,12 L0,12 L0,2 L2 ,2 z"
-                Fill="White"
-                UseLayoutRounding="True" />-->
             <Image
                 Width="12"
                 Height="12"
@@ -288,9 +20,6 @@
                 Source="/cbhk_environment;component/resources/common/images/Close.png" />
         </Grid>
     </DataTemplate>
-
-    <!--<ImageBrush x:Key="CloseWhite" ImageSource="/cbhk_environment;component/resources/common/images/Close.png" />-->
-    <!--<ImageBrush x:Key="MinimizeHover" ImageSource="/cbhk_environment;component/resources/common/images/MinimizeHover.png" />-->
 
     <DataTemplate x:Key="MaximizeWhite">
         <Grid>
@@ -310,8 +39,6 @@
         </Grid>
     </DataTemplate>
 
-    <!--<ImageBrush x:Key="MinimizeWhite" ImageSource="/cbhk_environment;component/resources/common/images/Minimize.png" />-->
-
     <DataTemplate x:Key="MinimizeHover">
         <Grid>
             <Image
@@ -329,8 +56,6 @@
                 Source="/cbhk_environment;component/resources/common/images/CloseHover.png" />
         </Grid>
     </DataTemplate>
-
-    <!--<ImageBrush x:Key="CloseHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseHover.png" />-->
 
     <Style x:Key="TitleBarButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Focusable" Value="True" />
@@ -404,7 +129,7 @@
 
     <Style x:Key="CommonWindow" TargetType="{x:Type local_window:CommonWindow}">
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}" />
-        <Setter Property="Background" Value="#595959" />
+        <Setter Property="Background" Value="#242424" />
         <Setter Property="BorderBrush" Value="#2F2F2F" />
         <Setter Property="MaxHeight" Value="{x:Static SystemParameters.MaximizedPrimaryScreenHeight}" />
         <Setter Property="MaxWidth" Value="{x:Static SystemParameters.MaximizedPrimaryScreenWidth}" />
@@ -412,9 +137,7 @@
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="ResizeMode" Value="CanMinimize" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <!--<Setter Property="TextOptions.TextFormattingMode" Value="Display" />-->
         <Setter Property="WindowStyle" Value="None" />
-        <!--<Setter Property="FontFamily" Value="Segoe UI" />-->
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
                 <WindowChrome
@@ -427,7 +150,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Window}">
-                    <Grid x:Name="LayoutRoot" Background="#353535">
+                    <Grid x:Name="LayoutRoot" Background="#242424">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40" />
                             <RowDefinition Height="*" />
@@ -673,13 +396,14 @@
 
     <Style TargetType="local_window:TransitioningContentControl">
         <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="Background" Value="#242424" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Stretch" />
         <Setter Property="Transition" Value="DefaultTransition" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Window}">
-                    <Grid x:Name="LayoutRoot" Background="#2F2F2F">
+                    <Grid x:Name="LayoutRoot" Background="#242424">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40" />
                             <RowDefinition Height="*" />

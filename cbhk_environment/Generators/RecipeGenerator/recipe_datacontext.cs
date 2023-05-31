@@ -7,16 +7,15 @@ using cbhk_environment.WindowDictionaries;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Win32;
+using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -25,9 +24,13 @@ namespace cbhk_environment.Generators.RecipeGenerator
 {
     public class recipe_datacontext : ObservableObject
     {
-        #region 返回和运行指令
-        public RelayCommand<CommonWindow> ReturnCommand { get; set; }
-        public RelayCommand RunCommand { get; set; }
+        #region 返回、运行与导入等指令
+        public RelayCommand<CommonWindow> Return { get; set; }
+        public RelayCommand Run { get; set; }
+        public RelayCommand ImportFromClipboard { get; set; }
+        public RelayCommand ImportFromFile { get; set; }
+        public RelayCommand<MenuItem> AddRecipe { get; set; }
+        public RelayCommand<MenuItem> ClearRecipes { get; set; }
         #endregion
 
         #region 保存物品ID
@@ -43,19 +46,19 @@ namespace cbhk_environment.Generators.RecipeGenerator
         }
         #endregion
 
-        #region 所有类型的配方
-        static CraftingTable craftingTable = null;
-        static Furnace furnace = null;
-        static BlastFurnace blastFurnace = null;
-        static SmithingTable smithingTable = null;
-        static Smoker smoker = null;
-        static Stonecutter stonecutter = null;
-        static CampFire campFire = null;
-        static List<UserControl> RecipeTypes = null;
+        #region 配方类型
+        public enum RecipeType
+        {
+            CraftingTable,
+            Furnace,
+            BlastFurnace,
+            Campfire,
+            SmithingTable,
+            Smoker,
+            Stonecutter
+        }
         #endregion
 
-        //配方窗体可视化区域引用
-        Grid RecipeZone = null;
         //被抓取的物品
         public static Image GrabedImage = new Image();
 
@@ -64,14 +67,18 @@ namespace cbhk_environment.Generators.RecipeGenerator
 
         //本生成器的图标路径
         string icon_path = "pack://application:,,,/cbhk_environment;component/resources/common/images/spawnerIcons/IconRecipes.png";
-        //右侧缓存区引用
+        //原版物品库视图引用
         public ListView originalItemViewer = null;
-        //滚动视图
-        public ScrollViewer scrollViewer = null;
+        //自定义物品库视图引用
+        public ListView customItemViewer = null;
         //拖拽源
         public static Image drag_source = null;
 
-        public ObservableCollection<ItemStructure> ItemsSource { get; set; } = new ObservableCollection<ItemStructure> { };
+        /// <summary>
+        /// 原版物品库
+        /// </summary>
+        public ObservableCollection<ItemStructure> originalItemsSource { get; set; } = new();
+        public ObservableCollection<ItemStructure> customItemSource { get; set; } = new();
 
         #region 已选中的成员
         private ItemStructure selectedItem = null;
@@ -101,57 +108,307 @@ namespace cbhk_environment.Generators.RecipeGenerator
                 searchText = value;
                 if(originalItemViewer != null)
                 {
-                    ReciptItemSource.View.Refresh();
+                    OriginalItemSource.View.Refresh();
                 }
             }
         }
         #endregion
 
-        //数据源对象
-        private CollectionViewSource ReciptItemSource = new();
+        //原版物品库数据源
+        private CollectionViewSource OriginalItemSource = new();
+        //自定义物品库数据源
+        private CollectionViewSource CustomItemSource = new();
+        //配方标签页数据源
+        public ObservableCollection<RichTabItems> RecipeList { get; set; } = new() { new RichTabItems() { Style = Application.Current.Resources["RichTabItemStyle"] as Style,IsContentSaved = true,Header = "工作台" } };
 
         /// <summary>
         /// 表示是否已订阅搜索事件
         /// </summary>
         bool GotFocused = false;
 
-        //异步锁
-        object itemLoadLock = new();
-
-        /// <summary>
-        /// 配方操作类型
-        /// </summary>
-        public enum RecipeModifyTypes
-        {
-            Add,
-            Delete
-        }
-
         public recipe_datacontext()
         {
             #region 链接命令
-            ReturnCommand = new RelayCommand<CommonWindow>(return_command);
-            RunCommand = new RelayCommand(run_command);
+            Return = new RelayCommand<CommonWindow>(return_command);
+            Run = new RelayCommand(run_command);
+            ImportFromClipboard = new RelayCommand(ImportFromClipboardCommand);
+            ImportFromFile = new RelayCommand(ImportFromFileCommand);
+            AddRecipe = new RelayCommand<MenuItem>(AddRecipeCommand);
+            ClearRecipes = new RelayCommand<MenuItem>(ClearRecipesCommand);
             #endregion
-
-            #region 异步载入物品序列
-            BindingOperations.EnableCollectionSynchronization(ItemsSource, itemLoadLock);
+            #region 异步载入原版物品序列
+            //异步锁
+            object itemLoadLock = new();
+            BindingOperations.EnableCollectionSynchronization(originalItemsSource, itemLoadLock);
             //加载物品集合
-            string uriDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\";
-            string urlPath = "";
             Task.Run(() =>
             {
                 lock (itemLoadLock)
                 {
-                    foreach (var item in MainWindow.ItemDataBase)
+                    string uriDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\";
+                    string urlPath = "";
+                    foreach (var item in MainWindow.ItemIdSource)
                     {
-                        urlPath = uriDirectoryPath + item.Key[..item.Key.IndexOf(":")] + ".png";
+                        urlPath = uriDirectoryPath + item.ComboBoxItemId + ".png";
                         if (File.Exists(urlPath))
-                            ItemsSource.Add(new ItemStructure(new Uri(urlPath, UriKind.Absolute),item.Key));
+                            originalItemsSource.Add(new ItemStructure(new Uri(urlPath, UriKind.Absolute), item.ComboBoxItemId + ":" + item.ComboBoxItemText, "{id:\"minecraft:" + item.ComboBoxItemId + "\",Count:1b}"));
                     }
                 }
             });
             #endregion
+            #region 异步载入自定义物品序列
+            BindingOperations.EnableCollectionSynchronization(customItemSource, itemLoadLock);
+            //加载物品集合
+            Task.Run(() =>
+            {
+                lock (itemLoadLock)
+                {
+                    string uriDirectoryPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\saves\\Item\\";
+                    string[] itemFileList = Directory.GetFiles(uriDirectoryPath);
+                    foreach (var item in itemFileList)
+                    {
+                        if (File.Exists(item))
+                        {
+                            string nbt = ExternalDataImportManager.GetItemDataHandler(item);
+                            if (nbt.Length > 0)
+                            {
+                                JObject data = JObject.Parse(nbt);
+                                JToken id = data.SelectToken("id");
+                                if (id == null) continue;
+                                string itemID = id.ToString().Replace("\"", "").Replace("minecraft:", "");
+                                string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID + ".png";
+                                string itemName = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemId == itemID).Select(item => item.ComboBoxItemText).First();
+                                customItemSource.Add(new ItemStructure(new Uri(iconPath, UriKind.Absolute), itemID + ":" + itemName, nbt));
+                            }
+                        }
+                    }
+                }
+            });
+            #endregion
+            #region 初始化数据
+            RecipeList[0].Content = new CraftingTable() { FontWeight = FontWeights.Normal };
+            #endregion
+        }
+
+
+        /// <summary>
+        /// 添加配方
+        /// </summary>
+        /// <param name="obj"></param>
+        private void AddRecipeCommand(MenuItem obj)
+        {
+            MenuItem menu = obj.Parent as MenuItem;
+            int index = menu.Items.IndexOf(obj);
+            RichTabItems richTabItems = new()
+            {
+                Style = Application.Current.Resources["RichTabItemStyle"] as Style,
+                IsContentSaved = true,
+                Header = obj.Header
+            };
+            RecipeList.Add(richTabItems);
+            richTabItems.FindParent<TabControl>().SelectedItem = richTabItems;
+
+            switch (index)
+            {
+                default:
+                    richTabItems.Content = new CraftingTable() { FontWeight = FontWeights.Normal };
+                    break;
+                case 1:
+                    richTabItems.Content = new Furnace() { FontWeight = FontWeights.Normal };
+                    break;
+                case 2:
+                    richTabItems.Content = new Smoker() { FontWeight = FontWeights.Normal };
+                    break;
+                case 3:
+                    richTabItems.Content = new BlastFurnace() { FontWeight = FontWeights.Normal };
+                    break;
+                case 4:
+                    richTabItems.Content = new Campfire() { FontWeight = FontWeights.Normal };
+                    break;
+                case 5:
+                    richTabItems.Content = new SmithingTable() { FontWeight = FontWeights.Normal };
+                    break;
+                case 6:
+                    richTabItems.Content = new Stonecutter() { FontWeight = FontWeights.Normal };
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// 外部添加配方
+        /// </summary>
+        public object AddRecipeCommand(RecipeType recipeType)
+        {
+            object result = "";
+            RichTabItems richTabItems = new()
+            {
+                Style = Application.Current.Resources["RichTabItemStyle"] as Style,
+                IsContentSaved = true
+            };
+            RecipeList.Add(richTabItems);
+            richTabItems.FindParent<TabControl>().SelectedItem = richTabItems;
+            switch (recipeType)
+            {
+                case RecipeType.CraftingTable:
+                    CraftingTable craftingTable = new() { FontWeight = FontWeights.Normal };
+                    result = craftingTable;
+                    richTabItems.Header = "工作台";
+                    richTabItems.Content = craftingTable;
+                    break;
+                case RecipeType.Furnace:
+                    Furnace furnace = new() { FontWeight = FontWeights.Normal };
+                    result = furnace;
+                    richTabItems.Header = "熔炉";
+                    richTabItems.Content = furnace;
+                    break;
+                case RecipeType.BlastFurnace:
+                    BlastFurnace blastFurnace = new() { FontWeight = FontWeights.Normal };
+                    result = blastFurnace;
+                    richTabItems.Header = "高炉";
+                    richTabItems.Content = blastFurnace;
+                    break;
+                case RecipeType.Campfire:
+                    Campfire campfire = new() { FontWeight = FontWeights.Normal};
+                    result = campfire;
+                    richTabItems.Header = "篝火";
+                    richTabItems.Content = campfire;
+                    break;
+                case RecipeType.SmithingTable:
+                    SmithingTable smithingTable = new() { FontWeight = FontWeights.Normal };
+                    result = smithingTable;
+                    richTabItems.Header = "锻造台";
+                    richTabItems.Content = smithingTable;
+                    break;
+                case RecipeType.Smoker:
+                    Smoker smoker = new() { FontWeight = FontWeights.Normal };
+                    result = smoker;
+                    richTabItems.Header = "烟熏炉";
+                    richTabItems.Content = smoker;
+                    break;
+                case RecipeType.Stonecutter:
+                    Stonecutter stonecutter = new() { FontWeight = FontWeights.Normal };
+                    result = stonecutter;
+                    richTabItems.Header = "切石机";
+                    richTabItems.Content = stonecutter;
+                    break;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 清空配方
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ClearRecipesCommand(MenuItem obj)
+        {
+            MenuItem menu = obj.Parent as MenuItem;
+            int index = menu.Items.IndexOf(obj);
+            for (int i = 0; i < RecipeList.Count; i++)
+            {
+                switch (index)
+                {
+                    case 1:
+                        if (RecipeList[i].Content is CraftingTable)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    case 2:
+                        if (RecipeList[i].Content is Furnace)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    case 3:
+                        if (RecipeList[i].Content is Smoker)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    case 4:
+                        if (RecipeList[i].Content is BlastFurnace)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    case 5:
+                        if (RecipeList[i].Content is Campfire)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    case 6:
+                        if (RecipeList[i].Content is SmithingTable)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    case 7:
+                        if (RecipeList[i].Content is Stonecutter)
+                        {
+                            RecipeList.RemoveAt(i);
+                            i--;
+                        }
+                        break;
+                    default:
+                        RecipeList.Clear();
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 从剪切板导入配方
+        /// </summary>
+        private void ImportFromClipboardCommand()
+        {
+            recipe_datacontext context = this;
+            ExternalDataImportManager.ImportRecipeDataHandler(Clipboard.GetText(), ref context,false);
+        }
+
+        /// <summary>
+        /// 从文件导入配方
+        /// </summary>
+        private void ImportFromFileCommand()
+        {
+            OpenFileDialog openFileDialog = new()
+            {
+                AddExtension = true,
+                DefaultExt = ".json",
+                Filter = "Json文件|*.json;",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                Multiselect = false,
+                Title = "请选择配方文件"
+            };
+            if (openFileDialog.ShowDialog().Value)
+            {
+                recipe_datacontext context = this;
+                ExternalDataImportManager.ImportRecipeDataHandler(openFileDialog.FileName,ref context);
+            }
+        }
+
+        /// <summary>
+        /// 载入添加配方按钮的图标
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void AddRecipeMenuIconLoaded(object sender,RoutedEventArgs e)
+        {
+            MenuItem menuItem = sender as MenuItem;
+            string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Recipe\\images\\" + menuItem.Uid + "_icon.png";
+            if(!File.Exists(iconPath))
+                iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Recipe\\images\\" + menuItem.Uid + ".png";
+            Image image = new()
+            {
+                Source = new BitmapImage(new Uri(iconPath))
+            };
+            menuItem.Icon = image;
         }
 
         private void return_command(CommonWindow win)
@@ -165,6 +422,81 @@ namespace cbhk_environment.Generators.RecipeGenerator
         }
 
         /// <summary>
+        /// 执行生成
+        /// </summary>
+        private void run_command()
+        {
+            System.Windows.Forms.FolderBrowserDialog folderBrowser = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                Description = "请选择配方文件生成路径",
+                UseDescriptionForTitle = true,
+                RootFolder = Environment.SpecialFolder.MyComputer,
+                ShowHiddenFiles = true,
+                ShowNewFolderButton = true,
+                ShowPinnedPlaces = true
+            };
+            if (folderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string selectedPath = folderBrowser.SelectedPath;
+                if (!selectedPath.EndsWith("\\"))
+                    selectedPath += "\\";
+                foreach (var item in RecipeList)
+                {
+                    if(item.Content is CraftingTable craftingTable)
+                    {
+                        craftingTableDataContext context = craftingTable.DataContext as craftingTableDataContext;
+                        context.NeedSave = false;
+                        context.RunCommand();
+                        context.NeedSave = false;
+                        _ = File.WriteAllTextAsync(selectedPath + context.FileName + ".json", context.Result);
+                    }
+                    if (item.Content is Furnace furnace)
+                    {
+                        furnaceDataContext context = furnace.DataContext as furnaceDataContext;
+                        context.NeedSave = false;
+                        context.RunCommand();
+                        context.NeedSave = false;
+                        _ = File.WriteAllTextAsync(selectedPath + context.FileName + ".json", context.Result);
+                    }
+                    if (item.Content is BlastFurnace blastFurnace)
+                    {
+                        blastFurnaceDataContext context = blastFurnace.DataContext as blastFurnaceDataContext;
+                        context.NeedSave = false;
+                        context.RunCommand();
+                        context.NeedSave = false;
+                        _ = File.WriteAllTextAsync(selectedPath + context.FileName + ".json", context.Result);
+                    }
+                    if (item.Content is Campfire campfire)
+                    {
+                        campfireDataContext context = campfire.DataContext as campfireDataContext;
+                        context.NeedSave = false;
+                        context.RunCommand();
+                        context.NeedSave = false;
+                        _ = File.WriteAllTextAsync(selectedPath + context.FileName + ".json", context.Result);
+                    }
+                    if (item.Content is SmithingTable smithingTable)
+                    {
+                        smithingTableDataContext context = smithingTable.DataContext as smithingTableDataContext;
+                        context.NeedSave = false;
+                        context.RunCommand();
+                        context.NeedSave = false;
+                        _ = File.WriteAllTextAsync(selectedPath + context.FileName + ".json", context.Result);
+                    }
+                    if (item.Content is Stonecutter stonecutter)
+                    {
+                        stonecutterDataContext context = stonecutter.DataContext as stonecutterDataContext;
+                        context.NeedSave = false;
+                        context.RunCommand();
+                        context.NeedSave = false;
+                        _ = File.WriteAllTextAsync(selectedPath + context.FileName + ".json", context.Result);
+                    }
+                }
+                OpenFolderThenSelectFiles.ExplorerFile(selectedPath);
+            }
+        }
+
+        /// <summary>
         /// 搜索框获取焦点后执行过滤事件绑定
         /// </summary>
         /// <param name="sender"></param>
@@ -175,8 +507,12 @@ namespace cbhk_environment.Generators.RecipeGenerator
             {
                 TextBox textBox = sender as TextBox;
                 Window window = Window.GetWindow(textBox);
-                ReciptItemSource = window.FindResource("RecipeItemSource") as CollectionViewSource;
-                ReciptItemSource.Filter += CollectionViewSource_Filter;
+                OriginalItemSource = window.FindResource("OriginalItemSource") as CollectionViewSource;
+                OriginalItemSource.Filter += CollectionViewSource_Filter;
+
+                CustomItemSource = window.FindResource("CustomItemSource") as CollectionViewSource;
+                CustomItemSource.Filter += CollectionViewSource_Filter;
+
                 GotFocused = true;
             }
         }
@@ -202,67 +538,6 @@ namespace cbhk_environment.Generators.RecipeGenerator
                 e.Accepted = true;
         }
 
-        private void run_command()
-        {
-            string result = "";
-            string file_name = "";
-
-            #region 工作台
-            result = craftingTable.Visibility == Visibility.Visible ?craftingTable.RecipeData: result;
-            file_name = craftingTable.Visibility == Visibility.Visible ? craftingTable.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            #region 高炉
-            result = blastFurnace.Visibility == Visibility.Visible ?blastFurnace.RecipeData: result;
-            file_name = blastFurnace.Visibility == Visibility.Visible ? blastFurnace.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            #region 营火
-            result = campFire.Visibility == Visibility.Visible ? campFire.RecipeData : result;
-            file_name = campFire.Visibility == Visibility.Visible ? campFire.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            #region 熔炉
-            result = furnace.Visibility == Visibility.Visible ?furnace.RecipeData: result;
-            file_name = furnace.Visibility == Visibility.Visible ? furnace.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            #region 烟熏炉
-            result = smoker.Visibility == Visibility.Visible ?smoker.RecipeData: result;
-            file_name = smoker.Visibility == Visibility.Visible ? smoker.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            #region 切石机
-            result = stonecutter.Visibility == Visibility.Visible ?stonecutter.RecipeData: result;
-            file_name = stonecutter.Visibility == Visibility.Visible ? stonecutter.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            #region 锻造台
-            result = smithingTable.Visibility == Visibility.Visible ?smithingTable.RecipeData:result;
-            file_name = smithingTable.Visibility == Visibility.Visible ? smithingTable.RecipeFileName.Text.Trim() : file_name;
-            #endregion
-
-            SaveFileDialog folderBrowser = new()
-            {
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
-                Title = "请选择配方文件生成路径",
-                DefaultExt = "json",
-                AddExtension = true,
-                Filter = "(*.json)|*.json;",
-                RestoreDirectory = true,
-                CheckPathExists = true
-            };
-            if (folderBrowser.ShowDialog().Value == true)
-            {
-                File.WriteAllText(folderBrowser.FileName, result);
-                OpenFolderThenSelectFiles.ExplorerFile(folderBrowser.FileName);
-            }
-
-            //Displayer displayer = Displayer.GetContentDisplayer();
-            //displayer.GeneratorResult(result ,"配方",icon_path);
-            //displayer.Show();
-        }
-
         /// <summary>
         /// 载入物品库
         /// </summary>
@@ -271,112 +546,21 @@ namespace cbhk_environment.Generators.RecipeGenerator
         public void ItemsLoaded(object sender, RoutedEventArgs e)
         {
             TabControl tabControl = sender as TabControl;
+
+            #region 原版物品库
             originalItemViewer = (tabControl.Items[0] as TextTabItems).Content as ListView;
             originalItemViewer.DataContext = this;
             originalItemViewer.MouseMove += Bag_MouseMove;
             originalItemViewer.PreviewMouseLeftButtonDown += SelectItemClickDown;
             originalItemViewer.MouseLeave += ListBox_MouseLeave;
-        }
-
-        /// <summary>
-        /// 载入左侧切换栏图标
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void IconViewerLoaded(object sender, RoutedEventArgs e)
-        {
-            StackPanel parent = sender as StackPanel;
-            Style btn_style = (parent.Children[0] as IconTextButtons).Style;
-            //获取所有配方图标文件
-            string[] icon_files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Recipe\\images");
-            for (int i = 0; i < icon_files.Length; i++)
-            {
-                string current_file_name = Path.GetFileName(icon_files[i]);
-                if (current_file_name.Contains("icon.png") && current_file_name.Length > 8)
-                {
-                    IconTextButtons iconTextButtons = new IconTextButtons
-                    {
-                        Background = new ImageBrush(new BitmapImage(new Uri(icon_files[i], UriKind.Absolute))),
-                        PressedBackground = new ImageBrush(new BitmapImage(new Uri(icon_files[i], UriKind.Absolute))),
-                        Tag = icon_files[i],
-                        Height = 50,
-                        Width = 50,
-                        BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                        BorderThickness = new Thickness(1),
-                        Style = btn_style,
-                        ClickMode = ClickMode.Release
-                    };
-                    iconTextButtons.Click += RecipeTyleSwitcher;
-                    parent.Children.Add(iconTextButtons);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 切换配方类型
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RecipeTyleSwitcher(object sender, RoutedEventArgs e)
-        {
-            IconTextButtons textButtons = sender as IconTextButtons;
-            foreach (var item in RecipeTypes)
-            {
-                if (Path.GetFileNameWithoutExtension(textButtons.Tag.ToString()).Replace("_icon","") == item.Tag.ToString())
-                {
-                    Panel.SetZIndex(item,1);
-                    item.Opacity = 1;
-                    item.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    Panel.SetZIndex(item, 0);
-                    item.Opacity = 0;
-                    item.Visibility = Visibility.Collapsed;
-                }
-            }
-        }
-
-        /// <summary>
-        /// 载入编辑区控件
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void ModifyGridLoaded(object sender, RoutedEventArgs e)
-        {
-            Grid zone = sender as Grid;
-
-            #region 初始化所有配方类型
-            craftingTable = new CraftingTable();
-            furnace = new Furnace();
-            blastFurnace = new BlastFurnace();
-            smithingTable = new SmithingTable();
-            smoker = new Smoker();
-            stonecutter = new Stonecutter();
-            campFire = new CampFire();
             #endregion
 
-            #region 连接所有类型的配方引用
-            RecipeTypes = new List<UserControl> { };
-            RecipeTypes.Add(craftingTable);
-            RecipeTypes.Add(furnace);
-            RecipeTypes.Add(blastFurnace);
-            RecipeTypes.Add(smithingTable);
-            RecipeTypes.Add(smoker);
-            RecipeTypes.Add(stonecutter);
-            RecipeTypes.Add(campFire);
-            #endregion
-
-            #region 添加所有类型的配方
-            zone.Children.Add(furnace);
-            zone.Children.Add(blastFurnace);
-            zone.Children.Add(smithingTable);
-            zone.Children.Add(smoker);
-            zone.Children.Add(stonecutter);
-            zone.Children.Add(craftingTable);
-            zone.Children.Add(campFire);
-            furnace.Opacity = blastFurnace.Opacity = smithingTable.Opacity = smoker.Opacity = stonecutter.Opacity = campFire.Opacity = 0;
-            furnace.Visibility = blastFurnace.Visibility = smithingTable.Visibility = smoker.Visibility = stonecutter.Visibility = campFire.Visibility = Visibility.Collapsed;
+            #region 自定义物品库
+            customItemViewer = (tabControl.Items[1] as TextTabItems).Content as ListView;
+            customItemViewer.DataContext = this;
+            customItemViewer.MouseMove += Bag_MouseMove;
+            customItemViewer.PreviewMouseLeftButtonDown += SelectItemClickDown;
+            customItemViewer.MouseLeave += ListBox_MouseLeave;
             #endregion
         }
 
@@ -404,7 +588,7 @@ namespace cbhk_environment.Generators.RecipeGenerator
                 drag_source = new Image
                 {
                     Source = new BitmapImage(SelectedItem.ImagePath),
-                    Tag = itemStructure.IDAndName[..itemStructure.IDAndName.IndexOf(':')]
+                    Tag = itemStructure
                 };
                 GrabedImage = drag_source;
 
@@ -416,29 +600,6 @@ namespace cbhk_environment.Generators.RecipeGenerator
                     IsGrabingItem = false;
                 }
             }
-        }
-
-        /// <summary>
-        /// 获取窗体可视化区域引用
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void RecipeZoneLoaded(object sender, RoutedEventArgs e)
-        {
-            RecipeZone = sender as Grid;
-            RecipeZone.MouseMove += SelectItemMove;
-            RecipeZone.MouseLeftButtonUp += RecipeZoneMouseLeftButtonUp;
-        }
-
-        /// <summary>
-        /// 右击删除该物品
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteItemClick(object sender, MouseButtonEventArgs e)
-        {
-            UniformGrid parent = (sender as Image).Parent as UniformGrid;
-            parent.Children.Remove(sender as Image);
         }
 
         /// <summary>
@@ -467,65 +628,6 @@ namespace cbhk_environment.Generators.RecipeGenerator
             }
         }
 
-        /// <summary>
-        /// 检测预览视图是否有内容重叠
-        /// </summary>
-        private static int CheckOverLap(Image image)
-        {
-            int index = -1;
-            int count = craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children.Count;
-            Image current_image;
-            for (int i = 0; i < count; i++)
-            {
-                current_image = craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children[i] as Image;
-                if(current_image.Tag == image.Tag)
-                {
-                    index = i;
-                    break;
-                }
-            }
-            return index;
-        }
-
-        /// <summary>
-        /// 更新右侧多选预览视图
-        /// </summary>
-        /// <param name="image">图像控件</param>
-        /// <param name="delete">是否删除</param>
-        /// <param name="cover">是否覆盖</param>
-        public static void UpdateMultipleItemView(Image image,RecipeModifyTypes modifyTypes,List<Image> images)
-        {
-            int index = CheckOverLap(image);
-            switch (modifyTypes)
-            {
-                case RecipeModifyTypes.Add:
-                    if (index == -1)
-                        craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children.Add(image);
-                    else
-                        craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children[index].Visibility = Visibility.Visible;
-                    break;
-                case RecipeModifyTypes.Delete:
-                    images.Remove(image);
-                    int result = 0;
-                    result += CraftingTable.FirstItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.SecondItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.ThirdItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.FourthItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.FifthItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.SixthItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.SeventhItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.EighthItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    result += CraftingTable.NinthItem.Find(item => item.Tag == image.Tag) != null ? 1 : 0;
-                    if (result >= 2)
-                        craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children[index].Visibility = Visibility.Collapsed;
-                    else
-                        craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children.RemoveAt(index);
-                    if (craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children.Count == 1)
-                        craftingTable.ItemInfomationWindow.CurrentItemInfomation.Children[0].Visibility = Visibility.Visible;
-                    break;
-            }
-        }
-
         public void ListBox_MouseLeave(object sender, MouseEventArgs e)
         {
             SelectedItem = null;
@@ -539,7 +641,8 @@ namespace cbhk_environment.Generators.RecipeGenerator
         /// <exception cref="NotImplementedException"></exception>
         private void Bag_MouseMove(object sender, MouseEventArgs e)
         {
-            HitTestResult hitTestResult = VisualTreeHelper.HitTest(originalItemViewer, Mouse.GetPosition(originalItemViewer));
+            ListView listView = sender as ListView;
+            HitTestResult hitTestResult = VisualTreeHelper.HitTest(listView, Mouse.GetPosition(listView));
             if(hitTestResult != null)
             {
                 var item = hitTestResult.VisualHit;
@@ -548,9 +651,9 @@ namespace cbhk_environment.Generators.RecipeGenerator
 
                 if (item != null)
                 {
-                    int i = originalItemViewer.Items.IndexOf(((ListViewItem)item).DataContext);
-                    if (i >= 0 && i < originalItemViewer.Items.Count)
-                        originalItemViewer.SelectedIndex = i;
+                    int i = listView.Items.IndexOf(((ListViewItem)item).DataContext);
+                    if (i >= 0 && i < listView.Items.Count)
+                        listView.SelectedIndex = i;
                 }
             }
         }

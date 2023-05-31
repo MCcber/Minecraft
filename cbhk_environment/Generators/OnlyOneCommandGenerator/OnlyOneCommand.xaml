@@ -59,8 +59,15 @@
                 CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local_window:CommonWindow}}"
                 FontSize="15"
                 Style="{DynamicResource IconTextButton}"
-                ToolTip="ESC:返回主页"
-                ToolTipService.InitialShowDelay="0" />
+                ToolTipService.BetweenShowDelay="0"
+                ToolTipService.InitialShowDelay="0">
+                <CustomControls:IconTextButtons.ToolTip>
+                    <ToolTip
+                        Background="#484848"
+                        Content="ESC:返回"
+                        Foreground="White" />
+                </CustomControls:IconTextButtons.ToolTip>
+            </CustomControls:IconTextButtons>
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
@@ -72,8 +79,15 @@
                 FontSize="15"
                 IconColor="White"
                 Style="{DynamicResource IconTextButton}"
-                ToolTip="F5:运行"
-                ToolTipService.InitialShowDelay="0" />
+                ToolTipService.BetweenShowDelay="0"
+                ToolTipService.InitialShowDelay="0">
+                <CustomControls:IconTextButtons.ToolTip>
+                    <ToolTip
+                        Background="#484848"
+                        Content="F5:运行"
+                        Foreground="White" />
+                </CustomControls:IconTextButtons.ToolTip>
+            </CustomControls:IconTextButtons>
             <CustomControls:IconTextButtons
                 Width="25"
                 Padding="0,0,0,5"
@@ -107,8 +121,8 @@
                 Text="当前标记"
                 TextAlignment="Center" />
             <TextBox
-                Width="200"
-                HorizontalAlignment="Left"
+                Margin="2,0"
+                HorizontalAlignment="Stretch"
                 VerticalContentAlignment="Center"
                 BorderBrush="Black"
                 FontSize="15"

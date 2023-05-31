@@ -45,7 +45,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// <summary>
         /// 文件模板成员列表
         /// </summary>
-        public ObservableCollection<TemplateItems> TemplateItemList { get; set; } = new ObservableCollection<TemplateItems> { };
+        //public ObservableCollection<TemplateItems> TemplateItemList { get; set; } = new ObservableCollection<TemplateItems> { };
 
         /// <summary>
         /// 左侧树视图模板类型成员
@@ -53,9 +53,9 @@ namespace cbhk_environment.Generators.DataPackGenerator
         public static ObservableCollection<RichTreeViewItems> TemplateTypeItemList { get; set; } = new ObservableCollection<RichTreeViewItems> { };
 
         #region 生成与返回
-        public RelayCommand RunCommand { get; set; }
+        public RelayCommand Run { get; set; }
 
-        public RelayCommand<FrameworkElement> ReturnCommand { get; set; }
+        public RelayCommand<FrameworkElement> Return { get; set; }
         #endregion
 
         #region 数据包管理器右键菜单
@@ -137,10 +137,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         }
         #endregion
 
-        #region 新建窗体中上一个被选中的模板
-        public static TemplateItems LastSelectedItems { get; set; } = null;
-        #endregion
-
         /// <summary>
         /// 记录剪切状态
         /// </summary>
@@ -153,8 +149,8 @@ namespace cbhk_environment.Generators.DataPackGenerator
         public EditDataContext()
         {
             #region 链接指令
-            RunCommand = new RelayCommand(run_command);
-            ReturnCommand = new RelayCommand<FrameworkElement>(return_command);
+            //RunCommand = new RelayCommand(run_command);
+            //ReturnCommand = new RelayCommand<FrameworkElement>(return_command);
 
             AddFile = new RelayCommand(AddFileCommand);
             AddFolder = new RelayCommand(AddFolderCommand);
@@ -219,70 +215,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void AddFileCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            ContentItems contentItems = richTreeViewItems.Header as ContentItems;
-            //当前选中节点的数据包父节点
-            RichTreeViewItems datapackItem = contentItems.DataPackItemReference;
-            ContentItems parentHeader = datapackItem.Header as ContentItems;
-            if (Directory.Exists(contentItems.Uid))
-            {
-                AddFileForm addFileForm = new AddFileForm();
-                if(addFileForm.ShowDialog() == true && LastSelectedItems != null)
-                {
-                    //将存储的整型转换为字符串版本号
-                    string datapackVersion = parentHeader.DataPackMetaInfo.Version;
-
-                    #region 筛选更高的版本号
-                    if(datapackVersion.Contains("~"))
-                    {
-                        string[] versions = datapackVersion.Split('~');
-                        string leftVerion = versions[0].Replace(".","");
-                        string rightVerion = versions[1].Replace(".", "");
-                        try
-                        {
-                            if (int.Parse(leftVerion) > int.Parse(rightVerion))
-                                datapackVersion = versions[0];
-                            else
-                                datapackVersion = versions[1];
-                        }
-                        catch
-                        {
-                            MessageBox.Show("添加错误,请更正数据包配置目录中的版本数据","操作执行失败");
-                        }
-                    }
-                    #endregion
-
-                    //根据版本、类型和名称添加文件
-                    bool CoverOldFile = false;
-                    if (!File.Exists(richTreeViewItems.Uid + "\\" + NewFileName))
-                    {
-                        File.Copy(TemplateSelectDataContext.TemplateDataFilePath + "\\" + datapackVersion + "\\" + LastSelectedItems.TemplateID + LastSelectedItems.FileType, richTreeViewItems.Uid + "\\" + NewFileName);
-                        CoverOldFile = true;
-                    }
-                    else
-                    {
-                        if(MessageBox.Show("目标路径已有同名文件，是否覆盖？","警告") == MessageBoxResult.OK)
-                        {
-                            File.Copy(TemplateSelectDataContext.TemplateDataFilePath + "\\" + datapackVersion + "\\" + LastSelectedItems.TemplateID + LastSelectedItems.FileType, richTreeViewItems.Uid + "\\" + NewFileName,true);
-                            CoverOldFile = true;
-                        }
-                    }
-
-                    if(CoverOldFile)
-                    {
-                        ContentItems newContentItem = new ContentItems(richTreeViewItems.Uid + "\\" + NewFileName, ContentReader.ContentType.File)
-                        {
-                            DataPackItemReference = contentItems.DataPackItemReference
-                        };
-                        newContentItem.DisplayFileName.Text = NewFileName;
-                        RichTreeViewItems newItem = new RichTreeViewItems()
-                        {
-                            Header = newContentItem
-                        };
-                        richTreeViewItems.Items.Add(newItem);
-                    }
-                }
-            }
         }
 
         /// <summary>
@@ -354,10 +286,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
                         Uid = path,
                         Tag = ContentReader.ContentType.UnKnown
                     };
-                    ContentReader.ContentType contentType = ContentReader.GetTargetContentType(richTreeViewItems.Uid);
-                    ContentItems contentItems = new ContentItems(path, contentType);
-                    richTreeViewItems.Header = contentItems;
-                    selectedItem.Items.Add(richTreeViewItems);
+                    ContentReader.ContentType contentType = ContentReader.ContentType.UnKnown;
                 }
             }
         }
@@ -368,8 +297,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         private void CopyFullPathCommand()
         {
             RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            ContentItems contentItems = richTreeViewItems.Header as ContentItems;
-            Clipboard.SetText(contentItems.Uid);
         }
 
         /// <summary>
@@ -378,8 +305,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         private void OpenWithResourceManagementCommand()
         {
             RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            TemplateItems templateItems = richTreeViewItems.Header as TemplateItems;
-            OpenFolderThenSelectFiles.ExplorerFile(templateItems.Uid);
         }
 
         /// <summary>
@@ -415,9 +340,9 @@ namespace cbhk_environment.Generators.DataPackGenerator
         private void OpenWithTerminalCommand()
         {
             RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            TemplateItems templateItems = richTreeViewItems.Header as TemplateItems;
-            if(Directory.Exists(templateItems.Uid))
-            Process.Start(@"explorer.exe", "cd " + templateItems.Uid);
+            //TemplateItems templateItems = richTreeViewItems.Header as TemplateItems;
+            //if(Directory.Exists(templateItems.Uid))
+            //Process.Start(@"explorer.exe", "cd " + templateItems.Uid);
         }
 
         /// <summary>
@@ -463,12 +388,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// <param name="e"></param>
         public void ContentViewLoaded(object sender, RoutedEventArgs e)
         {
-            ContentView = sender as TreeView;
-            if (datapack_datacontext.newTreeViewItems != null)
-                foreach (var item in datapack_datacontext.newTreeViewItems)
-                {
-                    ContentView.Items.Add(item);
-                }
         }
 
         /// <summary>
@@ -493,8 +412,8 @@ namespace cbhk_environment.Generators.DataPackGenerator
         {
             RichTabItems CurrentItem = FileModifyZone.SelectedItem as RichTabItems;
             RichTextBox CurrentTextBox = CurrentItem.Content as RichTextBox;
-            TextRange CurrentContent = new TextRange(CurrentTextBox.Document.ContentStart, CurrentTextBox.Document.ContentEnd);
-            File.WriteAllText(CurrentItem.Uid, CurrentContent.Text);
+            TextRange CurrentContent = new(CurrentTextBox.Document.ContentStart, CurrentTextBox.Document.ContentEnd);
+            _ = File.WriteAllTextAsync(CurrentItem.Uid, CurrentContent.Text);
         }
     }
 }

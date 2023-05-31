@@ -105,7 +105,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding AddEntity}"
-                Content="添加实体"
+                Content="添加"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
@@ -114,7 +114,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ClearEntity}"
-                Content="清空实体"
+                Content="清空"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
@@ -123,7 +123,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ImportEntityFromClipboard}"
-                Content="从剪切板导入实体"
+                Content="从剪切板导入"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
@@ -132,7 +132,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ImportEntityFromFile}"
-                Content="从文件导入实体"
+                Content="从文件导入"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:RadiusToggleButtons

@@ -45,8 +45,15 @@
                 Command="{Binding Run}"
                 FontSize="15"
                 Style="{DynamicResource IconTextButton}"
-                ToolTip="F5:运行"
-                ToolTipService.InitialShowDelay="0" />
+                ToolTipService.BetweenShowDelay="0"
+                ToolTipService.InitialShowDelay="0">
+                <CustomControls:IconTextButtons.ToolTip>
+                    <ToolTip
+                        Background="#484848"
+                        Content="F5:运行"
+                        Foreground="White" />
+                </CustomControls:IconTextButtons.ToolTip>
+            </CustomControls:IconTextButtons>
             <CustomControls:IconTextButtons
                 Width="20"
                 Height="20"

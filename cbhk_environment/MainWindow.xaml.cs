@@ -830,7 +830,7 @@ namespace cbhk_environment
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TabControl tabControl = sender as TabControl;
-            rotationChartBody.SwitchTimer.IsEnabled = tabControl.SelectedIndex == 1;
+            rotationChartBody.StopTimer.IsEnabled = rotationChartBody.SwitchTimer.IsEnabled = tabControl.SelectedIndex == 1;
         }
     }
 

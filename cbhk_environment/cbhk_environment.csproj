@@ -49,6 +49,13 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Generators\DataPackGenerator\Components\Mcfunction.xshd" />
+    <Resource Include="Generators\RecipeGenerator\Images\Cell.png" />
+    <Resource Include="Generators\RecipeGenerator\Images\CraftingTable.png" />
+    <Resource Include="Generators\RecipeGenerator\Images\Arrow.png" />
+    <Resource Include="Generators\RecipeGenerator\Images\BlastFurnace.png" />
+    <Resource Include="Generators\RecipeGenerator\Images\Furnace.png" />
+    <Resource Include="Generators\RecipeGenerator\Images\SmithingTable.png" />
+    <Resource Include="Generators\RecipeGenerator\Images\Smoker.png" />
     <Resource Include="resources\cbhk_form\images\Error.png">
       <CopyToOutputDirectory></CopyToOutputDirectory>
     </Resource>
@@ -126,7 +133,7 @@
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="NLog">
-      <Version>5.1.4</Version>
+      <Version>5.1.5</Version>
     </PackageReference>
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Runtime.WindowsRuntime.UI.Xaml">
@@ -139,6 +146,7 @@
       <Version>1.5.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.1" />
+    <PackageReference Include="WriteableBitmapEx" Version="1.6.8" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="resources\cbhk_form\images\cb.ico" />
@@ -282,6 +290,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="GeneralTools\jsonReader - v1.3.js" />
+    <None Remove="Generators\RecipeGenerator\cell.png" />
+    <None Remove="Generators\RecipeGenerator\Components\Empty.png" />
+    <None Remove="Generators\RecipeGenerator\crafting_table.png" />
+    <None Remove="Generators\RecipeGenerator\Images\arrow.png" />
+    <None Remove="Generators\RecipeGenerator\Images\BlastFurnace.png" />
+    <None Remove="Generators\RecipeGenerator\Images\cell.png" />
+    <None Remove="Generators\RecipeGenerator\Images\CraftingTable.png" />
+    <None Remove="Generators\RecipeGenerator\Images\furnace.png" />
+    <None Remove="Generators\RecipeGenerator\Images\SmithingTable.png" />
+    <None Remove="Generators\RecipeGenerator\Images\smoker.png" />
     <None Remove="resources\cbhk_form\images\Error.png" />
     <None Remove="resources\cbhk_form\images\Info.png" />
     <None Remove="resources\common\images\Save.png" />

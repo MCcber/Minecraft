@@ -16,14 +16,14 @@ namespace cbhk_environment.CustomControls
         public static readonly DependencyProperty ThicknessBackgroundProperty =
             DependencyProperty.Register("ThicknessBackground", typeof(BitmapImage), typeof(TextButtons), new PropertyMetadata(default(BitmapImage)));
 
-        public SolidColorBrush MouseOverBackground
+        public Brush MouseOverBackground
         {
-            get { return (SolidColorBrush)GetValue(MouseOverBackgroundProperty); }
+            get { return (Brush)GetValue(MouseOverBackgroundProperty); }
             set { SetValue(MouseOverBackgroundProperty, value); }
         }
 
         public static readonly DependencyProperty MouseOverBackgroundProperty =
-            DependencyProperty.Register("MouseOverBackground", typeof(SolidColorBrush), typeof(TextButtons), new PropertyMetadata(default(SolidColorBrush)));
+            DependencyProperty.Register("MouseOverBackground", typeof(Brush), typeof(TextButtons), new PropertyMetadata(default(Brush)));
 
         public Brush MouseLeftDownBackground
         {
@@ -33,5 +33,14 @@ namespace cbhk_environment.CustomControls
 
         public static readonly DependencyProperty MouseLeftDownBackgroundProperty =
             DependencyProperty.Register("MouseLeftDownBackground", typeof(Brush), typeof(TextButtons), new PropertyMetadata(default(Brush)));
+
+        public Brush MouseOverBorderBrush
+        {
+            get { return (Brush)GetValue(MouseOverBorderBrushProperty); }
+            set { SetValue(MouseOverBorderBrushProperty, value); }
+        }
+
+        public static readonly DependencyProperty MouseOverBorderBrushProperty =
+            DependencyProperty.Register("MouseOverBorderBrush", typeof(Brush), typeof(TextButtons), new PropertyMetadata(default(Brush)));
     }
 }

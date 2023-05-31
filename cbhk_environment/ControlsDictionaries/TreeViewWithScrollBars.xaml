@@ -49,7 +49,6 @@
                             RenderOptions.BitmapScalingMode="NearestNeighbor"
                             RenderOptions.ClearTypeHint="Enabled"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                            
                             UseLayoutRounding="True"
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                             <ItemsPresenter />

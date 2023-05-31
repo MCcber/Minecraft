@@ -708,7 +708,7 @@ namespace cbhk_environment.Generators.VillagerGenerator
                     {
                         if (File.Exists(item))
                         {
-                            string nbt = GeneralTools.ExternalDataImportManager.GetItemDataHandler(item);
+                            string nbt = ExternalDataImportManager.GetItemDataHandler(item);
                             if (nbt.Length > 0)
                             {
                                 JObject data = JObject.Parse(nbt);

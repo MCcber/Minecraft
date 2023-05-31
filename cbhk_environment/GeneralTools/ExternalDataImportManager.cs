@@ -3,6 +3,8 @@ using cbhk_environment.CustomControls;
 using cbhk_environment.GeneralTools.Displayer;
 using cbhk_environment.GeneralTools.Information;
 using cbhk_environment.Generators.FireworkRocketGenerator.Components;
+using cbhk_environment.Generators.RecipeGenerator;
+using cbhk_environment.Generators.RecipeGenerator.Components;
 using cbhk_environment.Generators.SpawnerGenerator.Components;
 using cbhk_environment.Generators.VillagerGenerator;
 using Newtonsoft.Json.Linq;
@@ -20,6 +22,97 @@ namespace cbhk_environment.GeneralTools
 {
     public class ExternalDataImportManager
     {
+        #region 处理导入外部配方
+        public static void ImportRecipeDataHandler(string filePathOrData, ref recipe_datacontext recipeContext, bool IsPath = true)
+        {
+            MessageDisplayer messageDisplayer = new();
+            messageDisplayerDataContext displayContext = messageDisplayer.DataContext as messageDisplayerDataContext;
+            string data = IsPath ? File.ReadAllText(filePathOrData) : filePathOrData;
+            try
+            {
+                JObject json = JObject.Parse(data);
+                if (json["type"] is JToken recipeType)
+                {
+                    switch (recipeType.ToString().Replace("minecraft:",""))
+                    {
+                        case "crafting_shaped":
+                        case "crafting_shapeness":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.CraftingTable;
+                                CraftingTable craftingTable = recipeContext.AddRecipeCommand(type) as CraftingTable;
+                                craftingTableDataContext context = craftingTable.DataContext as craftingTableDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                        case "smithing_transform":
+                        case "smithing_trim":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.SmithingTable;
+                                SmithingTable smithingTable = recipeContext.AddRecipeCommand(type) as SmithingTable;
+                                smithingTableDataContext context = smithingTable.DataContext as smithingTableDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                        case "blasting":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                BlastFurnace blastFurnace = recipeContext.AddRecipeCommand(type) as BlastFurnace;
+                                blastFurnaceDataContext context = blastFurnace.DataContext as blastFurnaceDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                        case "campfire_cooking":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                Campfire campfire = recipeContext.AddRecipeCommand(type) as Campfire;
+                                campfireDataContext context = campfire.DataContext as campfireDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                        case "smelting":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                Furnace furnace = recipeContext.AddRecipeCommand(type) as Furnace;
+                                furnaceDataContext context = furnace.DataContext as furnaceDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                        case "smoker":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                Smoker smoker = recipeContext.AddRecipeCommand(type) as Smoker;
+                                smokerDataContext context = smoker.DataContext as smokerDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                        case "stonecutting":
+                            {
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                Stonecutter stonecutter = recipeContext.AddRecipeCommand(type) as Stonecutter;
+                                stonecutterDataContext context = stonecutter.DataContext as stonecutterDataContext;
+                                context.ImportMode = true;
+                                context.ExternalData = json;
+                            }
+                            break;
+                    }
+                }
+            }
+            catch
+            {
+                displayContext.DisplayInfomation = "文件内容格式不合法";
+                displayContext.MessageIcon = displayContext.errorIcon;
+                displayContext.MessageTitle = "导入失败";
+                _ = messageDisplayer.ShowDialog();
+            }
+        }
+        #endregion
+
         #region 处理导入外部刷怪笼
         public static void ImportSpawnerDataHandler(string filePathOrData, ref ObservableCollection<RichTabItems> itemPageList, bool IsPath = true)
         {
@@ -51,6 +144,28 @@ namespace cbhk_environment.GeneralTools
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }
+        }
+        public static string GetSpawnerDataHandler(string filePathOrData, bool IsPath = true)
+        {
+            string result = "";
+            string data = IsPath ? File.ReadAllText(filePathOrData) : filePathOrData;
+
+            if (data.Length == 0) return result;
+
+            #region 提取可用NBT数据和实体ID
+            if (data.Contains('{') && data.Contains('}'))
+                result = data[data.IndexOf('{')..(data.LastIndexOf('}') + 1)];
+
+            if (result.Length > 0)
+            {
+                //补齐缺失双引号对的key
+                result = Regex.Replace(result, @"([\{\[,])([\s+]?\w+[\s+]?):", "$1\"$2\":");
+                //清除数值型数据的单位
+                result = Regex.Replace(result, @"(\d+[\,\]\}]?)([a-zA-Z])", "$1").Replace("I;", "");
+            }
+
+            return result;
+            #endregion
         }
 
         /// <summary>

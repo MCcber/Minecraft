@@ -136,41 +136,37 @@ namespace cbhk_environment.Generators.TagGenerator
                     {
                         if (tagItemTemplate.DisplayText.Trim().Length > 0)
                         {
-                            string itemString = tagItemTemplate.DisplayText.Trim()[..tagItemTemplate.DisplayText.Trim().IndexOf(' ')];
+                            string itemString = tagItemTemplate.DisplayText.Contains(' ')? tagItemTemplate.DisplayText[..tagItemTemplate.DisplayText.IndexOf(' ')]: tagItemTemplate.DisplayText;
                             tagItemTemplate.BeChecked = selectedAll;
 
                             if (tagItemTemplate.BeChecked.Value)
                             {
-                                if (tagItemTemplate.DataType == "Item")
+                                if (tagItemTemplate.DataType == "Item" && !Items.Contains("\"minecraft:" + itemString + "\","))
                                     Items.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Entity")
+                                if (tagItemTemplate.DataType == "Entity" && !Entities.Contains("\"minecraft:" + itemString + "\","))
                                     Entities.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Blocks")
+                                if (tagItemTemplate.DataType == "Block&Item" && !Blocks.Contains("\"minecraft:" + itemString + "\","))
                                     Blocks.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Biomes")
+                                if (tagItemTemplate.DataType == "Biome" && !Biomes.Contains("\"minecraft:" + itemString + "\","))
                                     Biomes.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "GameEvent")
+                                if (tagItemTemplate.DataType == "GameEvent" && !GameEvent.Contains("\"minecraft:" + itemString + "\","))
                                     GameEvent.Add("\"minecraft:" + itemString + "\",");
                             }
                             else
                             {
-                                if (tagItemTemplate.DataType == "Item")
+                                if (tagItemTemplate.DataType == "Item" && Items.Contains("\"minecraft:" + itemString + "\","))
                                     Items.Remove("\"minecraft:" + itemString + "\",");
-                                else
-                                if (tagItemTemplate.DataType == "Entity")
+                                if (tagItemTemplate.DataType == "Entity" && Entities.Contains("\"minecraft:" + itemString + "\","))
                                     Entities.Remove("\"minecraft:" + itemString + "\",");
-                                else
-                                if (tagItemTemplate.DataType == "Blocks")
+                                if (tagItemTemplate.DataType == "Block&Item" && Blocks.Contains("\"minecraft:" + itemString + "\","))
                                     Blocks.Remove("\"minecraft:" + itemString + "\",");
-                                else
-                                if (tagItemTemplate.DataType == "Biomes")
+                                if (tagItemTemplate.DataType == "Biome" && Biomes.Contains("\"minecraft:" + itemString + "\","))
                                     Biomes.Remove("\"minecraft:" + itemString + "\",");
-                                else
-                                if (tagItemTemplate.DataType == "GameEvent")
+                                if (tagItemTemplate.DataType == "GameEvent" && GameEvent.Contains("\"minecraft:" + itemString + "\","))
                                     GameEvent.Remove("\"minecraft:" + itemString + "\",");
                             }
                         }
@@ -194,23 +190,23 @@ namespace cbhk_environment.Generators.TagGenerator
                     {
                         if (tagItemTemplate.DisplayText.Trim().Length > 0)
                         {
-                            string itemString = tagItemTemplate.DisplayText.Trim()[..tagItemTemplate.DisplayText.Trim().IndexOf(' ')];
+                            string itemString = tagItemTemplate.DisplayText.Contains(' ') ? tagItemTemplate.DisplayText[..tagItemTemplate.DisplayText.IndexOf(' ')] : tagItemTemplate.DisplayText;
                             tagItemTemplate.BeChecked = !tagItemTemplate.BeChecked.Value;
                             if (tagItemTemplate.BeChecked.Value)
                             {
-                                if (tagItemTemplate.DataType == "Item")
+                                if (tagItemTemplate.DataType == "Item" && !Items.Contains("\"minecraft:" + itemString + "\","))
                                     Items.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Entity")
+                                if (tagItemTemplate.DataType == "Entity" && !Entities.Contains("\"minecraft:" + itemString + "\","))
                                     Entities.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Blocks")
+                                if (tagItemTemplate.DataType == "Block&Item" && !Blocks.Contains("\"minecraft:" + itemString + "\","))
                                     Blocks.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Biomes")
+                                if (tagItemTemplate.DataType == "Biome" && !Biomes.Contains("\"minecraft:" + itemString + "\","))
                                     Biomes.Add("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "GameEvent")
+                                if (tagItemTemplate.DataType == "GameEvent" && !GameEvent.Contains("\"minecraft:" + itemString + "\","))
                                     GameEvent.Add("\"minecraft:" + itemString + "\",");
                             }
                             else
@@ -221,10 +217,10 @@ namespace cbhk_environment.Generators.TagGenerator
                                 if (tagItemTemplate.DataType == "Entity")
                                     Entities.Remove("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Blocks")
+                                if (tagItemTemplate.DataType == "Block&Item")
                                     Blocks.Remove("\"minecraft:" + itemString + "\",");
                                 else
-                                if (tagItemTemplate.DataType == "Biomes")
+                                if (tagItemTemplate.DataType == "Biome")
                                     Biomes.Remove("\"minecraft:" + itemString + "\",");
                                 else
                                 if (tagItemTemplate.DataType == "GameEvent")
@@ -533,45 +529,38 @@ namespace cbhk_environment.Generators.TagGenerator
                 string itemString;
                 if (displayText.Trim().Length > 0)
                 {
-                    if (displayText.Contains(' '))
-                        itemString = displayText.Trim()[..displayText.Trim().IndexOf(' ')];
-                    else
-                        itemString = displayText.Trim();
+                    itemString = displayText.Contains(' ') ? displayText[..displayText.IndexOf(' ')] : displayText;
                     if (GetDisplayText().IsMatch(displayText.Trim()))
                     {
                         iconCheckBoxs.IsChecked = !iconCheckBoxs.IsChecked.Value;
                         if (iconCheckBoxs.IsChecked.Value)
                         {
-                            if (CurrentItem.DataType == "Item")
+                            if (CurrentItem.DataType == "Item" && !Items.Contains("\"minecraft:" + itemString + "\","))
                                 Items.Add("\"minecraft:" + itemString + "\",");
                             else
-                            if (CurrentItem.DataType == "Entity")
+                            if (CurrentItem.DataType == "Entity" && !Entities.Contains("\"minecraft:" + itemString + "\","))
                                 Entities.Add("\"minecraft:" + itemString + "\",");
                             else
-                            if (CurrentItem.DataType == "Block")
+                            if (CurrentItem.DataType == "Block&Item" && !Blocks.Contains("\"minecraft:" + itemString + "\","))
                                 Blocks.Add("\"minecraft:" + itemString + "\",");
                             else
-                            if (CurrentItem.DataType == "Biome")
+                            if (CurrentItem.DataType == "Biome" && !Biomes.Contains("\"minecraft:" + itemString + "\","))
                                 Biomes.Add("\"minecraft:" + itemString + "\",");
                             else
-                            if (CurrentItem.DataType == "GameEvent")
+                            if (CurrentItem.DataType == "GameEvent" && !GameEvent.Contains("\"minecraft:" + itemString + "\","))
                                 GameEvent.Add("\"minecraft:" + itemString + "\",");
                         }
                         else
                         {
-                            if (CurrentItem.DataType == "Item")
+                            if (CurrentItem.DataType == "Item" && Items.Contains("\"minecraft:" + itemString + "\","))
                                 Items.Remove("\"minecraft:" + itemString + "\",");
-                            else
-                            if (CurrentItem.DataType == "Entity")
+                            if (CurrentItem.DataType == "Entity" && Entities.Contains("\"minecraft:" + itemString + "\","))
                                 Entities.Remove("\"minecraft:" + itemString + "\",");
-                            else
-                            if (CurrentItem.DataType == "Block")
+                            if (CurrentItem.DataType == "Block&Item" && Blocks.Contains("\"minecraft:" + itemString + "\","))
                                 Blocks.Remove("\"minecraft:" + itemString + "\",");
-                            else
-                            if (CurrentItem.DataType == "Biome")
+                            if (CurrentItem.DataType == "Biome" && Biomes.Contains("\"minecraft:" + itemString + "\","))
                                 Biomes.Remove("\"minecraft:" + itemString + "\",");
-                            else
-                            if (CurrentItem.DataType == "GameEvent")
+                            if (CurrentItem.DataType == "GameEvent" && GameEvent.Contains("\"minecraft:" + itemString + "\","))
                                 GameEvent.Remove("\"minecraft:" + itemString + "\",");
                         }
                     }

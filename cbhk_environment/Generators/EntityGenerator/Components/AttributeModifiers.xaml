@@ -26,9 +26,15 @@
             VerticalAlignment="Center"
             Foreground="White"
             Text="数量"
-            ToolTip="计算中修饰符调整基础值的数值。"
             ToolTipService.BetweenShowDelay="0"
-            ToolTipService.InitialShowDelay="0" />
+            ToolTipService.InitialShowDelay="0">
+            <TextBlock.ToolTip>
+                <ToolTip
+                    Background="#484848"
+                    Content="计算中修饰符调整基础值的数值。"
+                    Foreground="White" />
+            </TextBlock.ToolTip>
+        </TextBlock>
         <Slider
             x:Name="Amount"
             Grid.Row="0"
@@ -42,9 +48,15 @@
             VerticalAlignment="Center"
             Foreground="White"
             Text="运算方法"
-            ToolTip="0、1或2。定义修饰符对属性的基础值的运算方法。"
             ToolTipService.BetweenShowDelay="0"
-            ToolTipService.InitialShowDelay="0" />
+            ToolTipService.InitialShowDelay="0">
+            <TextBlock.ToolTip>
+                <ToolTip
+                    Background="#484848"
+                    Content="0、1或2。定义修饰符对属性的基础值的运算方法。"
+                    Foreground="White" />
+            </TextBlock.ToolTip>
+        </TextBlock>
         <ComboBox
             x:Name="Operation"
             Grid.Row="1"
@@ -60,9 +72,15 @@
             VerticalAlignment="Center"
             Foreground="White"
             Text="UUID"
-            ToolTip="该修饰符的UUID。"
             ToolTipService.BetweenShowDelay="0"
-            ToolTipService.InitialShowDelay="0" />
+            ToolTipService.InitialShowDelay="0">
+            <TextBlock.ToolTip>
+                <ToolTip
+                    Background="#484848"
+                    Content="该修饰符的UUID。"
+                    Foreground="White" />
+            </TextBlock.ToolTip>
+        </TextBlock>
         <local:UUIDOrPosGroup
             x:Name="UUID"
             Grid.Row="2"
@@ -74,9 +92,15 @@
             VerticalAlignment="Center"
             Foreground="White"
             Text="名称"
-            ToolTip="修饰符的名称。"
             ToolTipService.BetweenShowDelay="0"
-            ToolTipService.InitialShowDelay="0" />
+            ToolTipService.InitialShowDelay="0">
+            <TextBlock.ToolTip>
+                <ToolTip
+                    Background="#484848"
+                    Content="修饰符的名称。"
+                    Foreground="White" />
+            </TextBlock.ToolTip>
+        </TextBlock>
         <TextBox
             x:Name="ModifierName"
             Grid.Row="3"

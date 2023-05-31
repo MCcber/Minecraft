@@ -64,8 +64,15 @@
                 Command="{Binding Return}"
                 FontSize="15"
                 Style="{DynamicResource IconTextButton}"
-                ToolTip="运行"
-                ToolTipService.InitialShowDelay="0" />
+                ToolTipService.BetweenShowDelay="0"
+                ToolTipService.InitialShowDelay="0">
+                <CustomControls:IconTextButtons.ToolTip>
+                    <ToolTip
+                        Background="#484848"
+                        Content="ESC:返回"
+                        Foreground="White" />
+                </CustomControls:IconTextButtons.ToolTip>
+            </CustomControls:IconTextButtons>
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
@@ -76,8 +83,15 @@
                 Command="{Binding Run}"
                 FontSize="15"
                 Style="{DynamicResource IconTextButton}"
-                ToolTip="运行"
-                ToolTipService.InitialShowDelay="0" />
+                ToolTipService.BetweenShowDelay="0"
+                ToolTipService.InitialShowDelay="0">
+                <CustomControls:IconTextButtons.ToolTip>
+                    <ToolTip
+                        Background="#484848"
+                        Content="F5:运行"
+                        Foreground="White" />
+                </CustomControls:IconTextButtons.ToolTip>
+            </CustomControls:IconTextButtons>
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
@@ -96,7 +110,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding AddFireworkRocket}"
-                Content="添加烟花"
+                Content="添加"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
@@ -105,7 +119,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ClearFireworkRocket}"
-                Content="清空烟花"
+                Content="清空"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
@@ -114,7 +128,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ImportFireworkRocketFromClipboard}"
-                Content="从剪切板导入烟花"
+                Content="从剪切板导入"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
@@ -123,7 +137,7 @@
                 VerticalAlignment="Center"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ImportFireworkRocketFromFile}"
-                Content="从文件导入烟花"
+                Content="从文件导入"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:RadiusToggleButtons

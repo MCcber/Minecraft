@@ -1,5 +1,6 @@
 ﻿using cbhk_environment.CustomControls;
 using cbhk_environment.GeneralTools;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -46,9 +47,10 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         /// <param name="e"></param>
         private void IconTextButtons_Click(object sender, RoutedEventArgs e)
         {
-            StackPanel parent = Parent as StackPanel;
+            ItemsControl parent = this.FindParent<ItemsControl>();
+            ObservableCollection<EnchantmentItems> canDestroyItems = parent.ItemsSource as ObservableCollection<EnchantmentItems>;
             //删除自己
-            parent.Children.Remove(this);
+            canDestroyItems.Remove(this);
             parent.FindParent<Accordion>().FindChild<IconButtons>().Focus();
         }
     }

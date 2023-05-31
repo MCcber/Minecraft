@@ -63,10 +63,16 @@
             VerticalAlignment="Center"
             Foreground="White"
             Text="牵绳者"
-            ToolTip="拴绳连接到的实体的UUID。"
             ToolTipService.BetweenShowDelay="0"
             ToolTipService.InitialShowDelay="0"
-            Visibility="Collapsed" />
+            Visibility="Collapsed">
+            <TextBlock.ToolTip>
+                <ToolTip
+                    Background="#484848"
+                    Content="拴绳连接到的实体的UUID。"
+                    Foreground="White" />
+            </TextBlock.ToolTip>
+        </TextBlock>
         <local:UUIDOrPosGroup
             x:Name="tractor"
             Grid.Row="2"
@@ -80,10 +86,16 @@
             VerticalAlignment="Center"
             Foreground="White"
             Text="栅栏坐标"
-            ToolTip="拴绳连接到的栅栏的坐标。"
             ToolTipService.BetweenShowDelay="0"
             ToolTipService.InitialShowDelay="0"
-            Visibility="Collapsed" />
+            Visibility="Collapsed">
+            <TextBlock.ToolTip>
+                <ToolTip
+                    Background="#484848"
+                    Content="拴绳连接到的栅栏的坐标。"
+                    Foreground="White" />
+            </TextBlock.ToolTip>
+        </TextBlock>
         <local:UUIDOrPosGroup
             x:Name="fence"
             Grid.Row="3"

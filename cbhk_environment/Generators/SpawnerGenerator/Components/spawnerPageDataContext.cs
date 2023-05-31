@@ -1,4 +1,5 @@
 ﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools;
 using cbhk_environment.GenerateResultDisplayer;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -36,6 +37,7 @@ namespace cbhk_environment.Generators.SpawnerGenerator.Components
             set
             {
                 showResult = value;
+                OnPropertyChanged();
             }
         }
         #endregion
@@ -157,6 +159,8 @@ namespace cbhk_environment.Generators.SpawnerGenerator.Components
         /// </summary>
         private void SaveCommand()
         {
+            ShowResult = false;
+            run_command();
             System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
             {
                 Description = "请选择要保存的目录",
@@ -168,12 +172,10 @@ namespace cbhk_environment.Generators.SpawnerGenerator.Components
             if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string entityID = "";
-                if (Result.Contains('{'))
-                {
-                    if (JObject.Parse(Result).SelectToken("SpawnData.entity.id") is JToken id)
-                        entityID = id.ToString().Replace("minecraft:", "");
-                }
-                File.WriteAllTextAsync(folderBrowserDialog.SelectedPath + "spawner" + entityID + ".command", Result);
+                string data = ExternalDataImportManager.GetSpawnerDataHandler(Result, false);
+                if (JObject.Parse(data).SelectToken("SpawnData.entity.id") is JToken id)
+                    entityID = id.ToString().Replace("minecraft:", "");
+                File.WriteAllTextAsync(folderBrowserDialog.SelectedPath + entityID + "Spawner" + ".command", Result);
             }
         }
 

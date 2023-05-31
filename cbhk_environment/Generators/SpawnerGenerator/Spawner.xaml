@@ -103,14 +103,14 @@
                 Padding="5"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding AddSpawner}"
-                Content="添加刷怪笼"
+                Content="添加"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons
                 Padding="5"
                 Background="{DynamicResource ButtonNormal}"
                 Command="{Binding ClearSpawner}"
-                Content="清除刷怪笼"
+                Content="清除"
                 PressedBackground="{DynamicResource ButtonPressed}"
                 Style="{DynamicResource IconTextButton}" />
             <CustomControls:IconTextButtons

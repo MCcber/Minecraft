@@ -8,44 +8,34 @@
     xmlns:local="clr-namespace:cbhk_environment.Generators.DataPackGenerator.DatapackInitializationForms"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="HomePage"
-    d:DesignHeight="450"
-    d:DesignWidth="800"
+    d:DesignHeight="630"
+    d:DesignWidth="900"
     mc:Ignorable="d">
 
-    <Grid Width="1080" Height="571">
-        <CustomControls:RichTreeViewItems Style="{DynamicResource RichTreeViewItem}" Visibility="Collapsed">
-            <behavior:Interaction.Triggers>
-                <behavior:EventTrigger EventName="Loaded">
-                    <behavior:CallMethodAction MethodName="RichTreeViewItemStyleLoaded" TargetObject="{Binding}" />
-                </behavior:EventTrigger>
-            </behavior:Interaction.Triggers>
-        </CustomControls:RichTreeViewItems>
+    <Page.DataContext>
+        <local:HomePageDataContext />
+    </Page.DataContext>
 
-        <Grid Panel.ZIndex="1">
+    <Grid>
+        <Grid Panel.ZIndex="1" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <StackPanel
-                Grid.Column="0"
-                MaxWidth="380"
-                Margin="0,10,10,0">
+            <StackPanel Grid.Column="0" Margin="10,30,10,10">
                 <TextBlock
-                    FontSize="30"
+                    Margin="50,0,0,0"
+                    FontSize="20"
                     Foreground="White"
                     Text="打开近期使用的内容" />
                 <TextBox
-                    Margin="10,30,96,30"
+                    Margin="50,30,120,30"
                     HorizontalAlignment="Stretch"
                     BorderBrush="#424242"
                     CaretBrush="White"
                     FontSize="25"
-                    Foreground="White">
-                    <behavior:Interaction.Triggers>
-                        <behavior:EventTrigger EventName="TextChanged">
-                            <behavior:CallMethodAction MethodName="RecentItemSearchBoxTextChanged" TargetObject="{Binding}" />
-                        </behavior:EventTrigger>
-                    </behavior:Interaction.Triggers>
+                    Foreground="White"
+                    Text="{Binding SearchText, Mode=OneWayToSource}">
                     <TextBox.Resources>
                         <VisualBrush
                             x:Key="BackgroundBrush"
@@ -74,9 +64,6 @@
                         <Style TargetType="TextBox">
                             <Setter Property="Background" Value="Transparent" />
                             <Style.Triggers>
-                                <!--<Trigger Property="Text" Value="{x:Null}">
-                                    <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
-                                </Trigger>-->
                                 <Trigger Property="Text" Value="">
                                     <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
                                 </Trigger>
@@ -85,193 +72,298 @@
                     </TextBox.Style>
                 </TextBox>
                 <TreeView
-                    MaxHeight="420"
+                    Margin="50,10"
                     Background="Transparent"
                     BorderThickness="0"
                     FontSize="20"
                     Foreground="White"
+                    ItemsSource="{Binding TEST}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     Style="{DynamicResource TreeViewWithScrollBar}"
                     VirtualizingStackPanel.IsVirtualizing="True"
                     VirtualizingStackPanel.VirtualizationMode="Recycling"
-                    Visibility="{Binding RecentItemTreeViewVisibility, Mode=OneWay}">
-                    <behavior:Interaction.Triggers>
-                        <behavior:EventTrigger EventName="Loaded">
-                            <behavior:CallMethodAction MethodName="RecentFilesViewLoaded" TargetObject="{Binding}" />
-                        </behavior:EventTrigger>
-                    </behavior:Interaction.Triggers>
-                </TreeView>
+                    Visibility="{Binding RecentItemTreeViewVisibility, Mode=OneWay}" />
                 <ScrollViewer
-                    MaxHeight="420"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    Visibility="{Binding RecentItemSearchPanelVisibility, Mode=OneWay}">
+                    Margin="20"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
                     <ItemsControl
-                        MaxHeight="420"
+                        Margin="20"
                         Background="Transparent"
                         ItemsSource="{Binding RecentItemSearchResults, Mode=OneWay}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                         ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                        <behavior:Interaction.Triggers>
-                            <behavior:EventTrigger EventName="Loaded">
-                                <behavior:CallMethodAction MethodName="RecentItemSearchPanelLoaded" TargetObject="{Binding}" />
-                            </behavior:EventTrigger>
-                        </behavior:Interaction.Triggers>
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <VirtualizingStackPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" />
+                                <VirtualizingStackPanel />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
                 </ScrollViewer>
-
             </StackPanel>
             <StackPanel
                 Grid.Column="1"
-                Margin="0,10,0,0"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Top">
+                Margin="10,30,10,10"
+                HorizontalAlignment="Left">
                 <TextBlock
-                    Margin="12,0,0,30"
-                    FontSize="30"
+                    Margin="0,0,0,10"
+                    FontSize="20"
                     Foreground="White"
                     Text="开始使用" />
-                <StackPanel Width="450" Margin="0,-20,0,10">
-                    <CustomControls:IconTextButtons
-                        Height="100"
-                        Panel.ZIndex="0"
+                <Grid
+                    Width="345"
+                    Height="76"
+                    Margin="0,0,0,5"
+                    HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Viewbox
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Width="30"
+                        Height="30"
+                        Margin="10"
+                        VerticalAlignment="Top"
+                        Panel.ZIndex="1"
+                        IsHitTestVisible="False">
+                        <Path
+                            Data="M0 80C0 53.5 21.5 32 48 32h96c26.5 0 48 21.5 48 48V96H384V80c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H432c-26.5 0-48-21.5-48-48V160H192v16c0 1.7-.1 3.4-.3 5L272 288h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H272c-26.5 0-48-21.5-48-48V336c0-1.7 .1-3.4 .3-5L144 224H48c-26.5 0-48-21.5-48-48V80z"
+                            Fill="White"
+                            Stretch="UniformToFill" />
+                    </Viewbox>
+                    <CustomControls:TextButtons
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Width="345"
+                        Height="76"
+                        Padding="48,0,0,0"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
                         Background="#383838"
                         BorderThickness="1"
                         Command="{Binding OpenLocalProject}"
-                        ContentColor="White"
-                        ContentData="打开本地项目"
-                        ContentHeight="100"
-                        ContentMargin="-160 10 30 0"
-                        ContentWidth="600"
-                        FontSize="40"
-                        IconColor="White"
-                        IconData="M0 80C0 53.5 21.5 32 48 32h96c26.5 0 48 21.5 48 48V96H384V80c0-26.5 21.5-48 48-48h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H432c-26.5 0-48-21.5-48-48V160H192v16c0 1.7-.1 3.4-.3 5L272 288h96c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H272c-26.5 0-48-21.5-48-48V336c0-1.7 .1-3.4 .3-5L144 224H48c-26.5 0-48-21.5-48-48V80z"
-                        IconHeight="50"
-                        IconMargin="15 0 0 0"
-                        IconWidth="50"
-                        Style="{DynamicResource IconTextButton}" />
-                    <CustomControls:IconTextButtons
-                        Margin="10,-40,0,0"
-                        HorizontalContentAlignment="Left"
-                        Panel.ZIndex="1"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding OpenLocalProject}"
-                        ContentColor="White"
-                        ContentData="打开本地的Minecraft数据包"
-                        ContentHeight="30"
-                        ContentWidth="400"
+                        Content="打开本地项目"
                         FontSize="20"
                         Foreground="White"
-                        Style="{DynamicResource IconTextButton}" />
-                </StackPanel>
-                <StackPanel Width="450" Margin="0,0,0,10">
-                    <CustomControls:IconTextButtons
-                        Height="100"
-                        Panel.ZIndex="0"
+                        MouseLeftDownBackground="#221D46"
+                        MouseOverBackground="#221D46"
+                        MouseOverBorderBrush="#7160E8"
+                        Style="{DynamicResource TextButtonsStyle}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,0,0,15"
+                        HorizontalAlignment="Left"
+                        FontSize="12"
+                        Foreground="White"
+                        IsHitTestVisible="False"
+                        Text="打开本地的Minecraft数据包" />
+                </Grid>
+                <Grid
+                    Width="345"
+                    Height="76"
+                    Margin="0,0,0,5"
+                    HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Viewbox
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Width="30"
+                        Height="30"
+                        Margin="10"
+                        VerticalAlignment="Top"
+                        Panel.ZIndex="1"
+                        IsHitTestVisible="False">
+                        <Path
+                            Data="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z"
+                            Fill="White"
+                            Stretch="UniformToFill" />
+                    </Viewbox>
+                    <CustomControls:TextButtons
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Width="345"
+                        Height="76"
+                        Padding="48,0,0,0"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
                         Background="#383838"
+                        BorderThickness="1"
                         Command="{Binding OpenLocalFolder}"
-                        ContentColor="White"
-                        ContentData="打开本地文件夹"
-                        ContentHeight="100"
-                        ContentMargin="-140 10 30 0"
-                        ContentWidth="600"
-                        FontSize="40"
-                        IconColor="White"
-                        IconData="M64 480H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64z"
-                        IconHeight="50"
-                        IconMargin="15 0 0 0"
-                        IconWidth="50"
-                        Style="{DynamicResource IconTextButton}" />
-                    <CustomControls:IconTextButtons
-                        Margin="10,-40,0,0"
-                        HorizontalContentAlignment="Left"
-                        Panel.ZIndex="1"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding OpenLocalFolder}"
-                        ContentColor="White"
-                        ContentData="导航和编辑mc相关的文件夹"
-                        ContentHeight="30"
-                        ContentWidth="400"
+                        Content="打开本地文件夹"
                         FontSize="20"
                         Foreground="White"
-                        Style="{DynamicResource IconTextButton}" />
-                </StackPanel>
-                <StackPanel Width="450" Margin="0,0,0,10">
-                    <CustomControls:IconTextButtons
-                        Height="100"
-                        Panel.ZIndex="0"
+                        MouseLeftDownBackground="#221D46"
+                        MouseOverBackground="#221D46"
+                        MouseOverBorderBrush="#7160E8"
+                        Style="{DynamicResource TextButtonsStyle}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,0,0,15"
+                        HorizontalAlignment="Left"
+                        FontSize="12"
+                        Foreground="White"
+                        IsHitTestVisible="False"
+                        Text="导航和编辑Minecraft相关的文件夹" />
+                </Grid>
+                <Grid
+                    Width="345"
+                    Height="76"
+                    Margin="0,0,0,5"
+                    HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Viewbox
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Width="30"
+                        Height="30"
+                        Margin="10"
+                        VerticalAlignment="Top"
+                        Panel.ZIndex="1"
+                        IsHitTestVisible="False">
+                        <Path
+                            Data="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
+                            Fill="White"
+                            Stretch="UniformToFill" />
+                    </Viewbox>
+                    <CustomControls:TextButtons
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Width="345"
+                        Height="76"
+                        Padding="48,0,0,0"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
                         Background="#383838"
+                        BorderThickness="1"
                         Command="{Binding OpenLocalFile}"
-                        ContentColor="White"
-                        ContentData="打开本地文件"
-                        ContentHeight="90"
-                        ContentMargin="-162 10 30 0"
-                        ContentWidth="600"
-                        FontSize="40"
-                        IconColor="White"
-                        IconData="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128z"
-                        IconHeight="50"
-                        IconMargin="17 0 0 0"
-                        IconWidth="50"
-                        Style="{DynamicResource IconTextButton}" />
-                    <CustomControls:IconTextButtons
-                        Margin="50,-40,0,0"
-                        HorizontalContentAlignment="Left"
-                        Panel.ZIndex="1"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding OpenLocalFile}"
-                        ContentColor="White"
-                        ContentData="导航和编辑mc相关的数据包内容文件"
-                        ContentHeight="30"
-                        ContentWidth="400"
+                        Content="打开本地文件"
                         FontSize="20"
                         Foreground="White"
-                        Style="{DynamicResource IconTextButton}" />
-                </StackPanel>
-                <StackPanel Width="450" Margin="0,0,0,10">
-                    <CustomControls:IconTextButtons
-                        Height="100"
-                        Panel.ZIndex="0"
+                        MouseLeftDownBackground="#221D46"
+                        MouseOverBackground="#221D46"
+                        MouseOverBorderBrush="#7160E8"
+                        Style="{DynamicResource TextButtonsStyle}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,0,0,15"
+                        HorizontalAlignment="Left"
+                        FontSize="12"
+                        Foreground="White"
+                        IsHitTestVisible="False"
+                        Text="导航和编辑Minecraft相关的数据包内容文件" />
+                </Grid>
+                <Grid
+                    Width="345"
+                    Height="76"
+                    Margin="0,0,0,5"
+                    HorizontalAlignment="Left">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Viewbox
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Grid.Column="0"
+                        Width="30"
+                        Height="30"
+                        Margin="10"
+                        VerticalAlignment="Top"
+                        Panel.ZIndex="1"
+                        IsHitTestVisible="False">
+                        <Path
+                            Data="M176 88v40H336V88c0-4.4-3.6-8-8-8H184c-4.4 0-8 3.6-8 8zm-48 40V88c0-30.9 25.1-56 56-56H328c30.9 0 56 25.1 56 56v40h28.1c12.7 0 24.9 5.1 33.9 14.1l51.9 51.9c9 9 14.1 21.2 14.1 33.9V304H384V288c0-17.7-14.3-32-32-32s-32 14.3-32 32v16H192V288c0-17.7-14.3-32-32-32s-32 14.3-32 32v16H0V227.9c0-12.7 5.1-24.9 14.1-33.9l51.9-51.9c9-9 21.2-14.1 33.9-14.1H128zM0 416V336H128v16c0 17.7 14.3 32 32 32s32-14.3 32-32V336H320v16c0 17.7 14.3 32 32 32s32-14.3 32-32V336H512v80c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64z"
+                            Fill="White"
+                            Stretch="UniformToFill" />
+                    </Viewbox>
+                    <CustomControls:TextButtons
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Width="345"
+                        Height="76"
+                        Padding="48,0,0,0"
+                        HorizontalContentAlignment="Left"
+                        VerticalContentAlignment="Top"
                         Background="#383838"
+                        BorderThickness="1"
                         Command="{Binding CreateLocalDataPack}"
-                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Page, Mode=FindAncestor}}"
-                        ContentColor="White"
-                        ContentData="创建新的数据包"
-                        ContentHeight="90"
-                        ContentMargin="-140 10 30 0"
-                        ContentWidth="600"
-                        FontSize="40"
-                        IconColor="White"
-                        IconData="M176 88v40H336V88c0-4.4-3.6-8-8-8H184c-4.4 0-8 3.6-8 8zm-48 40V88c0-30.9 25.1-56 56-56H328c30.9 0 56 25.1 56 56v40h28.1c12.7 0 24.9 5.1 33.9 14.1l51.9 51.9c9 9 14.1 21.2 14.1 33.9V304H384V288c0-17.7-14.3-32-32-32s-32 14.3-32 32v16H192V288c0-17.7-14.3-32-32-32s-32 14.3-32 32v16H0V227.9c0-12.7 5.1-24.9 14.1-33.9l51.9-51.9c9-9 21.2-14.1 33.9-14.1H128zM0 416V336H128v16c0 17.7 14.3 32 32 32s32-14.3 32-32V336H320v16c0 17.7 14.3 32 32 32s32-14.3 32-32V336H512v80c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64z"
-                        IconHeight="50"
-                        IconMargin="15 0 0 0"
-                        IconWidth="50"
-                        Style="{DynamicResource IconTextButton}" />
-                    <CustomControls:IconTextButtons
-                        Margin="55,-40,0,0"
-                        HorizontalContentAlignment="Left"
-                        Panel.ZIndex="1"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Command="{Binding CreateLocalDataPack}"
-                        CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Page, Mode=FindAncestor}}"
-                        ContentColor="White"
-                        ContentData="选择具有代码基架的数据包模板以开始"
-                        ContentHeight="30"
-                        ContentWidth="400"
+                        Content="创建新的数据包"
                         FontSize="20"
                         Foreground="White"
-                        Style="{DynamicResource IconTextButton}" />
-                </StackPanel>
+                        MouseLeftDownBackground="#221D46"
+                        MouseOverBackground="#221D46"
+                        MouseOverBorderBrush="#7160E8"
+                        Style="{DynamicResource TextButtonsStyle}" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="0,0,0,15"
+                        HorizontalAlignment="Left"
+                        FontSize="12"
+                        Foreground="White"
+                        IsHitTestVisible="False"
+                        Text="选择具有代码基架的数据包模板以开始" />
+                </Grid>
+                <DockPanel HorizontalAlignment="Center">
+                    <TextBlock Text="继续但无需代码">
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="#83BEEB" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Foreground" Value="#FFFFFF" />
+                                        <Setter Property="Cursor" Value="Hand" />
+                                        <Setter Property="BaselineOffset" Value="-5" />
+                                        <Setter Property="TextDecorations" Value="Baseline" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <TextBlock
+                        Margin="5,0,0,0"
+                        Foreground="White"
+                        Text="→" />
+                </DockPanel>
             </StackPanel>
         </Grid>
     </Grid>

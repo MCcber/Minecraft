@@ -18,6 +18,8 @@ namespace cbhk_environment.GenerateResultDisplayer
     {
         SolidColorBrush tranparentBrush = new((Color)ColorConverter.ConvertFromString("Transparent"));
         SolidColorBrush blackBrush = new((Color)ColorConverter.ConvertFromString("#000000"));
+        SolidColorBrush grayBrush = new((Color)ColorConverter.ConvertFromString("#484848"));
+        SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
         string buttonNormalImage = "pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonNormal.png";
         string buttonPressedImage = "pack://application:,,,/cbhk_environment;component/resources/common/images/ButtonPressed.png";
         ImageBrush buttonNormalBrush = null;
@@ -87,6 +89,12 @@ namespace cbhk_environment.GenerateResultDisplayer
             #endregion
 
             #region 处理新加入的数据
+            ToolTip toolTip = new()
+            {
+                Foreground = whiteBrush,
+                Content = "点击复制",
+                Background = grayBrush
+            };
             //如果不存在相同标签页
             if (!ExistSamePage)
             {
@@ -103,7 +111,7 @@ namespace cbhk_environment.GenerateResultDisplayer
                 firstParagraph.Inlines.Add(new Run(" ------------"));
                 #endregion
                 Paragraph paragraph = new() { TextAlignment = TextAlignment.Left };
-                Run newResult = new() { ToolTip = "点击复制", Text = spawn_result, FontFamily = fontFamily,Cursor = Cursors.Hand };
+                Run newResult = new() { ToolTip = toolTip, Text = spawn_result, FontFamily = fontFamily,Cursor = Cursors.Hand };
                 ToolTipService.SetBetweenShowDelay(newResult, 0);
                 ToolTipService.SetInitialShowDelay(newResult, 0);
                 newResult.MouseEnter += (a, b) =>
@@ -158,7 +166,7 @@ namespace cbhk_environment.GenerateResultDisplayer
                 splitParagraph.Inlines.Add(splitRun);
                 #endregion
                 Paragraph newParagraph = new() { TextAlignment = TextAlignment.Left };
-                Run newResult = new() { ToolTip = "点击复制", FontFamily = fontFamily,Cursor = Cursors.Hand,Text = spawn_result };
+                Run newResult = new() { ToolTip = toolTip, FontFamily = fontFamily,Cursor = Cursors.Hand,Text = spawn_result };
                 newResult.MouseLeftButtonDown += (a, b) => { Clipboard.SetText(spawn_result); };
                 newResult.MouseEnter += (a, b) =>
                 {

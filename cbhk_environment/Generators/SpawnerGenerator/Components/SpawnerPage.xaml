@@ -81,7 +81,7 @@
             </CustomControls:IconTextButtons>
             <CustomControls:RadiusToggleButtons
                 Foreground="White"
-                IsChecked="{Binding ShowResult, Mode=OneWayToSource}"
+                IsChecked="{Binding ShowResult, Mode=TwoWay}"
                 SelectedToggleText="显示结果"
                 Style="{DynamicResource RadiusToggleButton}"
                 ToggleHeight="25"
@@ -400,9 +400,7 @@
                 ModifyForeground="Black"
                 ModifyName="添加"
                 Style="{DynamicResource AccordionStyle}"
-                TitleForeground="Black"
-                ToolTipService.BetweenShowDelay="0"
-                ToolTipService.InitialShowDelay="0">
+                TitleForeground="Black">
                 <CustomControls:Accordion.ToolTip>
                     <ToolTip
                         Background="#484848"
