@@ -32,6 +32,7 @@
         <GeneralTools:UriToBitmapConverter x:Key="UriToBitmapImage" />
         <GeneralTools:ToolTipToString x:Key="ToolTipToString" />
         <GeneralTools:UriHelper x:Key="UriHelper" />
+        <ImageBrush x:Key="EditBox" ImageSource="/cbhk_environment;component/resources/common/images/TextEditBox.png" />
         <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
         <ImageBrush x:Key="LeftArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
@@ -916,10 +917,11 @@
                     <!--  普通属性  -->
                     <DockPanel
                         Grid.Row="0"
-                        Margin="0,0,0,10"
-                        HorizontalAlignment="Left"
+                        Margin="0,0,0,5"
+                        HorizontalAlignment="Stretch"
                         VerticalAlignment="Top"
-                        Background="Transparent">
+                        Background="Transparent"
+                        LastChildFill="True">
                         <TextBlock
                             VerticalAlignment="Center"
                             FontSize="15"
@@ -938,15 +940,10 @@
                                 </behavior:EventTrigger>
                             </behavior:Interaction.Triggers>
                         </ComboBox>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="15"
-                            Foreground="White"
-                            Text="搜索言论目标" />
                         <TextBox
                             Width="150"
-                            Margin="10,0"
-                            BorderBrush="Black"
+                            Margin="10,0,0,0"
+                            BorderBrush="#424242"
                             BorderThickness="1"
                             FontSize="15"
                             Foreground="White">
@@ -958,17 +955,70 @@
                                     <behavior:CallMethodAction MethodName="GossipSearchTargetLoaded" TargetObject="{Binding}" />
                                 </behavior:EventTrigger>
                             </behavior:Interaction.Triggers>
+                            <TextBox.Resources>
+                                <VisualBrush
+                                    x:Key="BackgroundBrush"
+                                    AlignmentX="Left"
+                                    AlignmentY="Center"
+                                    Stretch="UniformToFill">
+                                    <VisualBrush.Visual>
+                                        <Grid
+                                            Width="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualWidth}"
+                                            Height="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualHeight}"
+                                            Background="#383838">
+                                            <TextBlock
+                                                Margin="15,0,0,0"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Background="Transparent"
+                                                FontSize="12"
+                                                Foreground="#D6D6D6"
+                                                Text="搜索言论目标"
+                                                TextAlignment="Center" />
+                                        </Grid>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </TextBox.Resources>
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Background" Value="{StaticResource EditBox}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border
+                                                    x:Name="border"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    SnapsToDevicePixels="True">
+                                                    <ScrollViewer
+                                                        x:Name="PART_ContentHost"
+                                                        Focusable="False"
+                                                        HorizontalScrollBarVisibility="Hidden"
+                                                        VerticalScrollBarVisibility="Hidden" />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="BorderBrush" Value="#424242" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="Text" Value="">
+                                            <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="BorderBrush" Value="#424242" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
                         </TextBox>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="15"
-                            Foreground="White"
-                            Text="搜索物品" />
                         <TextBox
-                            Width="100"
-                            Margin="10,0"
-                            HorizontalAlignment="Left"
-                            BorderBrush="Black"
+                            Margin="10,0,0,0"
+                            BorderBrush="#424242"
                             BorderThickness="1"
                             FontSize="15"
                             Foreground="White"
@@ -978,6 +1028,66 @@
                                     <behavior:CallMethodAction MethodName="TextBox_GotFocus" TargetObject="{Binding}" />
                                 </behavior:EventTrigger>
                             </behavior:Interaction.Triggers>
+                            <TextBox.Resources>
+                                <VisualBrush
+                                    x:Key="BackgroundBrush"
+                                    AlignmentX="Left"
+                                    AlignmentY="Center"
+                                    Stretch="UniformToFill">
+                                    <VisualBrush.Visual>
+                                        <Grid
+                                            Width="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualWidth}"
+                                            Height="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualHeight}"
+                                            Background="#383838">
+                                            <TextBlock
+                                                Margin="15,0,0,0"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Center"
+                                                Background="Transparent"
+                                                FontSize="12"
+                                                Foreground="#D6D6D6"
+                                                Text="搜索物品"
+                                                TextAlignment="Center" />
+                                        </Grid>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </TextBox.Resources>
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="Background" Value="{StaticResource EditBox}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="TextBox">
+                                                <Border
+                                                    x:Name="border"
+                                                    Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    SnapsToDevicePixels="True">
+                                                    <ScrollViewer
+                                                        x:Name="PART_ContentHost"
+                                                        Focusable="False"
+                                                        HorizontalScrollBarVisibility="Hidden"
+                                                        VerticalScrollBarVisibility="Hidden" />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="border" Property="BorderBrush" Value="#424242" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="Text" Value="">
+                                            <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="BorderBrush" Value="#424242" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
                         </TextBox>
                     </DockPanel>
                     <!--  普通属性  -->

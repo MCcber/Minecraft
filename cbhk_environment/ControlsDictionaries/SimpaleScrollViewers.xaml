@@ -327,6 +327,36 @@
                             Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
                             Value="{Binding HorizontalOffset, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}" />
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="ComputedVerticalScrollBarVisibility" Value="Visible" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_VerticalScrollBar" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="False" />
+                                <Condition Property="ComputedVerticalScrollBarVisibility" Value="Visible" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_VerticalScrollBar" Property="Visibility" Value="Hidden" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="ComputedHorizontalScrollBarVisibility" Value="Visible" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_HorizontalScrollBar" Property="Visibility" Value="Visible" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="False" />
+                                <Condition Property="ComputedHorizontalScrollBarVisibility" Value="Visible" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_HorizontalScrollBar" Property="Visibility" Value="Hidden" />
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

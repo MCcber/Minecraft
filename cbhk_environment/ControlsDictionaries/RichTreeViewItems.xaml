@@ -94,24 +94,18 @@
                         </Rectangle>
                         <ToggleButton
                             x:Name="Expander"
-                            Margin="-1,0,0,0"
+                            VerticalAlignment="Top"
                             ClickMode="Press"
                             IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
                             Style="{StaticResource ExpandCollapseToggleStyle}" />
-                        <DockPanel
-                            Name="Bd"
+                        <ContentPresenter
+                            x:Name="PART_Header"
                             Grid.Column="1"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            LastChildFill="False"
-                            SnapsToDevicePixels="True">
-                            <ContentPresenter
-                                x:Name="PART_Header"
-                                Width="Auto"
-                                Height="Auto"
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                ContentSource="Header" />
-                        </DockPanel>
+                            Grid.ColumnSpan="2"
+                            Margin="2,0,0,0"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="Top"
+                            ContentSource="Header" />
                         <ItemsPresenter
                             x:Name="ItemsHost"
                             Grid.Row="1"
@@ -140,15 +134,13 @@
                             <Setter TargetName="PART_Header" Property="MinHeight" Value="19" />
                         </MultiTrigger>-->
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="Bd" Property="Background" Value="#8A8A8A" />
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}" />
+                            <Setter TargetName="grid" Property="Background" Value="#8A8A8A" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsSelected" Value="true" />
                                 <Condition Property="IsSelectionActive" Value="false" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background" Value="Green" />
                             <Setter Property="Foreground" Value="White" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="false">

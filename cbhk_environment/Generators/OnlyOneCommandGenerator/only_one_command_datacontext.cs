@@ -2,7 +2,7 @@
 using cbhk_environment.WindowDictionaries;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
+using ICSharpCode.AvalonEdit;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -74,30 +74,18 @@ namespace cbhk_environment.Generators.OnlyOneCommandGenerator
         /// </summary>
         private void AddOneCommandPageCommand()
         {
-            //ScrollViewer scrollViewer = new ScrollViewer
-            //{
-            //    HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
-            //    VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-            //    Style = Application.Current.Resources["DefaultScrollViewer"] as Style
-            //};
-            RichTextBox richTextBox = new RichTextBox()
+            TextEditor textEditor = new()
             {
-                MinHeight = 318,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
-                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1A1A1A")),
-                Foreground = new SolidColorBrush(Colors.White),
-                BorderThickness = new Thickness(0),
                 FontSize = 15,
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                ShowLineNumbers = true,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent"))
             };
-            EnabledFlowDocument enabledFlowDocument = new EnabledFlowDocument()
-            {
-                LineHeight = 10
-            };
-            richTextBox.Document = enabledFlowDocument;
-            //scrollViewer.Content = richTextBox;
-            RichTabItems tabItem = new RichTabItems
+
+            RichTabItems tabItem = new()
             {
                 Padding = new Thickness(10, 2, 0, 0),
                 FontSize = 12,
@@ -105,7 +93,7 @@ namespace cbhk_environment.Generators.OnlyOneCommandGenerator
                 Header = "OOC",
                 IsContentSaved = true,
                 Style = Application.Current.Resources["RichTabItemStyle"] as Style,
-                Content = richTextBox
+                Content = textEditor
             };
             CurrentItem = tabItem;
             OneCommandTabControl.Items.Add(tabItem);

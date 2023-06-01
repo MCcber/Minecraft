@@ -16,11 +16,15 @@
         <local:HomePageDataContext />
     </Page.DataContext>
 
+    <Page.Resources>
+        <ImageBrush x:Key="EditBox" ImageSource="/cbhk_environment;component/resources/common/images/TextEditBox.png" />
+    </Page.Resources>
+
     <Grid>
         <Grid Panel.ZIndex="1" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="400" />
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Column="0" Margin="10,30,10,10">
                 <TextBlock
@@ -29,30 +33,31 @@
                     Foreground="White"
                     Text="打开近期使用的内容" />
                 <TextBox
-                    Margin="50,30,120,30"
-                    HorizontalAlignment="Stretch"
+                    Width="310"
+                    Margin="50,30,0,0"
+                    HorizontalAlignment="Left"
                     BorderBrush="#424242"
                     CaretBrush="White"
                     FontSize="25"
                     Foreground="White"
-                    Text="{Binding SearchText, Mode=OneWayToSource}">
+                    Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.Resources>
                         <VisualBrush
                             x:Key="BackgroundBrush"
                             AlignmentX="Left"
                             AlignmentY="Center"
-                            Stretch="Uniform">
+                            Stretch="UniformToFill">
                             <VisualBrush.Visual>
                                 <Grid
-                                    Width="300"
-                                    Height="35"
+                                    Width="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualWidth}"
+                                    Height="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualHeight}"
                                     Background="#383838">
                                     <TextBlock
                                         Margin="15,0,0,0"
                                         HorizontalAlignment="Left"
                                         VerticalAlignment="Center"
                                         Background="Transparent"
-                                        FontSize="15"
+                                        FontSize="12"
                                         Foreground="#D6D6D6"
                                         Text="搜索近期使用内容"
                                         TextAlignment="Center" />
@@ -62,45 +67,77 @@
                     </TextBox.Resources>
                     <TextBox.Style>
                         <Style TargetType="TextBox">
-                            <Setter Property="Background" Value="Transparent" />
+                            <Setter Property="Background" Value="{StaticResource EditBox}" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="TextBox">
+                                        <Border
+                                            x:Name="border"
+                                            Background="{TemplateBinding Background}"
+                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            SnapsToDevicePixels="True">
+                                            <ScrollViewer
+                                                x:Name="PART_ContentHost"
+                                                Focusable="False"
+                                                HorizontalScrollBarVisibility="Hidden"
+                                                VerticalScrollBarVisibility="Hidden" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="border" Property="BorderBrush" Value="#424242" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
                             <Style.Triggers>
                                 <Trigger Property="Text" Value="">
                                     <Setter Property="Background" Value="{StaticResource BackgroundBrush}" />
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="BorderBrush" Value="#424242" />
                                 </Trigger>
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
                 </TextBox>
-                <TreeView
-                    Margin="50,10"
-                    Background="Transparent"
-                    BorderThickness="0"
-                    FontSize="20"
-                    Foreground="White"
-                    ItemsSource="{Binding TEST}"
-                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    Style="{DynamicResource TreeViewWithScrollBar}"
-                    VirtualizingStackPanel.IsVirtualizing="True"
-                    VirtualizingStackPanel.VirtualizationMode="Recycling"
-                    Visibility="{Binding RecentItemTreeViewVisibility, Mode=OneWay}" />
-                <ScrollViewer
-                    Margin="20"
-                    HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto">
-                    <ItemsControl
-                        Margin="20"
+                <Grid Margin="50,20">
+                    <TreeView
+                        HorizontalAlignment="Stretch"
                         Background="Transparent"
-                        ItemsSource="{Binding RecentItemSearchResults, Mode=OneWay}"
+                        BorderThickness="0"
+                        Foreground="White"
+                        ItemsSource="{Binding RecentContentDateItemList, IsAsync=True}"
                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.VerticalScrollBarVisibility="Disabled">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <VirtualizingStackPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </ScrollViewer>
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        Style="{DynamicResource TreeViewWithScrollBar}"
+                        VirtualizingStackPanel.IsVirtualizing="True"
+                        VirtualizingStackPanel.VirtualizationMode="Recycling"
+                        Visibility="{Binding RecentItemTreeViewVisibility, Mode=OneWay}">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="MouseLeave">
+                                <behavior:CallMethodAction MethodName="TreeView_MouseLeave" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                    </TreeView>
+                    <ScrollViewer
+                        HorizontalScrollBarVisibility="Disabled"
+                        VerticalScrollBarVisibility="Auto"
+                        Visibility="{Binding SearchResultViewerVisibility, Mode=OneWay}">
+                        <ItemsControl
+                            Width="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualWidth}"
+                            Height="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}"
+                            Background="Transparent"
+                            ItemsSource="{Binding RecentItemSearchResults, Mode=OneWay, IsAsync=True}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
             </StackPanel>
             <StackPanel
                 Grid.Column="1"
@@ -362,7 +399,13 @@
                     <TextBlock
                         Margin="5,0,0,0"
                         Foreground="White"
-                        Text="→" />
+                        Text="→">
+                        <behavior:Interaction.Triggers>
+                            <behavior:EventTrigger EventName="Loaded">
+                                <behavior:CallMethodAction MethodName="RightArrowLoaded" TargetObject="{Binding}" />
+                            </behavior:EventTrigger>
+                        </behavior:Interaction.Triggers>
+                    </TextBlock>
                 </DockPanel>
             </StackPanel>
         </Grid>

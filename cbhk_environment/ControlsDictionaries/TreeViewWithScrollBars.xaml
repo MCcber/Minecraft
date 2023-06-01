@@ -1,11 +1,8 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:CustomControls="clr-namespace:cbhk_environment.CustomControls">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <SolidColorBrush x:Key="ListBorder" Color="#828790" />
 
-    <Style x:Key="RichTreeViewItemContainerTemplate" TargetType="CustomControls:RichTreeViewItems">
+    <Style x:Key="RichTreeViewItemContainerTemplate" TargetType="TreeViewItem">
         <Setter Property="IsExpanded" Value="{Binding IsExpanded, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
         <Setter Property="IsSelected" Value="{Binding IsSelected, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" />
         <Style.Resources>

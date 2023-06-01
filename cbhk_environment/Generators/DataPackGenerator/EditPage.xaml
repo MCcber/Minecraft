@@ -187,7 +187,6 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="5,0"
                 HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
@@ -202,7 +201,6 @@
             <CustomControls:IconTextButtons
                 Width="25"
                 Height="25"
-                Margin="0,0,0,0"
                 HorizontalAlignment="Left"
                 HorizontalContentAlignment="Center"
                 VerticalContentAlignment="Center"
@@ -896,7 +894,6 @@
             </Grid.RowDefinitions>
             <TextBlock
                 Grid.Row="0"
-                Margin="5,0,0,0"
                 Foreground="White"
                 Text="数据包管理器" />
             <TextBox
@@ -904,7 +901,7 @@
                 Padding="2,0,0,0"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Left"
-                BorderBrush="#3D3D3D"
+                BorderBrush="#424242"
                 CaretBrush="White"
                 FontSize="20"
                 Foreground="White"
@@ -914,18 +911,21 @@
                         x:Key="BackgroundBrush"
                         AlignmentX="Left"
                         AlignmentY="Center"
-                        Stretch="None">
+                        Stretch="UniformToFill">
                         <VisualBrush.Visual>
-                            <Grid Background="Transparent">
+                            <Grid
+                                Width="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualWidth}"
+                                Height="{Binding RelativeSource={RelativeSource AncestorType=TextBox}, Path=ActualHeight}"
+                                Background="#383838">
                                 <TextBlock
-                                    Margin="5,0,0,0"
+                                    Margin="15,0,0,0"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
                                     Background="Transparent"
                                     FontSize="12"
                                     Foreground="#D6D6D6"
                                     Text="搜索数据包"
-                                    TextAlignment="Left" />
+                                    TextAlignment="Center" />
                             </Grid>
                         </VisualBrush.Visual>
                     </VisualBrush>

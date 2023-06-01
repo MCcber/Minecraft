@@ -75,7 +75,7 @@
                 <CustomControls:IconTextButtons.ToolTip>
                     <ToolTip
                         Background="#484848"
-                        Content="F5:运行"
+                        Content="保存"
                         Foreground="White" />
                 </CustomControls:IconTextButtons.ToolTip>
             </CustomControls:IconTextButtons>
