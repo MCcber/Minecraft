@@ -21,10 +21,12 @@ namespace cbhk_environment.Generators.TagGenerator
 {
     public partial class tag_datacontext: ObservableObject
     {
-        #region 生成与返回
+        #region 生成、返回等指令
         public RelayCommand RunCommand { get; set; }
 
         public RelayCommand<CommonWindow> ReturnCommand { get; set; }
+        public RelayCommand ImportFromClipboard { get; set; }
+        public RelayCommand ImportFromFile { get; set; }
         #endregion
 
         #region 替换
@@ -41,11 +43,11 @@ namespace cbhk_environment.Generators.TagGenerator
         #endregion
 
         #region 存储最终生成的列表
-        List<string> Blocks = new();
-        List<string> Items = new();
-        List<string> Entities = new();
-        List<string> GameEvent = new();
-        List<string> Biomes = new();
+        public List<string> Blocks = new();
+        public List<string> Items = new();
+        public List<string> Entities = new();
+        public List<string> GameEvent = new();
+        public List<string> Biomes = new();
         #endregion
 
         #region 搜索内容
@@ -236,7 +238,7 @@ namespace cbhk_environment.Generators.TagGenerator
         //对象数据源
         CollectionViewSource TagViewSource = null;
         //标签生成器的过滤类型数据源
-        public static ObservableCollection<string> TypeItemSource = new();
+        public ObservableCollection<string> TypeItemSource = new();
 
         /// <summary>
         /// 生物群系配置文件路径
@@ -273,6 +275,8 @@ namespace cbhk_environment.Generators.TagGenerator
             #region 链接指令
             RunCommand = new RelayCommand(run_command);
             ReturnCommand = new RelayCommand<CommonWindow>(return_command);
+            ImportFromClipboard = new(ImportFromClipboardCommand);
+            ImportFromFile = new(ImportFromFileCommand);
             #endregion
 
             #region 异步载入标签成员
@@ -381,6 +385,37 @@ namespace cbhk_environment.Generators.TagGenerator
                 }
             });
             #endregion
+        }
+
+        /// <summary>
+        /// 从剪切板导入标签数据
+        /// </summary>
+        private void ImportFromClipboardCommand()
+        {
+            ObservableCollection<TagItemTemplate> items = TagItems;
+            tag_datacontext context = this;
+            ExternalDataImportManager.ImportTagDataHandler(Clipboard.GetText(),ref items,ref context,false);
+        }
+
+        /// <summary>
+        /// 从文件导入标签数据
+        /// </summary>
+        private void ImportFromFileCommand()
+        {
+            ObservableCollection<TagItemTemplate> items = TagItems;
+            tag_datacontext context = this;
+            OpenFileDialog dialog = new()
+            {
+                Filter = "Json文件|*.json;",
+                AddExtension = true,
+                DefaultExt = ".json",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                Multiselect = false,
+                RestoreDirectory = true,
+                Title = "请选择一个标签文件"
+            };
+            if (dialog.ShowDialog().Value && File.Exists(dialog.FileName))
+                ExternalDataImportManager.ImportTagDataHandler(dialog.FileName, ref items, ref context);
         }
 
         /// <summary>

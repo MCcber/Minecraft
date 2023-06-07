@@ -170,25 +170,25 @@ namespace cbhk_signin
         {
             FrontWindow = sender as Window;
             //自动登录
-            //SignInTimer.Tick += ThreadTimerCallback;
-            //SignInTimer.IsEnabled = SaveUserPassword;
-            //IsOpenSignIn = !SaveUserPassword;
-            //if (Environment.OSVersion.Version.Major < 10)
-            //{
-            //    cbhk_environment.GeneralTools.Information.MessageDisplayer messageBox = new();
-            //    messageBox.ShowDialog();
-            //}
+            SignInTimer.Tick += ThreadTimerCallback;
+            SignInTimer.IsEnabled = SaveUserPassword;
+            IsOpenSignIn = !SaveUserPassword;
+            if (Environment.OSVersion.Version.Major < 10)
+            {
+                cbhk_environment.GeneralTools.Information.MessageDisplayer messageBox = new();
+                messageBox.ShowDialog();
+            }
 
             #region 调试
-            FrontWindow.ShowInTaskbar = false;
-            FrontWindow.WindowState = WindowState.Minimized;
-            FrontWindow.Opacity = 0;
-            cbhk_environment.MainWindow CBHK = new(StatsUserInfomation())
-            {
-                Topmost = true
-            };
-            CBHK.Show();
-            CBHK.Topmost = false;
+            //FrontWindow.ShowInTaskbar = false;
+            //FrontWindow.WindowState = WindowState.Minimized;
+            //FrontWindow.Opacity = 0;
+            //cbhk_environment.MainWindow CBHK = new(StatsUserInfomation())
+            //{
+            //    Topmost = true
+            //};
+            //CBHK.Show();
+            //CBHK.Topmost = false;
             #endregion
         }
 

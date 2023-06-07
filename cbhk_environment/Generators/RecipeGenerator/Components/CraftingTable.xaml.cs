@@ -428,9 +428,12 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
         {
             if (ExternalData.SelectToken("result") is JToken recipeResult)
             {
-                string itemID = recipeResult.ToString().Replace("minecraft:", "");
+                string itemID = recipeResult.SelectToken("item").ToString().Replace("minecraft:", "");
                 JToken itemCountObj = ExternalData.SelectToken("result.count");
-                Uri iconUri = new(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png");
+                Uri iconUri = null;
+                string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\item_and_block_images\\" + itemID.ToString() + ".png";
+                if (File.Exists(iconPath))
+                iconUri = new(iconPath);
                 string itemName = MainWindow.ItemIdSource.Where(item => item.ComboBoxItemId == itemID.ToString()).Select(item => item.ComboBoxItemText).First();
                 ResultItem.Source = new BitmapImage(iconUri);
                 ResultItem.Tag = new ItemStructure(iconUri, itemID + ":" + itemName);

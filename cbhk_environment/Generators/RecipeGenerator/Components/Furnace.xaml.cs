@@ -216,7 +216,7 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
             string resultItemID = resultItemStructure.IDAndName[..resultItemStructure.IDAndName.IndexOf(':')];
             string cookingTimeData = ",\"cookingtime\":"+int.Parse(Cookingtime.ToString());
             string experienceData = ",\"experience\":"+int.Parse(Experience.ToString()) + "}";
-            string resultData = "\"item\":\"minecraft:" + resultItemID + "\"";
+            string resultData = "\"result\":\"minecraft:" + resultItemID + "\"";
             #endregion
             #endregion
             #region 合并最终结果

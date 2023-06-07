@@ -30,6 +30,8 @@
         <GeneralTools:UriToBitmapConverter x:Key="UriToBitmapImage" />
         <GeneralTools:ToolTipToString x:Key="ToolTipToString" />
         <GeneralTools:UriHelper x:Key="UriHelper" />
+        <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
+        <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
         <ImageBrush x:Key="EditBox" ImageSource="/cbhk_environment;component/resources/common/images/TextEditBox.png" />
         <ImageBrush x:Key="Issue" ImageSource="/cbhk_environment;component/resources/common/images/Issue.png" />
         <ImageBrush x:Key="LeftArrow" ImageSource="/cbhk_environment;component/resources/common/images/IconArrowLeft.png" />
@@ -103,7 +105,7 @@
                 Foreground="White"
                 HeaderHeight="20"
                 HeaderWidth="20"
-                IsChecked="{Binding Replace, Mode=OneWayToSource}"
+                IsChecked="{Binding Replace, Mode=TwoWay}"
                 Style="{DynamicResource TextCheckBox}"
                 ToolTip="Replace"
                 ToolTipService.InitialShowDelay="0"
@@ -153,6 +155,20 @@
                     </behavior:EventTrigger>
                 </behavior:Interaction.Triggers>
             </ComboBox>
+            <CustomControls:IconTextButtons
+                Padding="5"
+                Background="{StaticResource ButtonNormal}"
+                Command="{Binding ImportFromClipboard}"
+                Content="从剪切板导入"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
+            <CustomControls:IconTextButtons
+                Padding="5"
+                Background="{StaticResource ButtonNormal}"
+                Command="{Binding ImportFromFile}"
+                Content="从文件导入"
+                PressedBackground="{StaticResource ButtonPressed}"
+                Style="{DynamicResource IconTextButton}" />
             <TextBox
                 Margin="5,0"
                 HorizontalAlignment="Stretch"

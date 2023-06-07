@@ -209,7 +209,7 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
             ItemStructure resultItemStructure = ResultItem.Tag as ItemStructure;
             string resultItemID = resultItemStructure.IDAndName[..resultItemStructure.IDAndName.IndexOf(':')];
             string countData = ",\"count\":" + int.Parse(count.ToString()) + "}";
-            string resultData = "\"item\":\"minecraft:" + resultItemID + "\"";
+            string resultData = "\"result\":\"minecraft:" + resultItemID + "\"";
             #endregion
             #endregion
             #region 合并最终结果

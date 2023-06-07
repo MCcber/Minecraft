@@ -945,6 +945,7 @@
                             Margin="10,0,0,0"
                             BorderBrush="#424242"
                             BorderThickness="1"
+                            CaretBrush="White"
                             FontSize="15"
                             Foreground="White">
                             <behavior:Interaction.Triggers>
@@ -1020,6 +1021,7 @@
                             Margin="10,0,0,0"
                             BorderBrush="#424242"
                             BorderThickness="1"
+                            CaretBrush="White"
                             FontSize="15"
                             Foreground="White"
                             Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}">

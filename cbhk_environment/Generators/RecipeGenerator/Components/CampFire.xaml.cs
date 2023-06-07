@@ -218,7 +218,7 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
             string resultItemID = resultItemStructure.IDAndName[..resultItemStructure.IDAndName.IndexOf(':')];
             string cookingTimeData = ",\"cookingtime\":" + int.Parse(Cookingtime.ToString());
             string experienceData = ",\"experience\":" + int.Parse(Experience.ToString()) + "}";
-            string resultData = "\"item\":\"minecraft:" + resultItemID + "\"";
+            string resultData = "\"result\":\"minecraft:" + resultItemID + "\"";
             #endregion
             #endregion
             #region 合并最终结果
@@ -326,9 +326,10 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
         public void ResultItem_Loaded(object sender, RoutedEventArgs e)
         {
             ResultItem = sender as Image;
-            ResultItem.Source ??= emptyImage;
             if (ImportMode)
                 ResultItemLoaded();
+            else
+                ResultItem.Source ??= emptyImage;
         }
 
         /// <summary>

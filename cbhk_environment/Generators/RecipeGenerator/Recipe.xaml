@@ -340,6 +340,7 @@
                 Margin="5"
                 VerticalContentAlignment="Center"
                 BorderBrush="#424242"
+                CaretBrush="White"
                 FontSize="20"
                 Foreground="White"
                 Text="{Binding SearchText, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}">

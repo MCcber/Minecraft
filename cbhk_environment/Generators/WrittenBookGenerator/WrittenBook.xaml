@@ -278,9 +278,6 @@
             Style="{DynamicResource IconTextButton}"
             Visibility="Collapsed">
             <behavior:Interaction.Triggers>
-                <behavior:EventTrigger EventName="Click">
-                    <behavior:CallMethodAction MethodName="SignatureAndCloseClicked" TargetObject="{Binding}" />
-                </behavior:EventTrigger>
                 <behavior:EventTrigger EventName="Loaded">
                     <behavior:CallMethodAction MethodName="SignatureAndCloseLoaded" TargetObject="{Binding}" />
                 </behavior:EventTrigger>

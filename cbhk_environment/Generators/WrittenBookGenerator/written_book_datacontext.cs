@@ -897,7 +897,6 @@ namespace cbhk_environment.Generators.WrittenBookGenerator
 
                 page_string = page_string.TrimEnd(',').Trim('\'');
                 result = page_string;
-                //written_box.Document = new EnabledFlowDocument();
                 CommonWindow window = Window.GetWindow(written_box) as CommonWindow;
                 window.DialogResult = true;
             }
@@ -1360,10 +1359,8 @@ namespace cbhk_environment.Generators.WrittenBookGenerator
         /// <param name="e"></param>
         public void SignatureClick(object sender, RoutedEventArgs e)
         {
-            if (signaturePage == null)
-                signaturePage = new SignaturePage();
-            if (signaturePage.DataContext == null)
-                signaturePage.DataContext = this;
+            signaturePage ??= new SignaturePage();
+            signaturePage.DataContext ??= this;
             PageFrame.Content = signaturePage;
             DisplayStylePanel = SignatureButton.Visibility = Visibility.Collapsed;
             signatureCancelButton.Visibility = sureToSignatureButton.Visibility = Visibility.Visible;

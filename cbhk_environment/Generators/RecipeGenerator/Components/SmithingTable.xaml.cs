@@ -154,16 +154,16 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
             if (BaseItem.Tag is ItemStructure baseStructure)
             {
                 baseItemID = baseStructure.IDAndName[..baseStructure.IDAndName.IndexOf(':')];
-                baseData = "\"base\":{\"item\":\"minecraft:" + baseItemID + "\"" + (templateTag.Length > 0 ? ",\"tag\":\"" + templateTag + "\"}," : "},");
+                baseData = "\"base\":{\"item\":\"minecraft:" + baseItemID + "\"" + (BaseTag.Length > 0 ? ",\"tag\":\"" + BaseTag + "\"}," : "},");
             }
             #endregion
             #region 合并修饰数据
             string additionItemID;
             string additionData = "";
-            if (BaseItem.Tag is ItemStructure additionStructure)
+            if (AdditionItem.Tag is ItemStructure additionStructure)
             {
                 additionItemID = additionStructure.IDAndName[..additionStructure.IDAndName.IndexOf(':')];
-                additionData = "\"addition\":{\"item\":\"minecraft:" + additionItemID + "\"" + (templateTag.Length > 0 ? ",\"tag\":\"" + templateTag + "\"}," : "},");
+                additionData = "\"addition\":{\"item\":\"minecraft:" + additionItemID + "\"" + (AdditionTag.Length > 0 ? ",\"tag\":\"" + AdditionTag + "\"}," : "},");
             }
             #endregion
             #region 合并结果数据
@@ -172,7 +172,7 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
             if (ResultItem.Tag is ItemStructure resultItemStructure)
             {
                 resultItemID = resultItemStructure.IDAndName[..resultItemStructure.IDAndName.IndexOf(':')];
-                resultData = "\"result\":{\"item\":\"minecraft:" + resultItemID + "\",Count:" + int.Parse(Count.ToString()) +"}";
+                resultData = "\"result\":{\"item\":\"minecraft:" + resultItemID + "\",\"count\":" + int.Parse(Count.ToString()) +"}";
             }
             #endregion
             #region 合并最终结果
@@ -295,7 +295,6 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
         public void ResultItem_Loaded(object sender, RoutedEventArgs e)
         {
             ResultItem = sender as Image;
-            ResultItem.Source ??= emptyImage;
             if (ImportMode)
             {
                 if (ExternalData.SelectToken("result") is JObject ingredient)
@@ -314,6 +313,8 @@ namespace cbhk_environment.Generators.RecipeGenerator.Components
                     }
                 }
             }
+            else
+                ResultItem.Source ??= emptyImage;
         }
 
         /// <summary>

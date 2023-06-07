@@ -6,6 +6,7 @@ using cbhk_environment.Generators.FireworkRocketGenerator.Components;
 using cbhk_environment.Generators.RecipeGenerator;
 using cbhk_environment.Generators.RecipeGenerator.Components;
 using cbhk_environment.Generators.SpawnerGenerator.Components;
+using cbhk_environment.Generators.TagGenerator;
 using cbhk_environment.Generators.VillagerGenerator;
 using Newtonsoft.Json.Linq;
 using System;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,6 +24,64 @@ namespace cbhk_environment.GeneralTools
 {
     public class ExternalDataImportManager
     {
+        #region 处理导入外部标签
+        public static void ImportTagDataHandler(string filePathOrData, ref ObservableCollection<TagItemTemplate> itemList,ref tag_datacontext context, bool IsPath = true)
+        {
+            MessageDisplayer messageDisplayer = new();
+            messageDisplayerDataContext displayContext = messageDisplayer.DataContext as messageDisplayerDataContext;
+            string data = IsPath ? File.ReadAllText(filePathOrData) : filePathOrData;
+
+            try
+            {
+                JObject content = JObject.Parse(data);
+                if (content.SelectToken("replace") is JToken replace)
+                    context.Replace = replace.ToString().ToString().ToLower() == "true";
+                if(content.SelectToken("values") is JArray valuesArray)
+                {
+                    List<string> values = valuesArray.ToList().ConvertAll(item=>item.ToString().Replace("minecraft:",""));
+                    StringBuilder id = new();
+                    foreach (var item in itemList)
+                    {
+                        id.Clear();
+                        if (item.DisplayText.Contains(' '))
+                            id.Append(item.DisplayText[..item.DisplayText.IndexOf(' ')]);
+                        else
+                            id.Append(item.DisplayText);
+                        item.BeChecked = values.Where(value => value == id.ToString()).Any();
+                        if(item.BeChecked.Value)
+                        {
+                            switch (item.DataType)
+                            {
+                                case "Item":
+                                    context.Items.Add(id.ToString());
+                                    break;
+                                case "Block&Item":
+                                    context.Blocks.Add(id.ToString());
+                                    break;
+                                case "Entity":
+                                    context.Entities.Add(id.ToString());
+                                    break;
+                                case "GameEvent":
+                                    context.GameEvent.Add(id.ToString());
+                                    break;
+                                case "Biome":
+                                    context.Biomes.Add(id.ToString());
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                displayContext.DisplayInfomation = "文件内容格式不合法";
+                messageDisplayer.Icon = displayContext.errorIcon;
+                displayContext.MessageTitle = "导入失败";
+                _ = messageDisplayer.ShowDialog();
+            }
+        }
+        #endregion
+
         #region 处理导入外部配方
         public static void ImportRecipeDataHandler(string filePathOrData, ref recipe_datacontext recipeContext, bool IsPath = true)
         {
@@ -66,7 +126,7 @@ namespace cbhk_environment.GeneralTools
                             break;
                         case "campfire_cooking":
                             {
-                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.Campfire;
                                 Campfire campfire = recipeContext.AddRecipeCommand(type) as Campfire;
                                 campfireDataContext context = campfire.DataContext as campfireDataContext;
                                 context.ImportMode = true;
@@ -75,7 +135,7 @@ namespace cbhk_environment.GeneralTools
                             break;
                         case "smelting":
                             {
-                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.Furnace;
                                 Furnace furnace = recipeContext.AddRecipeCommand(type) as Furnace;
                                 furnaceDataContext context = furnace.DataContext as furnaceDataContext;
                                 context.ImportMode = true;
@@ -84,7 +144,7 @@ namespace cbhk_environment.GeneralTools
                             break;
                         case "smoker":
                             {
-                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.Smoker;
                                 Smoker smoker = recipeContext.AddRecipeCommand(type) as Smoker;
                                 smokerDataContext context = smoker.DataContext as smokerDataContext;
                                 context.ImportMode = true;
@@ -93,7 +153,7 @@ namespace cbhk_environment.GeneralTools
                             break;
                         case "stonecutting":
                             {
-                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.BlastFurnace;
+                                recipe_datacontext.RecipeType type = recipe_datacontext.RecipeType.Stonecutter;
                                 Stonecutter stonecutter = recipeContext.AddRecipeCommand(type) as Stonecutter;
                                 stonecutterDataContext context = stonecutter.DataContext as stonecutterDataContext;
                                 context.ImportMode = true;
