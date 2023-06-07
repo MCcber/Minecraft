@@ -27,7 +27,6 @@
                             x:Name="PART_ContentHost"
                             Focusable="false"
                             HorizontalScrollBarVisibility="Disabled"
-                            
                             VerticalScrollBarVisibility="Disabled" />
                     </Border>
                     <ControlTemplate.Triggers>

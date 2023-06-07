@@ -29,20 +29,6 @@ namespace cbhk_environment.GeneralTools.Information
             }
         }
 
-        private ImageSource messageIcon = null;
-        public ImageSource MessageIcon
-        {
-            get
-            {
-                return messageIcon;
-            }
-            set
-            {
-                messageIcon = value;
-                OnPropertyChanged();
-            }
-        }
-
         public string MessageTitle { get; set; }
 
         #region 确定和取消

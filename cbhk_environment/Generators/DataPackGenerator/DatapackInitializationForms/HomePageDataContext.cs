@@ -1,9 +1,13 @@
 ﻿using cbhk_environment.CustomControls;
+using cbhk_environment.GeneralTools.Information;
 using cbhk_environment.GeneralTools.Time;
+using cbhk_environment.Generators.DataPackGenerator.Components;
 using cbhk_environment.Generators.DataPackGenerator.Components.HomePage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -14,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 
 namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationForms
 {
@@ -24,26 +29,20 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         /// 白色
         /// </summary>
         private SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
-
         /// <summary>
-        /// 近期内容文件列表路径
+        /// 透明
         /// </summary>
-        public string recentContentsFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\DataPack\\data\\recent_contents";
-
-        /// <summary>
-        /// 近期模板文件列表路径
-        /// </summary>
-        public string recentTemplateFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\DataPack\\data\\recent_templates";
+        private SolidColorBrush transparentBrush = new((Color)ColorConverter.ConvertFromString("Transparent"));
 
         /// <summary>
         /// 近期被固定的解决方案
         /// </summary>
-        public string StableRecentSolutionsFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\DataPack\\data\\recent_contents\\stable";
+        public string StableRecentSolutionsFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Datapack\\data\\RecentContents\\stable";
 
         /// <summary>
         /// 近期的非固定解决方案
         /// </summary>
-        public string RecentSolutionsFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\DataPack\\data\\recent_contents";
+        public string RecentSolutionsFolderPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\configs\\Datapack\\data\\RecentContents";
         #endregion
 
         #region 搜索历史解决方案文本
@@ -119,18 +118,18 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         #endregion
 
         #region 近期内容父级日期节点
-        public ObservableCollection<RichTreeViewItems> RecentContentDateItemList { get; set; } = new()
+        public ObservableCollection<TreeViewItem> RecentContentDateItemList { get; set; } = new()
                 {
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "已固定",Tag = "Fixed",IsExpanded = true,Visibility = Visibility.Collapsed},
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "一天内",Tag = "ToDay",IsExpanded = true,Visibility = Visibility.Collapsed},         
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "一天前",Tag = "Yesterday",IsExpanded = true,Visibility = Visibility.Collapsed },        
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "七天内",Tag = "ThisWeek",IsExpanded = true,Visibility = Visibility.Collapsed },        
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "上周",Tag = "LastWeek",IsExpanded = true , Visibility = Visibility.Collapsed},              
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "一月内",Tag = "ThisMonth",IsExpanded = true , Visibility = Visibility.Collapsed},       
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "上个月",Tag = "LastMonth",IsExpanded = true , Visibility = Visibility.Collapsed},       
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "一年内",Tag = "ThisYear",IsExpanded = true , Visibility = Visibility.Collapsed},             
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "去年",Tag = "LastYear",IsExpanded = true , Visibility = Visibility.Collapsed},              
-                    new RichTreeViewItems() { Margin = new Thickness(0,2,0,0), Header = "很久前",Tag = "LongTime",IsExpanded = true , Visibility = Visibility.Collapsed}
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "已固定",Tag = "Fixed",IsExpanded = true,Visibility = Visibility.Collapsed},
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "一天内",Tag = "ToDay",IsExpanded = true,Visibility = Visibility.Collapsed},         
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "一天前",Tag = "Yesterday",IsExpanded = true,Visibility = Visibility.Collapsed },        
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "七天内",Tag = "ThisWeek",IsExpanded = true,Visibility = Visibility.Collapsed },        
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "上周",Tag = "LastWeek",IsExpanded = true , Visibility = Visibility.Collapsed},              
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "一月内",Tag = "ThisMonth",IsExpanded = true , Visibility = Visibility.Collapsed},       
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "上个月",Tag = "LastMonth",IsExpanded = true , Visibility = Visibility.Collapsed},       
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "一年内",Tag = "ThisYear",IsExpanded = true , Visibility = Visibility.Collapsed},             
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "去年",Tag = "LastYear",IsExpanded = true , Visibility = Visibility.Collapsed},              
+                    new TreeViewItem() { Margin = new Thickness(0,2,0,0), Header = "很久前",Tag = "LongTime",IsExpanded = true , Visibility = Visibility.Collapsed}
                 };
         #endregion
 
@@ -166,7 +165,7 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         #endregion
 
         #region 主窗体引用
-        DataPack dataPack = null;
+        Datapack dataPack = null;
         #endregion
 
         public HomePageDataContext()
@@ -187,8 +186,21 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         public async void RightArrowLoaded(object sender,RoutedEventArgs e)
         {
             TextBlock textBlock = sender as TextBlock;
-            dataPack = Window.GetWindow(textBlock) as DataPack;
+            dataPack = Window.GetWindow(textBlock) as Datapack;
+            datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
+            //未加载过模板窗体说明需要载入近期解决方案
+            if(context.templateSelectPage == null)
             await RecentSolutionsLoaded();
+            #region 载入分页框架
+            DependencyObject frame = null;
+            if (frame == null)
+            {
+                frame = VisualTreeHelper.GetParent(context.homePage);
+                while (frame == null || frame is ContentPresenter)
+                    frame = VisualTreeHelper.GetParent(frame);
+                context.frame = frame;
+            }
+            #endregion
         }
 
         /// <summary>
@@ -197,6 +209,7 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         /// <returns></returns>
         private async Task RecentSolutionsLoaded()
         {
+            datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
             BindingOperations.EnableCollectionSynchronization(RecentContentDateItemList, RecentContentLoadLock);
             await Task.Run(() =>
             {
@@ -211,7 +224,6 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
                             RecentContentDateItemList.All(item =>
                             {
                                 item.Foreground = whiteBrush;
-                                item.Style = Application.Current.Resources["RichTreeViewItems"] as Style;
                                 return true;
                             });
                             for (int i = 0; i < stableContents.Length; i++)
@@ -223,22 +235,25 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
                                 };
                                 RotateTransform rotateTransform = recentTreeItem.pinBox.RenderTransform as RotateTransform;
                                 rotateTransform.Angle = 0;
-                                recentTreeItem.Title.Text = Path.GetFileNameWithoutExtension(stableContents[i]);
+                                recentTreeItem.Title.Text = Path.GetFileName(stableContents[i]);
                                 recentTreeItem.Path.Text = stableContents[i];
                                 recentTreeItem.ModifyDate.Text = File.GetLastWriteTime(stableContents[i]).ToString("yyyy/M/d HH:mm");
                                 RichTreeViewItems newNode = new()
                                 {
-                                    Margin = new Thickness(0, 0, 0, 10),
                                     Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                                    Margin = new Thickness(0, 0, 0, 10),
                                     Header = recentTreeItem,
                                     Foreground = whiteBrush,
                                     ToolTip = "打开解决方案\r\n" + stableContents[i],
-                                    Uid = stableContents[i]
+                                    Uid = stableContents[i],
+                                    Tag = stableContents[i]
                                 };
+                                newNode.MouseLeftButtonUp += OpenSolution_MouseLeftButtonUp;
                                 ToolTipService.SetBetweenShowDelay(newNode, 0);
                                 ToolTipService.SetInitialShowDelay(newNode, 0);
                                 RecentContentDateItemList[0].Items.Add(newNode);
                             }
+                            if(RecentContentDateItemList[0].Items.Count > 0)
                             RecentContentDateItemList[0].Visibility = Visibility.Visible;
                         });
                     }
@@ -256,20 +271,22 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
                                     HorizontalAlignment = HorizontalAlignment.Left,
                                     VerticalAlignment = VerticalAlignment.Top
                                 };
-                                recentTreeItem.Title.Text = Path.GetFileNameWithoutExtension(Contents[i]);
+                                recentTreeItem.Title.Text = Path.GetFileName(Contents[i]);
                                 recentTreeItem.Path.Text = Contents[i];
                                 recentTreeItem.ModifyDate.Text = File.GetLastWriteTime(Contents[i]).ToString("yyyy/M/d HH:mm");
                                 RichTreeViewItems newNode = new()
                                 {
-                                    Margin = new Thickness(0, 0, 0, 10),
                                     Style = Application.Current.Resources["RichTreeViewItems"] as Style,
+                                    Margin = new Thickness(0, 0, 0, 10),
                                     Header = recentTreeItem,
                                     Foreground = whiteBrush,
                                     ToolTip = "打开解决方案\r\n" + Contents[i],
-                                    Uid = Contents[i]
+                                    Uid = Contents[i],
+                                    Tag = Contents[i]
                                 };
                                 ToolTipService.SetBetweenShowDelay(newNode, 0);
                                 ToolTipService.SetInitialShowDelay(newNode, 0);
+                                newNode.MouseLeftButtonUp += OpenSolution_MouseLeftButtonUp;
                                 string timeMarker = TimeDifferenceCalculater.Calculate(File.GetLastWriteTime(Contents[i]));
                                 RecentContentDateItemList.All(item =>
                                 {
@@ -289,6 +306,50 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         }
 
         /// <summary>
+        /// 左击抬起后打开选中的解决方案
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenSolution_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            TreeViewItem treeViewItem = sender as TreeViewItem;
+            RecentTreeItem recentTreeItem = treeViewItem.Header as RecentTreeItem;
+            if (recentTreeItem.MouseEnterPinZone) return;
+            FileInfo fileInfo = new(treeViewItem.Uid);
+            if (File.Exists(treeViewItem.Uid) && fileInfo.Length > 0)
+            {
+                List<TreeViewItem> result = ContentReader.ReadTheContentOfTheSpecifiedPath(treeViewItem.Uid);
+                NavigationToEditPage();
+                datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
+                EditPageDataContext editContext = context.editPage.DataContext as EditPageDataContext;
+                foreach (var item in result)
+                    editContext.DatapackTreeViewItems.Add(item);
+                dataPack.Hide();
+                dataPack.Width = 1024;
+                dataPack.Height = 700;
+                dataPack.Topmost = true;
+                dataPack.Show();
+                dataPack.Topmost = false;
+            }
+            else
+            {
+                MessageDisplayer messageDisplayer = new();
+                messageDisplayerDataContext displayContext = messageDisplayer.DataContext as messageDisplayerDataContext;
+                messageDisplayer.Icon = displayContext.errorIcon;
+                messageDisplayer.Title = "无法打开";
+                displayContext.DisplayInfomation = "所选解决方案不存在,是否删除?";
+                if(messageDisplayer.ShowDialog().Value)
+                {
+                    File.Delete(RecentSolutionsFolderPath + "\\" + recentTreeItem.Title.Text);
+                    TreeViewItem timeMarkerItem = treeViewItem.Parent as TreeViewItem;
+                    timeMarkerItem.Items.Remove(treeViewItem);
+                    if (timeMarkerItem.Items.Count == 0)
+                        timeMarkerItem.Visibility = Visibility.Collapsed;
+                }
+            }
+        }
+
+        /// <summary>
         /// 鼠标离开近期解决方案视图后取消选中成员
         /// </summary>
         /// <param name="sender"></param>
@@ -300,11 +361,76 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         }
 
         /// <summary>
+        /// 导航至编辑页
+        /// </summary>
+        private async void NavigationToEditPage()
+        {
+            datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
+            context.editPage ??= new();
+            NavigationService.GetNavigationService(context.frame).Navigate(context.editPage);
+            await ReCalculateSolutionPath();
+        }
+
+        /// <summary>
+        /// 重新计算需要固定和不需要固定的解决方案路径
+        /// </summary>
+        /// <returns></returns>
+        public async Task ReCalculateSolutionPath()
+        {
+            await dataPack.Dispatcher.InvokeAsync(() =>
+            {
+                for (int i = 0; i < RecentContentDateItemList.Count; i++)
+                {
+                    for (int j = 0; j < RecentContentDateItemList[i].Items.Count; j++)
+                    {
+                        RichTreeViewItems currentItem = RecentContentDateItemList[i].Items[j] as RichTreeViewItems;
+                        if (currentItem.Uid != currentItem.Tag.ToString())
+                            File.Move(currentItem.Tag.ToString(), currentItem.Uid);
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// 继续但无需代码
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void ContinueButNotNeedCode_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            NavigationToEditPage();
+        }
+
+        /// <summary>
+        /// 循环载入本地数据包文件
+        /// </summary>
+        /// <param name="filePathes"></param>
+        /// <returns></returns>
+        private async Task LoadLocalFileLoop(string[] filePathes)
+        {
+            NavigationToEditPage();
+            datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
+            EditPageDataContext editContext = context.editPage.DataContext as EditPageDataContext;
+            await dataPack.Dispatcher.InvokeAsync(() =>
+            {
+                foreach (string fileName in filePathes)
+                {
+                    string externsion = Path.GetExtension(fileName);
+                    if ((!File.Exists(fileName) || !ContentReader.ReadableFileExtensionList.Contains(externsion)) && !Directory.Exists(fileName))
+                        continue;
+                    List<TreeViewItem> result = ContentReader.ReadTheContentOfTheSpecifiedPath(fileName);
+                    foreach (var item in result)
+                        editContext.DatapackTreeViewItems.Add(item);
+                }
+            });
+        }
+
+        /// <summary>
         /// 打开本地文件
         /// </summary>
-        private void OpenLocalFileCommand()
+        private async void OpenLocalFileCommand()
         {
-            Microsoft.Win32.OpenFileDialog fileBrowser = new()
+            OpenFileDialog fileBrowser = new()
             {
                 Multiselect = true,
                 RestoreDirectory = true,
@@ -313,26 +439,14 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
             };
 
             if (fileBrowser.ShowDialog() == true)
-            {
-            }
-        }
-
-        /// <summary>
-        ///  创建本地数据包
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void CreateLocalDataPackCommand()
-        {
-            //templateSelectPage ??= new TemplateSelectPage();
-            //templateSelectPage.DataContext ??= new TemplateSelectDataContext();
-            //PageFrame.Content = templateSelectPage;
+                await LoadLocalFileLoop(fileBrowser.FileNames);
         }
 
         /// <summary>
         /// 打开本地文件夹
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        private void OpenLocalFolderCommand()
+        private async void OpenLocalFolderCommand()
         {
             System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
             {
@@ -344,6 +458,8 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
             };
             if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK && Directory.Exists(folderBrowserDialog.SelectedPath))
             {
+                string[] files = new string[] { folderBrowserDialog.SelectedPath };
+                await LoadLocalFileLoop(files);
             }
         }
 
@@ -352,18 +468,46 @@ namespace cbhk_environment.Generators.DataPackGenerator.DatapackInitializationFo
         /// </summary>
         private void OpenLocalProjectCommand()
         {
-            System.Windows.Forms.FolderBrowserDialog folderBrowserDialog = new()
+            System.Windows.Forms.OpenFileDialog openFileDialog = new()
             {
-                Description = "请选择要编辑的项目路径",
-                UseDescriptionForTitle = true,
+                Title = "请选择要编辑的项目路径",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                Multiselect = false,
                 ShowHiddenFiles = true,
-                ShowNewFolderButton = true
+                Filter = "解决方案|*.sln;",
+                RestoreDirectory = true
             };
-
-            if (folderBrowserDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK && Directory.Exists(folderBrowserDialog.SelectedPath))
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK && File.Exists(openFileDialog.FileName))
             {
+                dataPack.Hide();
+                datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
+                context.editPage ??= new EditPage();
+                EditPageDataContext editContext = context.editPage.DataContext as EditPageDataContext;
+                NavigationToEditPage();
+                List<TreeViewItem> result = ContentReader.ReadTheContentOfTheSpecifiedPath(openFileDialog.FileName);
+                foreach (var item in result)
+                {
+                    if(File.Exists(item.Uid))
+                    item.MouseDoubleClick += editContext.DoubleClickAnalysisAndOpen;
+                    editContext.DatapackTreeViewItems.Add(item);
+                }
+                dataPack.Width = 1024;
+                dataPack.Height = 700;
+                dataPack.Topmost = true;
+                dataPack.Show();
+                dataPack.Topmost = false;
             }
+        }
+
+        /// <summary>
+        ///  创建本地数据包
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
+        private void CreateLocalDataPackCommand()
+        {
+            datapack_datacontext context = dataPack.DataContext as datapack_datacontext;
+            context.templateSelectPage ??= new();
+            NavigationService.GetNavigationService(context.frame)?.Navigate(context.templateSelectPage);
         }
     }
 }

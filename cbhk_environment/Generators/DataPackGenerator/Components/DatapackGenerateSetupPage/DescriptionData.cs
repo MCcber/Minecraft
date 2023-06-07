@@ -1,4 +1,4 @@
-﻿namespace cbhk_environment.Generators.DataPackGenerator.Components
+﻿namespace cbhk_environment.Generators.DataPackGenerator.Components.DatapackGenerateSetupPage
 {
     public class DescriptionData
     {

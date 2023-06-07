@@ -1,5 +1,5 @@
 ﻿<local_window:CommonWindow
-    x:Class="cbhk_environment.Generators.DataPackGenerator.DataPack"
+    x:Class="cbhk_environment.Generators.DataPackGenerator.Datapack"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:PageList="clr-namespace:cbhk_environment.Generators.DataPackGenerator.DatapackInitializationForms"
@@ -24,9 +24,15 @@
         <local_datacontext:datapack_datacontext />
     </Window.DataContext>
 
+    <behavior:Interaction.Triggers>
+        <behavior:EventTrigger EventName="Closing">
+            <behavior:CallMethodAction MethodName="Datapack_Closing" TargetObject="{Binding}" />
+        </behavior:EventTrigger>
+    </behavior:Interaction.Triggers>
+
     <Grid>
         <ContentControl>
-            <Frame Content="{Binding homePage}" />
+            <Frame Content="{Binding homePage}" NavigationUIVisibility="Hidden" />
         </ContentControl>
     </Grid>
 </local_window:CommonWindow>

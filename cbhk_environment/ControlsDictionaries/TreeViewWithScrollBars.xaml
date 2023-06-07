@@ -16,17 +16,10 @@
     </Style>
 
     <Style x:Key="TreeViewWithScrollBar" TargetType="{x:Type TreeView}">
-        <!--<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}" />-->
-        <!--<Setter Property="BorderBrush" Value="{StaticResource ListBorder}" />-->
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="1" />
-        <!--<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />-->
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-        <!--        <Setter Property="ItemContainerStyle" Value="{DynamicResource TreeViewWithScrollBarItemStyle}" />-->
         <Setter Property="ItemContainerStyle" Value="{DynamicResource RichTreeViewItemContainerTemplate}" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="ScrollViewer.PanningMode" Value="Both" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+        <!--<Setter Property="Stylus.IsFlicksEnabled" Value="False" />-->
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Template">
             <Setter.Value>
@@ -40,14 +33,13 @@
                             x:Name="_tv_scrollviewer_"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
-                            CanContentScroll="false"
-                            Focusable="false"
                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                             RenderOptions.BitmapScalingMode="NearestNeighbor"
                             RenderOptions.ClearTypeHint="Enabled"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             UseLayoutRounding="True"
-                            VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                            VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
+                            VirtualizingPanel.IsVirtualizing="True">
                             <ItemsPresenter />
                         </ScrollViewer>
                     </Border>
@@ -55,9 +47,9 @@
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
                         </Trigger>
-                        <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="true">
+                        <!--<Trigger Property="VirtualizingPanel.IsVirtualizing" Value="true">
                             <Setter TargetName="_tv_scrollviewer_" Property="CanContentScroll" Value="true" />
-                        </Trigger>
+                        </Trigger>-->
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -1,4 +1,5 @@
 ﻿using cbhk_environment.GeneralTools;
+using cbhk_environment.GeneralTools.Information;
 using cbhk_environment.Generators.EntityGenerator;
 using cbhk_environment.Generators.EntityGenerator.Components;
 using Newtonsoft.Json.Linq;
@@ -40,16 +41,33 @@ namespace cbhk_environment.Generators.SpawnerGenerator.Components
         /// <param name="e"></param>
         private void ImportFromClipboard_Click(object sender, RoutedEventArgs e)
         {
+            Button button = sender as Button;
+            Spawner spawner = Window.GetWindow(button) as Spawner;
             string data = ExternalDataImportManager.GetEntityDataHandler(Clipboard.GetText(),false);
             Tag = data;
-            string id = JObject.Parse(data)["id"].ToString().Replace("minecraft:","");
-            string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + ".png";
-            if (!File.Exists(iconPath))
-                iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + "_spawn_egg.png";
-            if (File.Exists(iconPath))
-                EntityIcon.Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute));
-            else
-                EntityIcon.Source = null;
+
+            try
+            {
+                string id = JObject.Parse(data)["id"].ToString().Replace("minecraft:", "");
+                string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + ".png";
+                if (!File.Exists(iconPath))
+                    iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + "_spawn_egg.png";
+                if (File.Exists(iconPath))
+                    EntityIcon.Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute));
+                else
+                    EntityIcon.Source = null;
+            }
+            catch
+            {
+                MessageDisplayer messageDisplayer = new()
+                {
+                    Icon = spawner.Icon,
+                    Title = "导入失败"
+                };
+                messageDisplayerDataContext context = messageDisplayer.DataContext as messageDisplayerDataContext;
+                context.DisplayInfomation = "剪切板内容与实体无关或内容有误";
+                messageDisplayer.ShowDialog();
+            }
         }
 
         /// <summary>
@@ -72,14 +90,30 @@ namespace cbhk_environment.Generators.SpawnerGenerator.Components
                 Tag = data;
                 if (File.Exists(openFileDialog.FileName))
                 {
-                    string id = JObject.Parse(data)["id"].ToString().Replace("minecraft:", "");
-                    string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + ".png";
-                    if (!File.Exists(iconPath))
-                        iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + "_spawn_egg.png";
-                    if (File.Exists(iconPath))
-                        EntityIcon.Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute));
-                    else
-                        EntityIcon.Source = null;
+                    try
+                    {
+                        string id = JObject.Parse(data)["id"].ToString().Replace("minecraft:", "");
+                        string iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + ".png";
+                        if (!File.Exists(iconPath))
+                            iconPath = AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + id + "_spawn_egg.png";
+                        if (File.Exists(iconPath))
+                            EntityIcon.Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute));
+                        else
+                            EntityIcon.Source = null;
+                    }
+                    catch
+                    {
+                        Button button = sender as Button;
+                        Spawner spawner = Window.GetWindow(button) as Spawner;
+                        MessageDisplayer messageDisplayer = new()
+                        {
+                            Icon = spawner.Icon,
+                            Title = "导入失败"
+                        };
+                        messageDisplayerDataContext context = messageDisplayer.DataContext as messageDisplayerDataContext;
+                        context.DisplayInfomation = "剪切板内容与实体无关或内容有误";
+                        messageDisplayer.ShowDialog();
+                    }
                 }
             }
         }
@@ -91,8 +125,8 @@ namespace cbhk_environment.Generators.SpawnerGenerator.Components
         /// <param name="e"></param>
         private void Spawn_Click(object sender, RoutedEventArgs e)
         {
-            EntityGenerator.Entity entity = new();
-            EntityGenerator.entity_datacontext context = entity.DataContext as EntityGenerator.entity_datacontext;
+            Entity entity = new();
+            entity_datacontext context = entity.DataContext as entity_datacontext;
             entityPagesDataContext pageContext = (context.EntityPageList[0].Content as EntityPages).DataContext as entityPagesDataContext;
             pageContext.UseForTool = true;
             if (entity.ShowDialog().Value)

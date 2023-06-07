@@ -202,7 +202,7 @@ namespace cbhk_environment.Distributor
         /// </summary>
         private void StartDatapacksGeneratorCommand()
         {
-            Generators.DataPackGenerator.DataPack dataPack = new Generators.DataPackGenerator.DataPack(cbhk);
+            Generators.DataPackGenerator.Datapack dataPack = new Generators.DataPackGenerator.Datapack(cbhk);
             SetCBHKState();
             dataPack.Topmost = true;
             dataPack.Show();

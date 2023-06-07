@@ -77,7 +77,10 @@
                     Interval="50"
                     IsTabStop="False">
                     <Viewbox>
-                        <Path Data="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z" Fill="#A49E9C" />
+                        <Path
+                            Margin="0,0,-2.5,0"
+                            Data="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z"
+                            Fill="#A49E9C" />
                     </Viewbox>
                 </RepeatButton>
             </Border>
@@ -122,9 +125,9 @@
                 VerticalAlignment="Center"
                 Background="Transparent">
                 <RepeatButton
-                    Width="10"
+                    Width="8"
                     Height="18"
-                    Margin="0,-3,0,0"
+                    Margin="0,0,0,0"
                     Background="Transparent"
                     BorderThickness="0"
                     Command="ScrollBar.LineRightCommand"
@@ -132,7 +135,16 @@
                     Interval="50"
                     IsTabStop="False">
                     <Viewbox>
-                        <Path Data="M246.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-128-128c-9.2-9.2-22.9-11.9-34.9-6.9s-19.8 16.6-19.8 29.6l0 256c0 12.9 7.8 24.6 19.8 29.6s25.7 2.2 34.9-6.9l128-128z" Fill="#A49E9C" />
+                        <Path
+                            Margin="0,0,0,0"
+                            Data="M9.4 278.6c-12.5-12.5-12.5-32.8 0-45.3l128-128c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 256c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-128-128z"
+                            Fill="#A49E9C" />
+                        <Viewbox.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5" />
+                        </Viewbox.RenderTransformOrigin>
+                        <Viewbox.RenderTransform>
+                            <RotateTransform Angle="180" />
+                        </Viewbox.RenderTransform>
                     </Viewbox>
                 </RepeatButton>
             </Border>
@@ -181,7 +193,10 @@
                     Interval="50"
                     IsTabStop="False">
                     <Viewbox>
-                        <Path Data="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z" Fill="#A49E9C" />
+                        <Path
+                            Margin="0,-2.5,0,0"
+                            Data="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            Fill="#A49E9C" />
                     </Viewbox>
                 </RepeatButton>
             </Border>
@@ -231,7 +246,16 @@
                     Interval="50"
                     IsTabStop="False">
                     <Viewbox>
-                        <Path Data="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z" Fill="#A49E9C" />
+                        <Path
+                            Margin="0,0,0,-2.5"
+                            Data="M182.6 137.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-9.2 9.2-11.9 22.9-6.9 34.9s16.6 19.8 29.6 19.8H288c12.9 0 24.6-7.8 29.6-19.8s2.2-25.7-6.9-34.9l-128-128z"
+                            Fill="#A49E9C" />
+                        <Viewbox.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5" />
+                        </Viewbox.RenderTransformOrigin>
+                        <Viewbox.RenderTransform>
+                            <RotateTransform Angle="180" />
+                        </Viewbox.RenderTransform>
                     </Viewbox>
                 </RepeatButton>
             </Border>

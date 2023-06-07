@@ -1,5 +1,18 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <ImageBrush x:Key="Test" />
+    <DrawingImage x:Key="UnknownFile">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="White" Geometry="M320 464c8.8 0 16-7.2 16-16V160H256c-17.7 0-32-14.3-32-32V48H64c-8.8 0-16 7.2-16 16V448c0 8.8 7.2 16 16 16H320zM0 64C0 28.7 28.7 0 64 0H229.5c17 0 33.3 6.7 45.3 18.7l90.5 90.5c12 12 18.7 28.3 18.7 45.3V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V64z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    <DrawingImage x:Key="Solution">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="LightGreen" Geometry="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384v38.6C310.1 219.5 256 287.4 256 368c0 59.1 29.1 111.3 73.7 143.3c-3.2 .5-6.4 .7-9.7 .7H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM288 368a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm211.3-43.3c-6.2-6.2-16.4-6.2-22.6 0L416 385.4l-28.7-28.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6l40 40c6.2 6.2 16.4 6.2 22.6 0l72-72c6.2-6.2 6.2-16.4 0-22.6z" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
     <DrawingImage x:Key="CheckedIn">
         <DrawingImage.Drawing>
             <DrawingGroup>
@@ -19,7 +32,8 @@
     <DrawingImage x:Key=".json">
         <DrawingImage.Drawing>
             <DrawingGroup>
-                <ImageDrawing ImageSource="/cbhk_environment;component/Generators/DataPackGenerator/Images/mcfIcon.png" Rect="0 0 10 10" />
+                <!--<ImageDrawing ImageSource="/cbhk_environment;component/Generators/DataPackGenerator/Images/mcfIcon.png" Rect="0 0 10 10" />-->
+                <GeometryDrawing Brush="White" Geometry="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM112 256H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16z" />
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
@@ -114,7 +128,7 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
-    <DrawingImage x:Key="folder_closed">
+    <DrawingImage x:Key="FolderClosed">
         <DrawingImage.Drawing>
             <DrawingGroup>
                 <ImageDrawing ImageSource="/cbhk_environment;component/Generators/DataPackGenerator/Images/folderIcon.png" Rect="0 0 10 10" />
@@ -122,14 +136,14 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
-    <DrawingImage x:Key="folder_open">
+    <DrawingImage x:Key="FolderOpen">
         <DrawingImage.Drawing>
             <DrawingGroup>
                 <GeometryDrawing Brush="#FFE39E" Geometry="M88.7 223.8L0 375.8V96C0 60.7 28.7 32 64 32H181.5c17 0 33.3 6.7 45.3 18.7l26.5 26.5c12 12 28.3 18.7 45.3 18.7H416c35.3 0 64 28.7 64 64v32H144c-22.8 0-43.8 12.1-55.3 31.8zm27.6 16.1C122.1 230 132.6 224 144 224H544c11.5 0 22 6.1 27.7 16.1s5.7 22.2-.1 32.1l-112 192C453.9 474 443.4 480 432 480H32c-11.5 0-22-6.1-27.7-16.1s-5.7-22.2 .1-32.1l112-192z" />
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
-    <DrawingImage x:Key="datapack">
+    <DrawingImage x:Key="Datapack">
         <DrawingImage.Drawing>
             <DrawingGroup>
                 <ImageDrawing ImageSource="/cbhk_environment;component/Generators/DataPackGenerator/Images/dataPackIcon.png" Rect="0 0 10 10" />

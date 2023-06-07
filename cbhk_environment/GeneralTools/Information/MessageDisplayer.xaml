@@ -12,7 +12,6 @@
     Width="300"
     Height="180"
     Background="#2F2F2F"
-    Closing="CommonWindow_Closing"
     ResizeMode="NoResize"
     WindowStyle="None"
     mc:Ignorable="d">
@@ -33,16 +32,6 @@
             <RowDefinition Height="2*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Image
-            Grid.Row="0"
-            Grid.Column="0"
-            RenderOptions.BitmapScalingMode="NearestNeighbor"
-            RenderOptions.ClearTypeHint="Auto"
-            Source="{Binding MessageIcon, Mode=OneWay}" />
         <ScrollViewer
             Grid.Row="0"
             Grid.Column="1"

@@ -1,61 +1,54 @@
 ﻿using cbhk_environment.CustomControls;
 using cbhk_environment.GeneralTools;
 using cbhk_environment.Generators.DataPackGenerator.Components;
-using cbhk_environment.Generators.DataPackGenerator.DatapackInitializationForms;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
+using ICSharpCode.AvalonEdit;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace cbhk_environment.Generators.DataPackGenerator
 {
-    public class EditDataContext : ObservableObject
+    public class EditPageDataContext : ObservableObject
     {
-        //获取文本编辑区的引用
-        public static TabControl FileModifyZone = null;
-
-        //获取内容视图引用
-        public static TreeView ContentView = null;
-
         #region 数据包搜索文本框内容
         private string datapackSeacherValue = "";
         public string DatapackSeacherValue
         {
-            get
-            {
-                return datapackSeacherValue;
-            }
+            get => datapackSeacherValue;
             set
             {
-                datapackSeacherValue = value;
+                SetProperty(ref datapackSeacherValue, value);
+                #region 搜索拥有指定数据的节点
+
+                #endregion
             }
         }
         #endregion
 
-        #region 当前数据包版本
-        public ObservableCollection<string> AddFileSearchFileTypeSource { get; set; } = new ObservableCollection<string> { };
+        #region 文本编辑器标签页数据源、数据包管理器树视图数据源
+        public ObservableCollection<RichTabItems> FunctionModifyTabItems { get; set; } = new();
+        public ObservableCollection<TreeViewItem> DatapackTreeViewItems { get; set; } = new();
         #endregion
 
-        /// <summary>
-        /// 文件模板成员列表
-        /// </summary>
-        //public ObservableCollection<TemplateItems> TemplateItemList { get; set; } = new ObservableCollection<TemplateItems> { };
+        #region 当前选中的文本编辑器
+        private RichTabItems selectedFileItem = null;
+        public RichTabItems SelectedFileItem
+        {
+            get => selectedFileItem;
+            set => SetProperty(ref selectedFileItem, value);
+        }
+        #endregion
 
-        /// <summary>
-        /// 左侧树视图模板类型成员
-        /// </summary>
-        public static ObservableCollection<RichTreeViewItems> TemplateTypeItemList { get; set; } = new ObservableCollection<RichTreeViewItems> { };
-
-        #region 生成与返回
-        public RelayCommand Run { get; set; }
-
-        public RelayCommand<FrameworkElement> Return { get; set; }
+        #region 数据包管理器树引用
+        TreeView ContentView = null;
         #endregion
 
         #region 数据包管理器右键菜单
@@ -72,71 +65,6 @@ namespace cbhk_environment.Generators.DataPackGenerator
         public RelayCommand Attribute { get; set; }
         #endregion
 
-        #region 文件添加窗体.文件名称
-        private static string newFileName = "File1.json";
-        public string NewFileName
-        {
-            get
-            {
-                return newFileName;
-            }
-            set
-            {
-                newFileName = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
-        #region 确定/取消添加文件
-        private bool addFileFormResult = false;
-        public bool AddFileFormResult
-        {
-            get
-            {
-                return addFileFormResult;
-            }
-            set
-            {
-                addFileFormResult = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public RelayCommand<Window> SureToAddFile { get; set; }
-        public RelayCommand<Window> CancelToAddFile { get; set; }
-        #endregion
-
-        #region 新建文件窗体右侧文件功能类型和描述
-        private string rightSideFileType = "";
-        public string RightSideFileType
-        {
-            get
-            {
-                return rightSideFileType.TrimStart('.');
-            }
-            set
-            {
-                rightSideFileType = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private string rightSideFileDescription = "";
-        public string RightSideFileDescription
-        {
-            get
-            {
-                return rightSideFileDescription.TrimStart('.');
-            }
-            set
-            {
-                rightSideFileDescription = value;
-                OnPropertyChanged();
-            }
-        }
-        #endregion
-
         /// <summary>
         /// 记录剪切状态
         /// </summary>
@@ -146,12 +74,14 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         RichTreeViewItems BeCutNode = null;
 
-        public EditDataContext()
+        #region 画刷
+        private SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
+        private SolidColorBrush transparentBrush = new((Color)ColorConverter.ConvertFromString("Transparent"));
+        #endregion
+
+        public EditPageDataContext()
         {
             #region 链接指令
-            //RunCommand = new RelayCommand(run_command);
-            //ReturnCommand = new RelayCommand<FrameworkElement>(return_command);
-
             AddFile = new RelayCommand(AddFileCommand);
             AddFolder = new RelayCommand(AddFolderCommand);
             Cut = new RelayCommand(CutCommand);
@@ -163,52 +93,46 @@ namespace cbhk_environment.Generators.DataPackGenerator
             OpenWithTerminal = new RelayCommand(OpenWithTerminalCommand);
             Delete = new RelayCommand(DeleteCommand);
             Attribute = new RelayCommand(AttributeCommand);
-
-            SureToAddFile = new RelayCommand<Window>(SureToAddFileCommand);
-            CancelToAddFile = new RelayCommand<Window>(CancelToAddFileCommand);
             #endregion
         }
 
-        #region 添加文件窗体逻辑
-
         /// <summary>
-        /// 添加文件窗体版本载入
+        /// 初始化数据
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void AddFileFormFileTypeLoaded(object sender,RoutedEventArgs e)
+        public void InitDataLoaded(object sender, RoutedEventArgs e)
         {
-            AddFileSearchFileTypeSource.Add(".json");
-            AddFileSearchFileTypeSource.Add(".mcfunction");
+            #region 文本编辑区
+            RichTabItems richTabItem = new()
+            {
+                Style = Application.Current.Resources["RichTabItemStyle"] as Style,
+                Uid = "DemonstrationPage",
+                FontSize = 12,
+                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                Header = "欢迎使用",
+                IsContentSaved = true
+            };
+            FunctionModifyTabItems.Add(richTabItem);
+            FlowDocument document = richTabItem.FindParent<Page>().FindResource("WelcomeDocument") as FlowDocument;
+            RichTextBox richTextBox = new()
+            {
+                Document = document,
+                IsReadOnly = true,
+                HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Visible,
+                BorderThickness = new Thickness(0),
+                Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("Transparent"))
+            };
+            richTabItem.Content = richTextBox;
+            #endregion
+            #region 数据包管理器树
+            RichTreeViewItems item = new();
+            DatapackTreeViewItems.Add(item);
+            ContentView = item.FindParent<TreeView>();
+            DatapackTreeViewItems.Remove(item);
+            #endregion
         }
-
-        /// <summary>
-        /// 确定添加文件
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void SureToAddFileCommand(Window win)
-        {
-            win.DialogResult = true;
-        }
-
-        /// <summary>
-        /// 取消添加文件
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void CancelToAddFileCommand(Window win)
-        {
-            win.DialogResult = false;
-        }
-
-        /// <summary>
-        /// 关闭添加文件窗体
-        /// </summary>
-        /// <param name="win"></param>
-        public void ClosingAddFileForm(Window win)
-        {
-            win.DialogResult = false;
-        }
-        #endregion
 
         /// <summary>
         /// 添加文件
@@ -266,7 +190,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
                             ContentView.Items.Remove(BeCutNode);
                         selectedItem.Items.Add(BeCutNode);
 
-                        foreach (RichTabItems tab in FileModifyZone.Items)
+                        foreach (RichTabItems tab in FunctionModifyTabItems)
                         {
                             if (tab.Uid == path)
                             {
@@ -314,7 +238,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
         {
             RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
             #region 编辑区对应标签页改为未保存
-            foreach (RichTabItems tab in FileModifyZone.Items)
+            foreach (RichTabItems tab in FunctionModifyTabItems)
             {
                 if (tab.Uid == richTreeViewItems.Uid)
                 {
@@ -372,48 +296,89 @@ namespace cbhk_environment.Generators.DataPackGenerator
         }
 
         /// <summary>
-        /// 获取文本编辑区的引用
+        /// 双击分析文件并打开
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void FileModifyZoneLoaded(object sender, RoutedEventArgs e)
+        public async void DoubleClickAnalysisAndOpen(object sender, MouseButtonEventArgs e)
         {
-            FileModifyZone = sender as TabControl;
+            await DoubleClickAnalysisAndOpenAsync(sender as TreeViewItem);
         }
 
         /// <summary>
-        /// 获取内容树视图引用
+        /// 异步执行文件分析与打开任务
+        /// </summary>
+        /// <param name="currentItem"></param>
+        /// <returns></returns>
+        private async Task DoubleClickAnalysisAndOpenAsync(TreeViewItem currentItem)
+        {
+            Datapack datapack = Window.GetWindow(currentItem) as Datapack;
+            await datapack.Dispatcher.InvokeAsync(() =>
+            {
+                string fileContent = File.ReadAllText(currentItem.Uid);
+                RichTabItems item = new()
+                {
+                    Style = Application.Current.Resources["RichTabItemStyle"] as Style,
+                    Uid = currentItem.Uid,
+                    FontSize = 12,
+                    Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFFF")),
+                    Header = Path.GetFileName(currentItem.Uid),
+                    IsContentSaved = true
+                };
+                TextEditor textEditor = new()
+                {
+                    ShowLineNumbers = true,
+                    Background = transparentBrush,
+                    Foreground = whiteBrush,
+                    BorderThickness = new Thickness(0),
+                    WordWrap = true,
+                    Text = fileContent,
+                    HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                    VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                };
+                textEditor.TextChanged += TextEditor_TextChanged;
+                textEditor.KeyDown += TextEditor_KeyDown;
+                item.Content = textEditor;
+                FunctionModifyTabItems.Add(item);
+                SelectedFileItem = item;
+            });
+        }
+
+        /// <summary>
+        /// 检测快捷键
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void ContentViewLoaded(object sender, RoutedEventArgs e)
+        private async void TextEditor_KeyDown(object sender, KeyEventArgs e)
         {
+            TextEditor textEditor = sender as TextEditor;
+            RichTabItems parent = textEditor.Parent as RichTabItems;
+            Datapack datapack = Window.GetWindow(parent) as Datapack;
+            #region 保存
+            if (e.KeyboardDevice.Modifiers == ModifierKeys.Control && e.Key == Key.S)
+            {
+                await datapack.Dispatcher.InvokeAsync(() =>
+                {
+                    string folder = Path.GetDirectoryName(parent.Uid);
+                    if (!Directory.Exists(folder))
+                        Directory.CreateDirectory(folder);
+                    _ = File.WriteAllTextAsync(parent.Uid, textEditor.Text);
+                    parent.IsContentSaved = true;
+                });
+            }
+            #endregion
         }
 
         /// <summary>
-        /// 返回主页
+        /// 文件编辑事件
         /// </summary>
-        /// <param name="win"></param>
-        private void return_command(FrameworkElement obj)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextEditor_TextChanged(object sender, System.EventArgs e)
         {
-            Window win = Window.GetWindow(obj);
-            DataPack.cbhk.Topmost = true;
-            DataPack.cbhk.WindowState = WindowState.Normal;
-            DataPack.cbhk.Show();
-            DataPack.cbhk.Topmost = false;
-            DataPack.cbhk.ShowInTaskbar = true;
-            win.Close();
-        }
-
-        /// <summary>
-        /// 执行生成
-        /// </summary>
-        private void run_command()
-        {
-            RichTabItems CurrentItem = FileModifyZone.SelectedItem as RichTabItems;
-            RichTextBox CurrentTextBox = CurrentItem.Content as RichTextBox;
-            TextRange CurrentContent = new(CurrentTextBox.Document.ContentStart, CurrentTextBox.Document.ContentEnd);
-            _ = File.WriteAllTextAsync(CurrentItem.Uid, CurrentContent.Text);
+            TextEditor textEditor = sender as TextEditor;
+            RichTabItems parent = textEditor.Parent as RichTabItems;
+            parent.IsContentSaved = false;
         }
     }
 }

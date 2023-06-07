@@ -59,7 +59,7 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             RenderOptions.BitmapScalingMode="NearestNeighbor"
-            Source="{StaticResource datapack}" />
+            Source="{StaticResource Datapack}" />
         <TextBlock
             x:Name="Title"
             Grid.Row="0"
@@ -99,6 +99,12 @@
             <behavior:Interaction.Triggers>
                 <behavior:EventTrigger EventName="MouseLeftButtonUp">
                     <behavior:CallMethodAction MethodName="Border_MouseLeftButtonUp" TargetObject="{Binding}" />
+                </behavior:EventTrigger>
+                <behavior:EventTrigger EventName="MouseEnter">
+                    <behavior:CallMethodAction MethodName="Border_MouseEnter" TargetObject="{Binding}" />
+                </behavior:EventTrigger>
+                <behavior:EventTrigger EventName="MouseLeave">
+                    <behavior:CallMethodAction MethodName="Border_MouseLeave" TargetObject="{Binding}" />
                 </behavior:EventTrigger>
             </behavior:Interaction.Triggers>
             <Border.Style>

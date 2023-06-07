@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ControlDataContexts="clr-namespace:cbhk_environment.ControlsDataContexts"
     xmlns:behavior="http://schemas.microsoft.com/xaml/behaviors"
-    xmlns:local_context="clr-namespace:cbhk_environment.ControlsDataContexts"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
 
     <ImageBrush x:Key="TextEditBox" ImageSource="/cbhk_environment;component/resources/common/images/TextEditBox.png" />

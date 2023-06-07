@@ -27,7 +27,7 @@ namespace cbhk_environment.GeneralTools.Time
                 result = "七天内";
             if (year == 0 && month == 0 && day == 1)
                 result = "一天前";
-            if (year == 0 && month == 0 && day == 1 && hour < 24)
+            if (year == 0 && month == 0 && day == 0 && hour < 24)
                 result = "一天内";
             return result;
         }

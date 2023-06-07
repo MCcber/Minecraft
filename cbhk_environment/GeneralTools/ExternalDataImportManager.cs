@@ -106,7 +106,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }
@@ -140,7 +140,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }
@@ -333,7 +333,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }
@@ -543,7 +543,7 @@ namespace cbhk_environment.GeneralTools
             {
                 displayContext.DisplayInfomation = "该指令内容与实体生成无关";
                 displayContext.MessageTitle = "导入失败";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 _ = messageDisplayer.ShowDialog();
                 itemPageList.RemoveAt(itemPageList.Count - 1);
                 return;
@@ -560,7 +560,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
                 return;
@@ -583,7 +583,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }
@@ -708,7 +708,7 @@ namespace cbhk_environment.GeneralTools
             {
                 displayContext.DisplayInfomation = "该指令内容与物品生成无关";
                 displayContext.MessageTitle = "导入失败";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 _ = messageDisplayer.ShowDialog();
                 itemPageList.RemoveAt(itemPageList.Count - 1);
                 return;
@@ -726,7 +726,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
                 return;
@@ -750,7 +750,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }
@@ -828,7 +828,7 @@ namespace cbhk_environment.GeneralTools
             {
                 displayContext.DisplayInfomation = "该指令内容与烟花生成无关";
                 displayContext.MessageTitle = "导入失败";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 _ = messageDisplayer.ShowDialog();
                 itemPageList.RemoveAt(itemPageList.Count - 1);
                 return;
@@ -841,7 +841,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
                 return;
@@ -857,7 +857,7 @@ namespace cbhk_environment.GeneralTools
             catch
             {
                 displayContext.DisplayInfomation = "文件内容格式不合法";
-                displayContext.MessageIcon = displayContext.errorIcon;
+                messageDisplayer.Icon = displayContext.errorIcon;
                 displayContext.MessageTitle = "导入失败";
                 _ = messageDisplayer.ShowDialog();
             }

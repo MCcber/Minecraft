@@ -16,6 +16,7 @@ namespace cbhk_environment.ControlsDataContexts
 
             RichTreeViewItems item = values[2] as RichTreeViewItems;
             ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(item);
+            if (ic == null) return null;
             bool isLastOne = ic.ItemContainerGenerator.IndexFromContainer(item) == ic.Items.Count - 1;
 
             Rectangle rectangle = values[3] as Rectangle;
@@ -29,8 +30,6 @@ namespace cbhk_environment.ControlsDataContexts
                 rectangle.VerticalAlignment = VerticalAlignment.Stretch;
                 return double.NaN;
             }
-
-           
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

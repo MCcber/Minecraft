@@ -16,10 +16,31 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components.HomePage
     /// </summary>
     public partial class RecentTreeItem : UserControl
     {
+        public bool MouseEnterPinZone = false;
         public RecentTreeItem()
         {
             InitializeComponent();
             DataContext = this;
+        }
+
+        /// <summary>
+        /// 进入固定区域
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Border_MouseEnter(object sender,MouseEventArgs e)
+        {
+            MouseEnterPinZone = true;
+        }
+
+        /// <summary>
+        /// 离开固定区域
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void Border_MouseLeave(object sender, MouseEventArgs e)
+        {
+            MouseEnterPinZone = false;
         }
 
         public void Grid_MouseEnter(object sender, MouseEventArgs e)
@@ -48,8 +69,10 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components.HomePage
                 rotateTransform.Angle = 0;
                 //保存当前内容节点
                 RichTreeViewItems currentContentItem = border.FindParent<RichTreeViewItems>();
+                //更新动态路径
+                currentContentItem.Uid = context.StableRecentSolutionsFolderPath + "\\" + System.IO.Path.GetFileName(currentContentItem.Tag.ToString());
                 //保存当前时间节点
-                RichTreeViewItems currentDateItem = currentContentItem.Parent as RichTreeViewItems;
+                TreeViewItem currentDateItem = currentContentItem.Parent as TreeViewItem;
                 currentDateItem.Items.Remove(currentContentItem);
                 //如果没有子级则折叠
                 if (currentDateItem.Items.Count == 0)
@@ -62,6 +85,8 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components.HomePage
                 rotateTransform.Angle = 90;
                 //保存当前内容节点
                 RichTreeViewItems currentContentItem = border.FindParent<RichTreeViewItems>();
+                //更新动态路径
+                currentContentItem.Uid = context.RecentSolutionsFolderPath + "\\" + System.IO.Path.GetFileName(currentContentItem.Tag.ToString());
                 context.RecentContentDateItemList[0].Items.Remove(currentContentItem);
                 //如果固定节点没有子级则折叠
                 if (context.RecentContentDateItemList[0].Items.Count == 0)
