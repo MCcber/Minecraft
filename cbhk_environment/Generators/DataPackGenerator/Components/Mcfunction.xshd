@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<SyntaxDefinition name="Custom Highlighting" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+<SyntaxDefinition name="Mcfunction" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
   <!--设置颜色与文本风格，如粗体，背景色等-->
-  <Color name="Comment" foreground="#C6B1B1" exampleText="* comment"/>
+  <Color name="Comment" foreground="#6A9955" exampleText="* comment"/>
   <Color name="Card" fontWeight="bold" foreground="#960092" exampleText="=CSTR"/>
   <Color name="Field" fontWeight="bold" foreground="#3A76D7" exampleText="CA"/>
     <!-- 主要的规则集 -->
     <RuleSet>
     <!--以//开头或者包裹在/*..*/中的文本使用Comment颜色-->
-        <Span color="Comment" begin="//" />
-        <Span color="Comment" multiline="true" begin="/\*" end="\*/" />
+        <Span color="Comment" begin="##" />
+        <Span color="Comment" multiline="false" />
         <Span color="String">
             <Begin>"</Begin>
             <End>"</End>
@@ -22,7 +22,7 @@
             <Word>if</Word>
             <Word>else</Word>
             <!-- ... -->
-        </Keywords> 
+        </Keywords>
         <!-- 可以使用正则进行定义 -->
         <Rule foreground="DarkBlue">
             \b0[xX][0-9a-fA-F]+  # hex number

@@ -902,6 +902,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                             {
                                 case "ItemGenerator":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -930,6 +936,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1145,6 +1152,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "Passengers":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1173,6 +1186,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1204,6 +1218,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "ArmorDropChances":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1219,19 +1239,19 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             FreshVisibility = Visibility.Collapsed,
                                             Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                                         };
-                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
                                         ArmorDropChances armorDropChances = new();
-                                        itemPanel.Children.Add(armorDropChances);
                                         ScrollViewer scrollViewer = new()
                                         {
+                                            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")),
                                             MaxHeight = 200,
-                                            Content = itemPanel,
+                                            Content = armorDropChances,
                                             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                                             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                                         };
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1252,6 +1272,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "ArmorItems":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1267,19 +1293,19 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             FreshVisibility = Visibility.Collapsed,
                                             Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                                         };
-                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
                                         ArmorItems armorItems = new();
-                                        itemPanel.Children.Add(armorItems);
                                         ScrollViewer scrollViewer = new()
                                         {
+                                            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")),
                                             MaxHeight = 200,
-                                            Content = itemPanel,
+                                            Content = armorItems,
                                             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                                             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                                         };
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1300,6 +1326,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "HandDropChances":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1315,19 +1347,19 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             FreshVisibility = Visibility.Collapsed,
                                             Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                                         };
-                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
-                                        ArmorDropChances armorDropChances = new();
-                                        itemPanel.Children.Add(armorDropChances);
+                                        HandDropChances handDropChances = new();
                                         ScrollViewer scrollViewer = new()
                                         {
                                             MaxHeight = 200,
-                                            Content = itemPanel,
+                                            Content = handDropChances,
+                                            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")),
                                             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                                             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                                         };
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1337,10 +1369,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                                 key = "EntityTag." + key;
                                             if (ExternallyReadEntityData.SelectToken(key) is JArray data)
                                             {
-                                                armorDropChances.boots.Value = double.Parse(data[0].ToString());
-                                                armorDropChances.legs.Value = double.Parse(data[1].ToString());
-                                                armorDropChances.chest.Value = double.Parse(data[2].ToString());
-                                                armorDropChances.helmet.Value = double.Parse(data[3].ToString());
+                                                handDropChances.mainhand.Value = double.Parse(data[0].ToString());
+                                                handDropChances.offhand.Value = double.Parse(data[1].ToString());
                                             }
                                         }
                                         #endregion
@@ -1348,6 +1378,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "HandItems":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1363,19 +1399,19 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                             FreshVisibility = Visibility.Collapsed,
                                             Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                                         };
-                                        StackPanel itemPanel = new() { Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")) };
                                         HandItems handItems = new();
-                                        itemPanel.Children.Add(handItems);
                                         ScrollViewer scrollViewer = new()
                                         {
+                                            Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2F2F2F")),
                                             MaxHeight = 200,
-                                            Content = itemPanel,
+                                            Content = handItems,
                                             VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
                                             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled,
                                         };
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1607,6 +1643,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "ItemGenerator":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion itemAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1635,6 +1677,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                         itemAccordion.Content = scrollViewer;
                                         itemAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(itemAccordion);
+                                        itemAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要代入导入的数据
                                         if (ImportMode)
@@ -1666,6 +1709,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                     break;
                                 case "LeashData":
                                     {
+                                        Binding visibilityBinder = new()
+                                        {
+                                            Mode = BindingMode.OneWay,
+                                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                                            Source = this
+                                        };
                                         Accordion leashAccordion = new()
                                         {
                                             MaxHeight = 200,
@@ -1687,6 +1736,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                                         leashAccordion.Content = leashData;
                                         leashAccordion.GotFocus += componentEvents.ValueChangedHandler;
                                         result.Add(leashAccordion);
+                                        leashAccordion.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                                         result.Remove(displayText);
                                         #region 分析是否需要导入数据
                                         if(ImportMode)
@@ -1732,12 +1782,19 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     break;
                 case "TAG_UUID_List":
                     {
+                        Binding visibilityBinder = new()
+                        {
+                            Mode = BindingMode.OneWay,
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
+                        };
                         UUIDListGenerator uUIDListGenerator = new()
                         {
                             Uid = Request.nbtType,
                             Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                         };
                         uUIDListGenerator.GotFocus += componentEvents.ValueChangedHandler;
+                        uUIDListGenerator.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                         result.Add(uUIDListGenerator);
                         result.Remove(displayText);
                         #region 分析是否需要代入导入的数据
@@ -1766,14 +1823,15 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     break;
                 case "TAG_Float_Array":
                     {
-                        JArray children = JArray.Parse(Request.children);
-                        Grid floatGrid = new() { Uid = Request.nbtType, Name = Request.key, Tag = new NBTDataStructure() { Result = "",Visibility = Visibility.Collapsed,DataType = Request.dataType,NBTGroup = Request.nbtType } };
-
                         Binding visibilityBinder = new()
                         {
                             Mode = BindingMode.OneWay,
-                            Path = new PropertyPath(Request.nbtType + "Visibility")
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
                         };
+                        JArray children = JArray.Parse(Request.children);
+                        Grid floatGrid = new() { Uid = Request.nbtType, Name = Request.key, Tag = new NBTDataStructure() { Result = "",Visibility = Visibility.Collapsed,DataType = Request.dataType,NBTGroup = Request.nbtType } };
+
                         displayText.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                         floatGrid.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
                         for (int i = 0; i < children.Count; i++)
@@ -1877,7 +1935,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         Binding visibilityBinder = new()
                         {
                             Mode = BindingMode.OneWay,
-                            Path = new PropertyPath(Request.nbtType + "Visibility")
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
                         };
                         displayText.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
                         if (Request.dataType == "TAG_Byte")
@@ -1956,7 +2015,6 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                             numberBox1.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
                             numberBox1.GotFocus += componentEvents.ValueChangedHandler;
                             result.Add(numberBox1);
-                            numberBox1.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
                             #region 分析是否需要代入导入的数据
                             if (ImportMode)
                             {
@@ -1980,7 +2038,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         Binding visibilityBinder = new()
                         {
                             Mode = BindingMode.OneWay,
-                            Path = new PropertyPath(Request.nbtType + "Visibility")
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
                         };
                         TextBox stringBox = new() { BorderBrush = blackBrush, Foreground = whiteBrush, Uid = Request.nbtType, Name = Request.key,Tag = new NBTDataStructure() { Result = "",Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType } };
                         displayText.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
@@ -2019,7 +2078,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         Binding visibilityBinder = new()
                         {
                             Mode = BindingMode.OneWay,
-                            Path = new PropertyPath(Request.nbtType + "Visibility")
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
                         };
                         Grid grid = new() { Uid = Request.nbtType, Name = Request.key, Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType } };
                         grid.ColumnDefinitions.Add(new ColumnDefinition() { Width = new GridLength(5, GridUnitType.Star) });
@@ -2041,14 +2101,15 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         grid.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
                         grid.GotFocus += componentEvents.ValueChangedHandler;
                         result.Add(grid);
+                        break;
                     }
-                    break;
                 case "TAG_Boolean":
                     {
                         Binding visibilityBinder = new()
                         {
                             Mode = BindingMode.OneWay,
-                            Path = new PropertyPath(Request.nbtType + "Visibility")
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
                         };
                         TextCheckBoxs textCheckBoxs = new()
                         {
@@ -2098,6 +2159,12 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                     break;
                 case "TAG_Enum":
                     {
+                        Binding visibilityBinder = new()
+                        {
+                            Mode = BindingMode.OneWay,
+                            Path = new PropertyPath(Request.nbtType + "Visibility"),
+                            Source = this
+                        };
                         MatchCollection matchCollection = Regex.Matches(Request.toolTip,@"[a-zA-Z_]+");
                         List<string> enumValueList = matchCollection.ToList().ConvertAll(item=>item.ToString());
                         ComboBox comboBox = new()
@@ -2112,6 +2179,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                             Tag = new NBTDataStructure() { Result = "", Visibility = Visibility.Collapsed, DataType = Request.dataType, NBTGroup = Request.nbtType }
                         };
                         comboBox.GotFocus += componentEvents.ValueChangedHandler;
+                        displayText.SetBinding(UIElement.VisibilityProperty,visibilityBinder);
+                        comboBox.SetBinding(UIElement.VisibilityProperty, visibilityBinder);
                         result.Add(comboBox);
                         #region 分析是否需要代入导入的数据
                         if (ImportMode)

@@ -103,26 +103,29 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             RichTabItems richTabItems = this.FindParent<RichTabItems>();
             int currentIndex = entityContext.EntityPageList.IndexOf(richTabItems);
             int index = int.Parse(slider.Value.ToString());
-            entityPagesDataContext pageContext = (entityContext.EntityPageList[index].Content as EntityPages).DataContext as entityPagesDataContext;
-            if (ReferenceMode.IsChecked.Value)
+            if (index >= 0 && index < entityContext.EntityPageList.Count)
             {
-                pageContext.UseForReference = true;
-                if (slider.Value < entityContext.EntityPageList.Count && currentIndex != index)
+                entityPagesDataContext pageContext = (entityContext.EntityPageList[index].Content as EntityPages).DataContext as entityPagesDataContext;
+                if (ReferenceMode.IsChecked.Value)
                 {
-                    DisplayEntity.Tag = pageContext.run_command(false);
-                    (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + pageContext.SelectedEntityIdString + "_spawn_egg.png", UriKind.RelativeOrAbsolute));
+                    pageContext.UseForReference = true;
+                    if (slider.Value < entityContext.EntityPageList.Count && currentIndex != index)
+                    {
+                        DisplayEntity.Tag = pageContext.run_command(false);
+                        (DisplayEntity.Child as Image).Source = new BitmapImage(new Uri(AppDomain.CurrentDomain.BaseDirectory + "resources\\data_sources\\entityImages\\" + pageContext.SelectedEntityIdString + "_spawn_egg.png", UriKind.RelativeOrAbsolute));
+                    }
+                    else
+                    {
+                        DisplayEntity.Tag = "";
+                        (DisplayEntity.Child as Image).Source = new BitmapImage();
+                    }
                 }
                 else
                 {
                     DisplayEntity.Tag = "";
                     (DisplayEntity.Child as Image).Source = new BitmapImage();
+                    pageContext.UseForReference = false;
                 }
-            }
-            else
-            {
-                DisplayEntity.Tag = "";
-                (DisplayEntity.Child as Image).Source = new BitmapImage();
-                pageContext.UseForReference = false;
             }
         }
 

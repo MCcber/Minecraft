@@ -150,6 +150,7 @@
             </TreeView>
             <ScrollViewer
                 Grid.Row="3"
+                Margin="20"
                 HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto"
                 Visibility="{Binding SearchResultViewerVisibility, Mode=OneWay}">

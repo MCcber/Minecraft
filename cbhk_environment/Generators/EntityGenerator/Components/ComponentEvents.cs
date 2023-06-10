@@ -548,8 +548,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void HandDropChances_LostFocus(object sender, RoutedEventArgs e)
         {
             Accordion accordion = sender as Accordion;
-            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
-            HandDropChances handDropChances = stackPanel.Children[0] as HandDropChances;
+            HandDropChances handDropChances = (accordion.Content as ScrollViewer).Content as HandDropChances;
             NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
             if (handDropChances.EnableButton.IsChecked.Value)
                 dataStructure.Result = handDropChances.Result;
@@ -565,8 +564,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void HandItems_LostFocus(object sender, RoutedEventArgs e)
         {
             Accordion accordion = sender as Accordion;
-            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
-            HandItems handItems = stackPanel.Children[0] as HandItems;
+            HandItems handItems = (accordion.Content as ScrollViewer).Content as HandItems;
             NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
             if (handItems.EnableButton.IsChecked.Value)
                 dataStructure.Result = handItems.Result;
@@ -582,8 +580,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void ArmorDropChances_LostFocus(object sender, RoutedEventArgs e)
         {
             Accordion accordion = sender as Accordion;
-            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
-            ArmorDropChances armorDropChances = stackPanel.Children[0] as ArmorDropChances;
+            ArmorDropChances armorDropChances = (accordion.Content as ScrollViewer).Content as ArmorDropChances;
             NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
             if (armorDropChances.EnableButton.IsChecked.Value)
                 dataStructure.Result = armorDropChances.Result;
@@ -599,8 +596,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private void ArmorItems_LostFocus(object sender, RoutedEventArgs e)
         {
             Accordion accordion = sender as Accordion;
-            StackPanel stackPanel = (accordion.Content as ScrollViewer).Content as StackPanel;
-            ArmorItems armorItems = stackPanel.Children[0] as ArmorItems;
+            ArmorItems armorItems = (accordion.Content as ScrollViewer).Content as ArmorItems;
             NBTDataStructure dataStructure = accordion.Tag as NBTDataStructure;
             if (armorItems.EnableButton.IsChecked.Value)
                 dataStructure.Result = armorItems.Result;
