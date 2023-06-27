@@ -19,7 +19,6 @@
     <SolidColorBrush x:Key="OptionMark.Disabled.Glyph" Color="#FF707070" />
     <Style x:Key="TextCheckBox" TargetType="{x:Type CustomControls:TextCheckBoxs}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Background" Value="{StaticResource OptionMark.Static.Background}" />
         <Setter Property="BorderBrush" Value="{StaticResource OptionMark.Static.Border}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />

@@ -16,6 +16,8 @@
     mc:Ignorable="d">
 
     <UserControl.Resources>
+        <ImageBrush x:Key="CloseWhite" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhite.png" />
+        <ImageBrush x:Key="CloseWhiteHover" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
         <ImageBrush x:Key="ButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/ButtonNormal.png" />
         <ImageBrush x:Key="ButtonPressed" ImageSource="/cbhk_environment;component/resources/common/images/ButtonPressed.png" />
     </UserControl.Resources>
@@ -32,13 +34,13 @@
         </Grid.ColumnDefinitions>
         <CustomControls:IconTextButtons
             Grid.Row="0"
-            Grid.RowSpan="3"
             Grid.Column="1"
-            Background="{StaticResource ButtonNormal}"
+            Width="25"
+            Height="25"
+            Background="{StaticResource CloseWhite}"
             Click="IconTextButtons_Click"
-            Content="X"
             Foreground="Black"
-            PressedBackground="{StaticResource ButtonPressed}"
+            PressedBackground="{StaticResource CloseWhiteHover}"
             Style="{DynamicResource IconTextButton}" />
         <DockPanel
             Grid.Row="0"
@@ -56,12 +58,11 @@
                 ToolTipService.ShowDuration="1000" />
             <Slider
                 x:Name="Value"
-                Height="30"
+                Height="25"
                 HorizontalAlignment="Stretch"
                 AllowDrop="False"
                 Background="Transparent"
                 BorderThickness="0"
-                FontSize="20"
                 Foreground="White"
                 Maximum="2147483647"
                 Minimum="0"
@@ -85,12 +86,11 @@
                 ToolTipService.ShowDuration="1000" />
             <TextBox
                 x:Name="Target"
-                Height="30"
+                Height="25"
                 HorizontalAlignment="Stretch"
                 BorderBrush="Black"
                 BorderThickness="1"
                 CaretBrush="White"
-                FontSize="20"
                 Foreground="White" />
         </DockPanel>
         <DockPanel
@@ -113,10 +113,8 @@
                 x:Name="Type"
                 Grid.Row="2"
                 Grid.Column="1"
-                Height="30"
-                Padding="0,5,0,0"
+                Height="25"
                 HorizontalAlignment="Stretch"
-                FontSize="15"
                 Loaded="TypeLoaded"
                 SelectedIndex="0"
                 Style="{DynamicResource TextComboBoxStyle}" />

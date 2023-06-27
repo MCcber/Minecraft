@@ -35,14 +35,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool showResult = false;
         public bool ShowResult
         {
-            get
-            {
-                return showResult;
-            }
-            set
-            {
-                showResult = value;
-            }
+            get => showResult;
+            set => SetProperty(ref showResult, value);
         }
         #endregion
 
@@ -53,7 +47,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool summon = true;
         public bool Summon
         {
-            get { return summon; }
+            get => summon;
             set
             {
                 summon = value;
@@ -72,7 +66,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool give;
         public bool Give
         {
-            get { return give; }
+            get => give;
             set
             {
                 give = value;
@@ -111,15 +105,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool entityCommonTagsEnabled = true;
         public bool EntityCommonTagsEnabled
         {
-            get
-            {
-                return entityCommonTagsEnabled;
-            }
-            set
-            {
-                entityCommonTagsEnabled = value;
-                OnPropertyChanged();
-            }
+            get => entityCommonTagsEnabled;
+            set => SetProperty(ref entityCommonTagsEnabled, value);
         }
         #endregion
 
@@ -127,15 +114,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool livingBodyCommonTagsEnabled = true;
         public bool LivingBodyCommonTagsEnabled
         {
-            get
-            {
-                return livingBodyCommonTagsEnabled;
-            }
-            set
-            {
-                livingBodyCommonTagsEnabled = value;
-                OnPropertyChanged();
-            }
+            get => livingBodyCommonTagsEnabled; 
+            set => SetProperty(ref livingBodyCommonTagsEnabled, value);
         }
         #endregion
 
@@ -143,15 +123,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool mobCommonTagsEnabled = true;
         public bool MobCommonTagsEnabled
         {
-            get
-            {
-                return mobCommonTagsEnabled;
-            }
-            set
-            {
-                mobCommonTagsEnabled = value;
-                OnPropertyChanged();
-            }
+            get => mobCommonTagsEnabled; 
+            set => SetProperty(ref mobCommonTagsEnabled, value);
         }
         #endregion
 
@@ -163,15 +136,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility entityCommonTagsVisibility = Visibility.Visible;
         public Visibility EntityCommonTagsVisibility
         {
-            get
-            {
-                return entityCommonTagsVisibility;
-            }
-            set
-            {
-                entityCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => entityCommonTagsVisibility; 
+            set => SetProperty(ref entityCommonTagsVisibility, value);
         }
         #endregion
 
@@ -179,15 +145,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility livingBodyCommonTagsVisibility = Visibility.Visible;
         public Visibility LivingBodyCommonTagsVisibility
         {
-            get
-            {
-                return livingBodyCommonTagsVisibility;
-            }
-            set
-            {
-                livingBodyCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => livingBodyCommonTagsVisibility; 
+            set => SetProperty(ref livingBodyCommonTagsVisibility, value);
         }
         #endregion
 
@@ -195,15 +154,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility mobCommonTagsVisibility = Visibility.Visible;
         public Visibility MobCommonTagsVisibility
         {
-            get
-            {
-                return mobCommonTagsVisibility;
-            }
-            set
-            {
-                mobCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => mobCommonTagsVisibility; 
+            set => SetProperty(ref mobCommonTagsVisibility, value);
         }
         #endregion
 
@@ -215,15 +167,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility angryCreatureExtraFieldVisibility = Visibility.Collapsed;
         public Visibility AngryCreatureExtraFieldVisibility
         {
-            get
-            {
-                return angryCreatureExtraFieldVisibility;
-            }
-            set
-            {
-                angryCreatureExtraFieldVisibility = value;
-                OnPropertyChanged();
-            }
+            get => angryCreatureExtraFieldVisibility; 
+            set => SetProperty(ref angryCreatureExtraFieldVisibility, value);
         }
         #endregion
 
@@ -231,15 +176,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility breedableMobExtraFieldsVisibility = Visibility.Collapsed;
         public Visibility BreedableMobExtraFieldsVisibility
         {
-            get
-            {
-                return breedableMobExtraFieldsVisibility;
-            }
-            set
-            {
-                breedableMobExtraFieldsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => breedableMobExtraFieldsVisibility;
+            set => SetProperty(ref breedableMobExtraFieldsVisibility, value);
         }
         #endregion
 
@@ -247,15 +185,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility commonTagsForMobsSpawnedInRaidsVisibility = Visibility.Collapsed;
         public Visibility CommonTagsForMobsSpawnedInRaidsVisibility
         {
-            get
-            {
-                return commonTagsForMobsSpawnedInRaidsVisibility;
-            }
-            set
-            {
-                commonTagsForMobsSpawnedInRaidsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => commonTagsForMobsSpawnedInRaidsVisibility; 
+            set => SetProperty(ref commonTagsForMobsSpawnedInRaidsVisibility, value);
         }
         #endregion
 
@@ -263,15 +194,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility commonTagsForRideableEntitiesVisibility = Visibility.Collapsed;
         public Visibility CommonTagsForRideableEntitiesVisibility
         {
-            get
-            {
-                return commonTagsForRideableEntitiesVisibility;
-            }
-            set
-            {
-                commonTagsForRideableEntitiesVisibility = value;
-                OnPropertyChanged();
-            }
+            get => commonTagsForRideableEntitiesVisibility; 
+            set => SetProperty(ref commonTagsForRideableEntitiesVisibility, value);
         }
         #endregion
 
@@ -279,15 +203,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility commonTagsForZombiesVisibility = Visibility.Collapsed;
         public Visibility CommonTagsForZombiesVisibility
         {
-            get
-            {
-                return commonTagsForZombiesVisibility;
-            }
-            set
-            {
-                commonTagsForZombiesVisibility = value;
-                OnPropertyChanged();
-            }
+            get => commonTagsForZombiesVisibility; 
+            set => SetProperty(ref commonTagsForZombiesVisibility, value);
         }
         #endregion
 
@@ -295,15 +212,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility tameableMobExtraFieldsVisibility = Visibility.Collapsed;
         public Visibility TameableMobExtraFieldsVisibility
         {
-            get
-            {
-                return tameableMobExtraFieldsVisibility;
-            }
-            set
-            {
-                tameableMobExtraFieldsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => tameableMobExtraFieldsVisibility; 
+            set => SetProperty(ref tameableMobExtraFieldsVisibility, value);
         }
         #endregion
 
@@ -311,15 +221,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility arrowProjectileCommonTagsVisibility = Visibility.Collapsed;
         public Visibility ArrowProjectileCommonTagsVisibility
         {
-            get
-            {
-                return arrowProjectileCommonTagsVisibility;
-            }
-            set
-            {
-                arrowProjectileCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => arrowProjectileCommonTagsVisibility; 
+            set => SetProperty(ref arrowProjectileCommonTagsVisibility, value);
         }
         #endregion
 
@@ -327,15 +230,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility containerEntityCommonTagsVisibility = Visibility.Collapsed;
         public Visibility ContainerEntityCommonTagsVisibility
         {
-            get
-            {
-                return containerEntityCommonTagsVisibility;
-            }
-            set
-            {
-                containerEntityCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => containerEntityCommonTagsVisibility; 
+            set => SetProperty(ref containerEntityCommonTagsVisibility, value);
         }
         #endregion
 
@@ -343,15 +239,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility fireballProjectileCommonTagsVisibility = Visibility.Collapsed;
         public Visibility FireballProjectileCommonTagsVisibility
         {
-            get
-            {
-                return fireballProjectileCommonTagsVisibility;
-            }
-            set
-            {
-                fireballProjectileCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => fireballProjectileCommonTagsVisibility; 
+            set => SetProperty(ref fireballProjectileCommonTagsVisibility, value);
         }
         #endregion
 
@@ -359,15 +248,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility itemProjectileCommonTagsVisibility = Visibility.Collapsed;
         public Visibility ItemProjectileCommonTagsVisibility
         {
-            get
-            {
-                return itemProjectileCommonTagsVisibility;
-            }
-            set
-            {
-                itemProjectileCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => itemProjectileCommonTagsVisibility; 
+            set => SetProperty(ref itemProjectileCommonTagsVisibility, value);
         }
         #endregion
 
@@ -375,15 +257,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility mineCartCommonTagsVisibility = Visibility.Collapsed;
         public Visibility MineCartCommonTagsVisibility
         {
-            get
-            {
-                return mineCartCommonTagsVisibility;
-            }
-            set
-            {
-                mineCartCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => mineCartCommonTagsVisibility; 
+            set => SetProperty(ref mineCartCommonTagsVisibility, value);
         }
         #endregion
 
@@ -391,15 +266,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility potionEffectCommonTagsVisibility = Visibility.Collapsed;
         public Visibility PotionEffectCommonTagsVisibility
         {
-            get
-            {
-                return potionEffectCommonTagsVisibility;
-            }
-            set
-            {
-                potionEffectCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => potionEffectCommonTagsVisibility;
+            set => SetProperty(ref potionEffectCommonTagsVisibility, value);
         }
         #endregion
 
@@ -407,15 +275,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private Visibility projectileCommonTagsVisibility = Visibility.Collapsed;
         public Visibility ProjectileCommonTagsVisibility
         {
-            get
-            {
-                return projectileCommonTagsVisibility;
-            }
-            set
-            {
-                projectileCommonTagsVisibility = value;
-                OnPropertyChanged();
-            }
+            get => projectileCommonTagsVisibility;
+            set => SetProperty(ref projectileCommonTagsVisibility, value);
         }
         #endregion
 
@@ -424,19 +285,16 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         #endregion
 
         #region 实体ID
-        private IconComboBoxItem entity_id = null;
+        private IconComboBoxItem selectedEntityId = null;
         public IconComboBoxItem SelectedEntityId
         {
-            get { return entity_id; }
+            get => selectedEntityId;
             set
             {
-                entity_id = value;
-                OnPropertyChanged();
+                SetProperty(ref selectedEntityId, value);
                 //更新特指和共通标签、额外字段
                 if (SpecialViewer != null)
-                {
                     UpdateUILayOut();
-                }
             }
         }
         public string SelectedEntityIdString
@@ -453,14 +311,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private string selectedVersion = "";
         public string SelectedVersion
         {
-            get
-            {
-                return selectedVersion;
-            }
-            set
-            {
-                selectedVersion = value;
-            }
+            get => selectedVersion;
+            set => SetProperty(ref selectedVersion, value);
         }
         #endregion
 
@@ -504,15 +356,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         private bool importMode = false;
         public bool ImportMode
         {
-            get
-            {
-                return importMode;
-            }
-            set
-            {
-                importMode = value;
-
-            }
+            get => importMode;
+            set => SetProperty(ref importMode, value);
         }
         #endregion
 
@@ -2241,6 +2086,8 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
         public void SpecialTagsPanelLoaded(object sender, RoutedEventArgs e)
         {
             TabControl tabControl = sender as TabControl;
+            foreach (TextTabItems item in tabControl.Items)
+                item.DataContext = this;
             SpecialViewer = (tabControl.Items[0] as TextTabItems).Content as ScrollViewer;
             if(EntityIds.Count > 0)
             SelectedEntityId ??= EntityIds.First();
@@ -2323,26 +2170,22 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 #endregion
                 #region 处理额外字段与共通标签的显示隐藏
                 Type currentClassType = GetType();
-                PropertyInfo[] propertyInfos = currentClassType.GetProperties();
                 #region 需要隐藏的共通标签
                 TabControl tabControl = (SpecialViewer.Parent as TextTabItems).Parent as TabControl;
                 foreach (var item in closedCommonTagList)
                 {
-                    TextTabItems textTabItem = tabControl.FindChild<TextTabItems>(item);
-                    if (textTabItem != null)
-                        textTabItem.Visibility = Visibility.Collapsed;
-                    //PropertyInfo visibilityPropertyInfo = currentClassType.GetProperty(item + "Visibility");
-                    //if(visibilityPropertyInfo != null)
-                    //{
-                    //    object visibility = Convert.ChangeType(Visibility.Collapsed, visibilityPropertyInfo.PropertyType);
-                    //    currentClassType.GetProperty(item + "Visibility")?.SetValue(this, visibility, null);
-                    //}
-                    //PropertyInfo enabledPropertyInfo = currentClassType.GetProperty(item + "Enabled");
-                    //if(enabledPropertyInfo != null)
-                    //{
-                    //    object enable = Convert.ChangeType(false, enabledPropertyInfo.PropertyType);
-                    //    currentClassType.GetProperty(item + "Enabled")?.SetValue(this, enable, null);
-                    //}
+                    PropertyInfo visibilityPropertyInfo = currentClassType.GetProperty(item + "Visibility");
+                    if (visibilityPropertyInfo != null)
+                    {
+                        object visibility = Convert.ChangeType(Visibility.Collapsed, visibilityPropertyInfo.PropertyType);
+                        currentClassType.GetProperty(item + "Visibility")?.SetValue(this, visibility, null);
+                    }
+                    PropertyInfo enabledPropertyInfo = currentClassType.GetProperty(item + "Enabled");
+                    if (enabledPropertyInfo != null)
+                    {
+                        object enable = Convert.ChangeType(false, enabledPropertyInfo.PropertyType);
+                        currentClassType.GetProperty(item + "Enabled")?.SetValue(this, enable, null);
+                    }
                 }
                 if(closedCommonTagList.Count == 0)
                 {
@@ -2353,21 +2196,20 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                 #region 需要显示的共通标签
                 foreach (var item in commonTagList)
                 {
-                    TextTabItems textTabItem = tabControl.FindChild<TextTabItems>(item);
-                    if(textTabItem != null)
-                        textTabItem.Visibility = Visibility.Visible;
-                    //PropertyInfo visibilityPropertyInfo = currentClassType.GetProperty(item + "Visibility");
-                    //if (visibilityPropertyInfo != null)
-                    //{
-                    //    object visibility = Convert.ChangeType(Visibility.Visible, visibilityPropertyInfo.PropertyType);
-                    //    currentClassType.GetProperty(item + "Visibility")?.SetValue(this, visibility, null);
-                    //}
-                    //PropertyInfo enabledPropertyInfo = currentClassType.GetProperty(item + "Enabled");
-                    //if (enabledPropertyInfo != null)
-                    //{
-                    //    object enable = Convert.ChangeType(true, enabledPropertyInfo.PropertyType);
-                    //    currentClassType.GetProperty(item + "Enabled")?.SetValue(this, enable, null);
-                    //}
+                    PropertyInfo visibilityPropertyInfo = currentClassType.GetProperty(item + "Visibility");
+                    if (visibilityPropertyInfo != null)
+                    {
+                        object visibility = Convert.ChangeType(Visibility.Visible, visibilityPropertyInfo.PropertyType);
+                        if(currentClassType.GetProperty(item + "Visibility") is PropertyInfo propertyInfo)
+                            propertyInfo.SetValue(this, visibility, null);
+                    }
+                    PropertyInfo enabledPropertyInfo = currentClassType.GetProperty(item + "Enabled");
+                    if (enabledPropertyInfo != null)
+                    {
+                        object enable = Convert.ChangeType(true, enabledPropertyInfo.PropertyType);
+                        if(currentClassType.GetProperty(item + "Enabled") is PropertyInfo propertyInfo)
+                            propertyInfo.SetValue(this, enable, null);
+                    }
                 }
                 #endregion
                 #region 同步本次计算后的特殊实体共通标签链表
@@ -2391,7 +2233,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
 
         private async Task GeneratorSpecifyTags(TabControl tabControl)
         {
-            if (tabControl.SelectedValue is not TextTabItems textTabItem) return;
+            if (tabControl.SelectedItem is not TextTabItems textTabItem) return;
             string currentUID = textTabItem.Uid;
             ScrollViewer tabContent = textTabItem.Content as ScrollViewer;
             Grid subGrid = tabContent.Content as Grid;
@@ -2406,8 +2248,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             for (int i = 0; i < subGrid.Children.Count; i++)
             {
                 FrameworkElement frameworkElement = subGrid.Children[i] as FrameworkElement;
-                NBTDataStructure dataStructure = frameworkElement.Tag as NBTDataStructure;
-                if (dataStructure != null && !AddedCommonTags.Contains(dataStructure.NBTGroup))
+                if (frameworkElement.Tag is NBTDataStructure dataStructure && !AddedCommonTags.Contains(dataStructure.NBTGroup))
                     AddedCommonTags.Add(dataStructure.NBTGroup);
             }
             if ((currentUID == "string" || currentUID == "number" || currentUID == "boolean" || currentUID == "list" || currentUID == "compound") && AddedCommonTags.Count >= 3) return;
@@ -2428,6 +2269,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
             string commonTagData = targetObj["common"].ToString();
             JArray commonTags = JArray.Parse(commonTagData);
             List<string> commonTagList = commonTags.ToList().ConvertAll(item => item.ToString());
+
             #region 处理共通标签
             List<FrameworkElement> components = new();
             var sortOrder = new List<string> { "EntityCommonTags", "LivingBodyCommonTags", "MobCommonTags" };
@@ -2477,7 +2319,7 @@ namespace cbhk_environment.Generators.EntityGenerator.Components
                         LeftIndex = !LeftIndex;
                     }
                 }
-                tabContent.Content = subGrid;
+                tabContent.Content ??= subGrid;
             });
             #endregion
         }

@@ -757,7 +757,7 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                 Random random = new();
                 #endregion
 
-                for (int i = 0; i < 300; i++)
+                for (int i = 0; i < 350; i++)
                 {
                     //实例化变换属性
                     Vector3D randomPos = context.GetSphereRandom(new float[] { (float)random.NextDouble(), (float)random.NextDouble() }, 1);
@@ -1062,8 +1062,11 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                     Border border = new()
                     {
                         Width = 25,
-                        Background = colorpicker.SelectColor
+                        Background = colorpicker.SelectColor,
+                        ToolTip = "右击删除"
                     };
+                    ToolTipService.SetBetweenShowDelay(border, 0);
+                    ToolTipService.SetInitialShowDelay(border, 0);
                     border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
                     border.Uid = "Main";
                     MainColors.Add(border);
@@ -1073,8 +1076,11 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                     Border border = new()
                     {
                         Width = 25,
-                        Background = colorpicker.SelectColor
+                        Background = colorpicker.SelectColor,
+                        ToolTip = "右击删除"
                     };
+                    ToolTipService.SetBetweenShowDelay(border, 0);
+                    ToolTipService.SetInitialShowDelay(border, 0);
                     border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
                     border.Uid = "Fade";
                     FadeColors.Add(border);
@@ -1140,8 +1146,8 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                 {
                     string colorName = Path.GetFileNameWithoutExtension(item);
                     colorName = colorName.Substring(0, colorName.LastIndexOf('_'));
-                    BitmapImage bitmapImage = new BitmapImage(new Uri(item, UriKind.Absolute));
-                    IconCheckBoxs iconCheckBoxs = new IconCheckBoxs
+                    BitmapImage bitmapImage = new(new Uri(item, UriKind.Absolute));
+                    IconCheckBoxs iconCheckBoxs = new()
                     {
                         ContentImage = bitmapImage,
                         HeaderHeight = 25,
@@ -1188,7 +1194,10 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                 {
                     Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorValue)),
                     Width = 25,
+                    ToolTip = "右击删除"
                 };
+                ToolTipService.SetBetweenShowDelay(border, 0);
+                ToolTipService.SetInitialShowDelay(border, 0);
                 border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
                 border.Uid = "Main";
                 MainColors.Add(border);
@@ -1199,7 +1208,10 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
                 {
                     Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colorValue)),
                     Width = 25,
+                    ToolTip = "右击删除"
                 };
+                ToolTipService.SetBetweenShowDelay(border, 0);
+                ToolTipService.SetInitialShowDelay(border, 0);
                 border.MouseRightButtonUp += DeleteColorMouseRightButtonUp;
                 border.Uid = "Fade";
                 FadeColors.Add(border);
@@ -1376,30 +1388,4 @@ namespace cbhk_environment.Generators.FireworkRocketGenerator.Components
             return normal;
         }
     }
-
-    //public static class Model3DGroupExtensions
-    //{
-    //    public static void LookAt(this GeometryModel3D geometryModel3D, Point3D targetPosition)
-    //    {
-    //        // Get the center point of the GeometryModel3D object
-    //        var center = geometryModel3D.Bounds.Location + new Vector3D(geometryModel3D.Bounds.SizeX / 2, geometryModel3D.Bounds.SizeY / 2, geometryModel3D.Bounds.SizeZ / 2);
-
-    //        // Calculate the transformation matrix
-    //        var zAxis = targetPosition - center;
-    //        zAxis.Normalize();
-    //        var xAxis = Vector3D.CrossProduct(zAxis, new Vector3D(0, 1, 0));
-    //        xAxis.Normalize();
-    //        var yAxis = Vector3D.CrossProduct(xAxis, zAxis);
-    //        yAxis.Normalize();
-
-    //        var matrix = new Matrix3D(
-    //            xAxis.X, yAxis.X, zAxis.X, 0,
-    //            xAxis.Y, yAxis.Y, zAxis.Y, 0,
-    //            xAxis.Z, yAxis.Z, zAxis.Z, 0,
-    //            0, 0, 0, 1);
-
-    //        // Apply the transformation
-    //        geometryModel3D.Transform = new MatrixTransform3D(matrix);
-    //    }
-    //}
 }

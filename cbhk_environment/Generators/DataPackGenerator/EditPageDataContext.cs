@@ -1,9 +1,10 @@
 ﻿using cbhk_environment.CustomControls;
 using cbhk_environment.GeneralTools;
-using cbhk_environment.Generators.DataPackGenerator.Components;
+using cbhk_environment.Generators.DataPackGenerator.Components.EditPage;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ICSharpCode.AvalonEdit;
+using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -38,6 +39,15 @@ namespace cbhk_environment.Generators.DataPackGenerator
         public ObservableCollection<TreeViewItem> DatapackTreeViewItems { get; set; } = new();
         #endregion
 
+        #region 文本编辑器标签页容器可见性
+        private Visibility functionModifyTabControlVisibility = Visibility.Visible;
+        public Visibility FunctionModifyTabControlVisibility
+        {
+            get => functionModifyTabControlVisibility;
+            set => SetProperty(ref functionModifyTabControlVisibility,value);
+        }
+        #endregion
+
         #region 当前选中的文本编辑器
         private RichTabItems selectedFileItem = null;
         public RichTabItems SelectedFileItem
@@ -47,13 +57,10 @@ namespace cbhk_environment.Generators.DataPackGenerator
         }
         #endregion
 
-        #region 数据包管理器树引用
-        TreeView ContentView = null;
-        #endregion
-
-        #region 数据包管理器右键菜单
-        public RelayCommand AddFile { get; set; }
-        public RelayCommand AddFolder { get; set; }
+        #region 数据包管理器右键菜单指令集
+        public RelayCommand AddNewItem { get; set; }
+        public RelayCommand AddExistingItems { get; set; }
+        public RelayCommand AddNewFolder { get; set; }
         public RelayCommand Cut { get; set; }
         public RelayCommand Copy { get; set; }
         public RelayCommand Paste { get; set; }
@@ -72,7 +79,11 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// <summary>
         /// 被剪切的节点
         /// </summary>
-        RichTreeViewItems BeCutNode = null;
+        TreeViewItem BeCopyOrCutNode = null;
+        /// <summary>
+        /// 解决方案视图被选中的成员
+        /// </summary>
+        TreeViewItem SolutionViewSelectedItem { get; set; } = null;
 
         #region 画刷
         private SolidColorBrush whiteBrush = new((Color)ColorConverter.ConvertFromString("#FFFFFF"));
@@ -82,8 +93,9 @@ namespace cbhk_environment.Generators.DataPackGenerator
         public EditPageDataContext()
         {
             #region 链接指令
-            AddFile = new RelayCommand(AddFileCommand);
-            AddFolder = new RelayCommand(AddFolderCommand);
+            AddNewItem = new RelayCommand(AddItemCommand);
+            AddExistingItems = new RelayCommand(AddExistingItemsCommand);
+            AddNewFolder = new RelayCommand(AddFolderCommand);
             Cut = new RelayCommand(CutCommand);
             Copy = new RelayCommand(CopyCommand);
             Paste = new RelayCommand(PasteCommand);
@@ -127,18 +139,108 @@ namespace cbhk_environment.Generators.DataPackGenerator
             richTabItem.Content = richTextBox;
             #endregion
             #region 数据包管理器树
-            RichTreeViewItems item = new();
+            TreeViewItem item = new();
             DatapackTreeViewItems.Add(item);
-            ContentView = item.FindParent<TreeView>();
             DatapackTreeViewItems.Remove(item);
             #endregion
         }
 
         /// <summary>
-        /// 添加文件
+        /// 左侧编辑区选中标签页更新事件
         /// </summary>
-        private void AddFileCommand()
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void FunctionModifyTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            FunctionModifyTabControlVisibility = FunctionModifyTabItems.Count == 0 ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        /// <summary>
+        /// 解决方案视图选中成员更新事件
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void SolutionViewer_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            SolutionViewSelectedItem = (sender as TreeView).SelectedItem as TreeViewItem;
+        }
+
+        /// <summary>
+        /// 新建项
+        /// </summary>
+        private void AddItemCommand()
+        {
+            if(Directory.Exists(SolutionViewSelectedItem.Uid))
+            {
+                AddFileForm addFileForm = new();
+                AddFileFormDataContext context = addFileForm.DataContext as AddFileFormDataContext;
+                DatapackTreeItems header = SolutionViewSelectedItem.Header as DatapackTreeItems;
+                TreeViewItem root = addFileForm.FileTypeViewer.Items[0] as TreeViewItem;
+                foreach (TreeViewItem item in root.Items)
+                {
+                    if ((item.Uid.Contains('\\') && item.Uid.Contains(header.HeadText.Text)) || (!item.Uid.Contains('\\') && item.Uid == header.HeadText.Text))
+                    {
+                        context.DefaultSelectedNewFile = "new " + (header.HeadText.Text.EndsWith('s')? header.HeadText.Text[0..(header.HeadText.Text.Length - 1)] : header.HeadText.Text);
+                        break;
+                    }
+                }
+                if (addFileForm.ShowDialog().Value)
+                {
+                    if(File.Exists(context.SelectedNewFile.Path) && Directory.Exists(SolutionViewSelectedItem.Uid))
+                    {
+                        File.Copy(context.SelectedNewFile.Path,SolutionViewSelectedItem.Uid + "\\" + context.NewFileName);
+                        DatapackTreeItems datapackTreeItems = new();
+                        datapackTreeItems.HeadText.Text = context.NewFileName;
+                        datapackTreeItems.DatapackMarker.Visibility = Visibility.Collapsed;
+                        datapackTreeItems.Icon.Visibility = Visibility.Visible;
+                        TreeViewItem newViewItem = new()
+                        {
+                            Header = datapackTreeItems,
+                            Uid = SolutionViewSelectedItem.Uid + "\\" + context.NewFileName
+                        };
+                        newViewItem.MouseDoubleClick += DoubleClickAnalysisAndOpen;
+                        SolutionViewSelectedItem.Items.Add(newViewItem);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 现有项
+        /// </summary>
+        private void AddExistingItemsCommand()
+        {
+            Microsoft.Win32.OpenFileDialog openFileDialog = new()
+            {
+                Filter = "Json文件|*.json;|Mcfunction文件|*.mcfunction;|Mcmeta文件|*.mcmeta;",
+                DefaultExt = ".json",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyComputer),
+                Multiselect = true,
+                RestoreDirectory = true,
+                Title = "添加现有项"
+            };
+            if(openFileDialog.ShowDialog().Value && Directory.Exists(SolutionViewSelectedItem.Uid))
+            {
+                string extension;
+                foreach (string item in openFileDialog.FileNames)
+                {
+                    if(File.Exists(item))
+                    {
+                        DatapackTreeItems datapackTreeItems = new();
+                        datapackTreeItems.DatapackMarker.Visibility = Visibility.Collapsed;
+                        datapackTreeItems.Icon.Visibility = Visibility.Visible;
+                        extension = Path.GetFileNameWithoutExtension(item);
+                        if (Application.Current.Resources[extension] is DrawingImage drawingImage)
+                            datapackTreeItems.Icon.Source = drawingImage;
+                        TreeViewItem newItem = new()
+                        {
+                            Uid = SolutionViewSelectedItem.Uid + "\\" + Path.GetFileName(item),
+                            Header = datapackTreeItems
+                        };
+                        SolutionViewSelectedItem.Items.Add(newItem);
+                    };
+                }
+            }
         }
 
         /// <summary>
@@ -146,7 +248,25 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void AddFolderCommand()
         {
-
+            if(Directory.Exists(SolutionViewSelectedItem.Uid))
+            {
+                string newUid = SolutionViewSelectedItem.Uid + (SolutionViewSelectedItem.Uid.EndsWith('\\') ? "" : "\\") + "新文件夹";
+                DatapackTreeItems datapackTreeItems = new();
+                datapackTreeItems.DatapackMarker.Visibility = Visibility.Collapsed;
+                datapackTreeItems.Icon.Visibility = Visibility.Visible;
+                datapackTreeItems.Icon.Source = Application.Current.Resources["FolderClosed"] as ImageSource;
+                datapackTreeItems.HeadText.Visibility = Visibility.Collapsed;
+                datapackTreeItems.FileNameEditor.Visibility = Visibility.Visible;
+                datapackTreeItems.FileNameEditor.Focus();
+                datapackTreeItems.FileNameEditor.Text = datapackTreeItems.HeadText.Text = "新文件夹";
+                TreeViewItem folderItem = new()
+                {
+                    Uid = newUid,
+                    Header = datapackTreeItems
+                };
+                folderItem.MouseDoubleClick += DoubleClickAnalysisAndOpen;
+                SolutionViewSelectedItem.Items.Add(folderItem);
+            }
         }
 
         /// <summary>
@@ -154,8 +274,8 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void CutCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            Clipboard.SetText(richTreeViewItems.Uid);
+            Clipboard.SetText(SolutionViewSelectedItem.Uid);
+            BeCopyOrCutNode = SolutionViewSelectedItem;
             IsCuted = true;
         }
 
@@ -164,8 +284,8 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void CopyCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            Clipboard.SetText(richTreeViewItems.Uid);
+            Clipboard.SetText(SolutionViewSelectedItem.Uid);
+            BeCopyOrCutNode = SolutionViewSelectedItem;
         }
 
         /// <summary>
@@ -174,43 +294,57 @@ namespace cbhk_environment.Generators.DataPackGenerator
         private void PasteCommand()
         {
             string path = Clipboard.GetText();
-            RichTreeViewItems selectedItem = ContentView.SelectedItem as RichTreeViewItems;
-            if (!Directory.Exists(selectedItem.Uid) && File.Exists(selectedItem.Uid) && selectedItem.Parent != null)
-                selectedItem = selectedItem.Parent as RichTreeViewItems;
-            if (Directory.Exists(path) || File.Exists(path))
+            TreeViewItem currentParent;
+            if (!Directory.Exists(SolutionViewSelectedItem.Uid) && File.Exists(SolutionViewSelectedItem.Uid) && SolutionViewSelectedItem.Parent is TreeViewItem)
+                currentParent = SolutionViewSelectedItem.Parent as TreeViewItem;
+            else
+                currentParent = SolutionViewSelectedItem;
+            if ((Directory.Exists(path) || File.Exists(path)) && path != currentParent.Uid)
             {
                 if (IsCuted)
                 {
                     //移动被剪切的节点到当前节点的子级
-                    if(BeCutNode != null && BeCutNode.Parent != null)
+                    if(BeCopyOrCutNode != null && BeCopyOrCutNode.Parent != null)
                     {
-                        if (BeCutNode.Parent is RichTreeViewItems beCutParent)
-                            beCutParent.Items.Remove(BeCutNode);
+                        #region 操作被剪切的节点
+                        if (BeCopyOrCutNode.Parent is TreeViewItem beCutParent)
+                            beCutParent.Items.Remove(BeCopyOrCutNode);
                         else
-                            ContentView.Items.Remove(BeCutNode);
-                        selectedItem.Items.Add(BeCutNode);
+                        {
+                            TreeView parent = BeCopyOrCutNode.Parent as TreeView;
+                            parent.Items.Remove(BeCopyOrCutNode);
+                        }
+                        currentParent.Items.Add(BeCopyOrCutNode);
+                        #endregion
 
+                        //更新本地磁盘的文件
+                        File.Move(path,currentParent.Uid + Path.GetFileName(path));
+
+                        #region 更新编辑区文件的UID路径数据
                         foreach (RichTabItems tab in FunctionModifyTabItems)
                         {
                             if (tab.Uid == path)
                             {
-                                if (!Directory.Exists(selectedItem.Uid))
-                                    Directory.CreateDirectory(selectedItem.Uid);
-                                tab.Uid = selectedItem.Uid + "\\" + tab.Header.ToString();
+                                if (!Directory.Exists(SolutionViewSelectedItem.Uid))
+                                    Directory.CreateDirectory(SolutionViewSelectedItem.Uid);
+                                tab.Uid = SolutionViewSelectedItem.Uid + "\\" + tab.Header.ToString();
                                 break;
                             }
                         }
+                        #endregion
                     }
                     IsCuted = false;
                 }
                 else
                 {
-                    RichTreeViewItems richTreeViewItems = new RichTreeViewItems()
+                    TreeViewItem treeViewItem = new()
                     {
                         Uid = path,
-                        Tag = ContentReader.ContentType.UnKnown
+                        Header = BeCopyOrCutNode.Header
                     };
-                    ContentReader.ContentType contentType = ContentReader.ContentType.UnKnown;
+                    SolutionViewSelectedItem.Items.Add(treeViewItem);
+                    //复制本地磁盘的文件
+                    File.Copy(path, currentParent.Uid + Path.GetFileName(path));
                 }
             }
         }
@@ -220,7 +354,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void CopyFullPathCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
+            Clipboard.SetText(SolutionViewSelectedItem.Uid);
         }
 
         /// <summary>
@@ -228,7 +362,10 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void OpenWithResourceManagementCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
+            if (File.Exists(SolutionViewSelectedItem.Uid))
+                OpenFolderThenSelectFiles.ExplorerFile(SolutionViewSelectedItem.Uid);
+            else
+                Process.Start("explorer.exe",SolutionViewSelectedItem.Uid);
         }
 
         /// <summary>
@@ -236,25 +373,25 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void ExcludeFromProjectCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
             #region 编辑区对应标签页改为未保存
             foreach (RichTabItems tab in FunctionModifyTabItems)
             {
-                if (tab.Uid == richTreeViewItems.Uid)
+                if (tab.Uid == SolutionViewSelectedItem.Uid)
                 {
                     tab.IsContentSaved = false;
                     break;
                 }
             }
             #endregion
-            if (richTreeViewItems.Parent != null)
+            if (SolutionViewSelectedItem.Parent != null)
             {
-                RichTreeViewItems parent = richTreeViewItems.Parent as RichTreeViewItems;
-                parent.Items.Remove(richTreeViewItems);
+                TreeViewItem parent = SolutionViewSelectedItem.Parent as TreeViewItem;
+                parent.Items.Remove(SolutionViewSelectedItem);
             }
             else
             {
-                ContentView.Items.Remove(ContentView.SelectedItem);
+                TreeView parent = SolutionViewSelectedItem.Parent as TreeView;
+                parent.Items.Remove(SolutionViewSelectedItem);
             }
         }
 
@@ -263,8 +400,7 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void OpenWithTerminalCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            //TemplateItems templateItems = richTreeViewItems.Header as TemplateItems;
+            //TemplateItems templateItems = TreeViewItem.Header as TemplateItems;
             //if(Directory.Exists(templateItems.Uid))
             //Process.Start(@"explorer.exe", "cd " + templateItems.Uid);
         }
@@ -274,14 +410,12 @@ namespace cbhk_environment.Generators.DataPackGenerator
         /// </summary>
         private void DeleteCommand()
         {
-            RichTreeViewItems richTreeViewItems = ContentView.SelectedItem as RichTreeViewItems;
-            //TemplateItems templateItems = richTreeViewItems.Header as TemplateItems;
-            #region 删除文件
-            if (Directory.Exists(richTreeViewItems.Uid))
-                Directory.Delete(richTreeViewItems.Uid, true);
+            #region 删除文件或文件夹
+            if (Directory.Exists(SolutionViewSelectedItem.Uid))
+                Directory.Delete(SolutionViewSelectedItem.Uid, true);
             else
-                if(File.Exists(richTreeViewItems.Uid))
-                File.Delete(richTreeViewItems.Uid);
+                if(File.Exists(SolutionViewSelectedItem.Uid))
+                File.Delete(SolutionViewSelectedItem.Uid);
             #endregion
             //删除右侧树视图中对应的节点
             ExcludeFromProjectCommand();

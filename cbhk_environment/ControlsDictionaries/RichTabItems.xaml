@@ -9,11 +9,31 @@
     <LocalContext:RichTabItemsSaveMarkVisibilityController x:Key="SaveMarkController" />
     <ImageBrush x:Key="CloseButtonNormal" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhite.png" />
     <ImageBrush x:Key="CloseButtonHightLight" ImageSource="/cbhk_environment;component/resources/common/images/CloseWhiteHover.png" />
-    <ImageBrush
+    <!--<ImageBrush
         x:Key="TabBack"
         ImageSource="/cbhk_environment;component/resources/common/images/TabBack.png"
         Stretch="Fill" />
-    <ImageBrush x:Key="TabFront" ImageSource="/cbhk_environment;component/resources/common/images/TabFront.png" />
+    <ImageBrush x:Key="TabFront" ImageSource="/cbhk_environment;component/resources/common/images/TabFront.png" />-->
+
+    <!--<DrawingImage x:Key="TabFront">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing>
+                    <GeometryDrawing.Geometry>
+                        M0 0L0 4L4 0L0 0z                                       M0 30L2 30L2 6L6 6L6 2L96 2L96 6L100 6L100 30L102 30L102 0L29 0C22.1599 0 7.59536 -2.78981 2.40278 2.40278C-2.91335 7.71891 0 22.962 0 30z                  M6 2L6 6L96 6L96 2L6 2z                               M2 6L2 30L6 30L6 6L2 6z                  M6 6L6 30L96 30L96 6L6 6z                  M96 6L96 30L100 30L100 6L96 6z
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="TabBack">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <ImageDrawing ImageSource="/cbhk_environment;component/resources/common/images/TabBack.png" Rect="0 0 10 10" />
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>-->
 
     <Style x:Key="RichTabItemStyle" TargetType="{x:Type CustomControls:RichTabItems}">
         <Setter Property="Foreground" Value="White" />
@@ -26,7 +46,7 @@
                     <Grid
                         x:Name="templateRoot"
                         MinHeight="20"
-                        Background="{StaticResource TabBack}"
+                        Background="Transparent"
                         RenderOptions.BitmapScalingMode="NearestNeighbor"
                         RenderOptions.ClearTypeHint="Enabled"
                         SnapsToDevicePixels="true"
@@ -36,10 +56,20 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
+                        <!--  {Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid}, Path=ActualHeight}  -->
+                        <Viewbox
+                            Grid.Column="0"
+                            Grid.ColumnSpan="3"
+                            Width="100"
+                            Height="25"
+                            Panel.ZIndex="0">
+                            <Path x:Name="background" Fill="Orange" />
+                        </Viewbox>
                         <Border
                             x:Name="mainBorder"
                             Grid.Column="0"
                             Margin="0"
+                            Panel.ZIndex="1"
                             Background="Transparent"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="0">
@@ -53,6 +83,7 @@
                         </Border>
                         <TextBlock
                             Grid.Column="1"
+                            Panel.ZIndex="1"
                             Background="Transparent"
                             Foreground="White"
                             Text="*"
@@ -61,11 +92,12 @@
                         <CustomControls:IconTextButtons
                             x:Name="closeButton"
                             Grid.Column="2"
-                            Width="15"
-                            Height="15"
+                            Width="14"
+                            Height="14"
                             Margin="0,0,5,0"
                             HorizontalContentAlignment="Center"
                             VerticalContentAlignment="Center"
+                            Panel.ZIndex="1"
                             Background="{StaticResource CloseButtonNormal}"
                             BorderThickness="0"
                             FontWeight="Normal"
@@ -240,7 +272,7 @@
                                 <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="MinWidth" Value="80" />
-                            <Setter Property="Margin" Value="0,0,2,0" />
+                            <Setter Property="Margin" Value="0,-2,0,0" />
                             <Setter TargetName="contentPresenter" Property="Margin" Value="5,2,0,0" />
                         </MultiDataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -251,9 +283,10 @@
                                 <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="true" />
                                 <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
                             </MultiDataTrigger.Conditions>
-                            <Setter TargetName="templateRoot" Property="Background" Value="{StaticResource TabFront}" />
+                            <Setter Property="MinWidth" Value="80" />
+                            <Setter TargetName="background" Property="Data" Value="" />
                             <Setter Property="Panel.ZIndex" Value="1" />
-                            <Setter Property="Margin" Value="0,-2,-2,0" />
+                            <Setter Property="Margin" Value="0,-2,0,0" />
                             <Setter TargetName="closeButton" Property="Visibility" Value="Visible" />
                             <Setter Property="FontWeight" Value="Bold" />
                         </MultiDataTrigger>

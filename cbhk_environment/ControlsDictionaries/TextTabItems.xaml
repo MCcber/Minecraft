@@ -31,13 +31,13 @@
                         <Border
                             x:Name="mainBorder"
                             Grid.Column="0"
-                            Margin="0"
+                            Margin="5,2"
                             Background="Transparent"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="0">
                             <Border
                                 x:Name="innerBorder"
-                                Margin="-1"
+                                Margin="0"
                                 Background="Transparent"
                                 BorderBrush="Transparent"
                                 BorderThickness="0"
@@ -185,8 +185,7 @@
                                 <Condition Binding="{Binding TabStripPlacement, RelativeSource={RelativeSource AncestorType={x:Type TabControl}}}" Value="Top" />
                             </MultiDataTrigger.Conditions>
                             <Setter Property="MinWidth" Value="80" />
-                            <Setter TargetName="contentPresenter" Property="Margin" Value="0,2,0,0" />
-                            <Setter TargetName="templateRoot" Property="Width" Value="Auto" />
+                            <Setter Property="Margin" Value="0,-2,0,0" />
                         </MultiDataTrigger>
                         <MultiDataTrigger>
                             <MultiDataTrigger.Conditions>

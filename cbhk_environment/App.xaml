@@ -6,6 +6,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/ConciseComboBoxItem.xaml" />
+                <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/ConciseListBoxItem.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/WindowDictionaries/TheCommonWindow.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/ListBoxWithScrollViewer.xaml" />
                 <ResourceDictionary Source="/cbhk_environment;component/ControlsDictionaries/TextBoxDefaultStyle.xaml" />

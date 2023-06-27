@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 
 namespace cbhk_environment.Generators.ItemGenerator.Components
 {
@@ -47,10 +48,9 @@ namespace cbhk_environment.Generators.ItemGenerator.Components
         /// <param name="e"></param>
         private void IconTextButtons_Click(object sender, RoutedEventArgs e)
         {
-            ItemsControl parent = this.FindParent<ItemsControl>();
-            ObservableCollection<EnchantmentItems> canDestroyItems = parent.ItemsSource as ObservableCollection<EnchantmentItems>;
+            StackPanel parent = this.FindParent<StackPanel>();
             //删除自己
-            canDestroyItems.Remove(this);
+            parent.Children.Remove(this);
             parent.FindParent<Accordion>().FindChild<IconButtons>().Focus();
         }
     }

@@ -39,29 +39,15 @@ namespace cbhk_signin
         private string userPassword = "";
         public string UserPassword
         {
-            get
-            {
-                return userPassword;
-            }
-            set
-            {
-                userPassword = value;
-                OnPropertyChanged();
-            }
+            get => userPassword; 
+            set => SetProperty(ref userPassword, value);
         }
 
         private string userAccount = "";
         public string UserAccount
         {
-            get
-            {
-                return userAccount;
-            }
-            set
-            {
-                userAccount = value;
-                OnPropertyChanged();
-            }
+            get => userAccount; 
+            set => SetProperty(ref userAccount, value);
         }
         #endregion
 
@@ -69,33 +55,15 @@ namespace cbhk_signin
         private bool saveUserPassword = false;
         public bool SaveUserPassword
         {
-            get
-            {
-                return saveUserPassword;
-            }
-            set
-            {
-                saveUserPassword = value;
-                if (saveUserPassword)
-                {
-                    SaveUserAccount = saveUserPassword;
-                }
-                OnPropertyChanged();
-            }
+            get => saveUserPassword; 
+            set => SetProperty(ref saveUserPassword, value);
         }
 
         private bool saveUserAccount = false;
         public bool SaveUserAccount
         {
-            get
-            {
-                return saveUserAccount;
-            }
-            set
-            {
-                saveUserAccount = value;
-                OnPropertyChanged();
-            }
+            get => saveUserAccount;
+            set => SetProperty(ref saveUserAccount, value);
         }
         #endregion
 
@@ -103,14 +71,8 @@ namespace cbhk_signin
         private bool isOpenSignIn = true;
         public bool IsOpenSignIn
         {
-            get
-            {
-                return isOpenSignIn;
-            }
-            set
-            {
-                isOpenSignIn = value;
-            }
+            get => isOpenSignIn;
+            set => SetProperty(ref isOpenSignIn, value);
         }
         #endregion
 
@@ -170,25 +132,25 @@ namespace cbhk_signin
         {
             FrontWindow = sender as Window;
             //自动登录
-            //SignInTimer.Tick += ThreadTimerCallback;
-            //SignInTimer.IsEnabled = SaveUserPassword;
-            //IsOpenSignIn = !SaveUserPassword;
-            //if (Environment.OSVersion.Version.Major < 10)
-            //{
-            //    cbhk_environment.GeneralTools.Information.MessageDisplayer messageBox = new();
-            //    messageBox.ShowDialog();
-            //}
+            SignInTimer.Tick += ThreadTimerCallback;
+            SignInTimer.IsEnabled = SaveUserPassword;
+            IsOpenSignIn = !SaveUserPassword;
+            if (Environment.OSVersion.Version.Major < 10)
+            {
+                cbhk_environment.GeneralTools.Information.MessageDisplayer messageBox = new();
+                messageBox.ShowDialog();
+            }
 
             #region 调试
-            FrontWindow.ShowInTaskbar = false;
-            FrontWindow.WindowState = WindowState.Minimized;
-            FrontWindow.Opacity = 0;
-            cbhk_environment.MainWindow CBHK = new(StatsUserInfomation())
-            {
-                Topmost = true
-            };
-            CBHK.Show();
-            CBHK.Topmost = false;
+            //FrontWindow.ShowInTaskbar = false;
+            //FrontWindow.WindowState = WindowState.Minimized;
+            //FrontWindow.Opacity = 0;
+            //cbhk_environment.MainWindow CBHK = new(StatsUserInfomation())
+            //{
+            //    Topmost = true
+            //};
+            //CBHK.Show();
+            //CBHK.Topmost = false;
             #endregion
         }
 
@@ -247,6 +209,7 @@ namespace cbhk_signin
         /// </summary>
         private async void SignInCommand()
         {
+            IsOpenSignIn = false;
             Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "resources\\signin_configs");
             if (UserAccount.Trim() == "")
             {
@@ -276,10 +239,8 @@ namespace cbhk_signin
                 if (!File.Exists(AppDomain.CurrentDomain.BaseDirectory + "resources\\signin_configs\\user_info.ini"))
                     File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "resources\\signin_configs\\user_info.ini").Close();
 
-                using (FileStream name_pwd_stream = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "resources\\signin_configs\\user_info.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite))
-                {
-                    name_pwd_stream.Write(user_pwd_bytes, 0, user_pwd_bytes.Length);
-                }
+                using FileStream name_pwd_stream = new(AppDomain.CurrentDomain.BaseDirectory + "resources\\signin_configs\\user_info.ini", FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                name_pwd_stream.Write(user_pwd_bytes, 0, user_pwd_bytes.Length);
             }
             #endregion
 
@@ -324,6 +285,7 @@ namespace cbhk_signin
             else
                 MessageBox.Show(result["message"].ToString());
             #endregion
+            IsOpenSignIn = false;
         }
 
         /// <summary>
@@ -331,7 +293,7 @@ namespace cbhk_signin
         /// </summary>
         private void ForgotPasswordCommand()
         {
-            Process.Start("https://mc.metamo.cn/u/login/");
+            Process.Start("explorer.exe", "https://mc.metamo.cn/u/login/");
         }
         #endregion
 
@@ -342,7 +304,7 @@ namespace cbhk_signin
         /// <param name="e"></param>
         public void UserAccountBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && IsOpenSignIn)
                 SignInCommand();
         }
 
@@ -353,7 +315,7 @@ namespace cbhk_signin
         /// <param name="e"></param>
         public void UserPasswordBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && IsOpenSignIn)
                 SignInCommand();
         }
     }

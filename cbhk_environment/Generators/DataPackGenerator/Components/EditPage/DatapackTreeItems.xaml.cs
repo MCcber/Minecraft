@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace cbhk_environment.Generators.DataPackGenerator.Components.EditPage
 {
@@ -23,6 +12,18 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components.EditPage
         public DatapackTreeItems()
         {
             InitializeComponent();
+            FileNameEditor.KeyDown += FileNameEditor_KeyDown;
+        }
+
+        private void FileNameEditor_KeyDown(object sender, KeyEventArgs e)
+        {
+            TreeViewItem parent = Parent as TreeViewItem;
+            int oldNameIndex = parent.Uid.LastIndexOf(HeadText.Text);
+            HeadText.Text = FileNameEditor.Text;
+            HeadText.Visibility = Visibility.Visible;
+            FileNameEditor.Visibility = Visibility.Collapsed;
+            parent.Uid = parent.Uid[0..oldNameIndex];
+            parent.Uid += FileNameEditor.Text;
         }
     }
 }

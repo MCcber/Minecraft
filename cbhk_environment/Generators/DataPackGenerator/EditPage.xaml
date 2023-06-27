@@ -38,9 +38,9 @@
                 </MenuItem.Icon>
                 <MenuItem
                     Background="#2F2F2F"
-                    Command="{Binding AddFile}"
+                    Command="{Binding AddNewItem}"
                     Foreground="White"
-                    Header="添加文件">
+                    Header="新建项">
                     <MenuItem.Icon>
                         <Image
                             RenderOptions.BitmapScalingMode="HighQuality"
@@ -50,9 +50,21 @@
                 </MenuItem>
                 <MenuItem
                     Background="#2F2F2F"
-                    Command="{Binding AddFolder}"
+                    Command="{Binding AddExistingItems}"
                     Foreground="White"
-                    Header="添加文件夹">
+                    Header="现有项">
+                    <MenuItem.Icon>
+                        <Image
+                            RenderOptions.BitmapScalingMode="HighQuality"
+                            RenderOptions.ClearTypeHint="Enabled"
+                            Source="{StaticResource NewFile}" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem
+                    Background="#2F2F2F"
+                    Command="{Binding AddNewFolder}"
+                    Foreground="White"
+                    Header="新建文件夹">
                     <MenuItem.Icon>
                         <Image
                             RenderOptions.BitmapScalingMode="HighQuality"
@@ -113,7 +125,7 @@
                 Background="#2F2F2F"
                 Command="{Binding OpenWithResourceManagement}"
                 Foreground="White"
-                Header="在文件资源管理器中打开此文件夹">
+                Header="在文件资源管理器中打开">
                 <MenuItem.Icon>
                     <Image
                         RenderOptions.BitmapScalingMode="HighQuality"
@@ -888,7 +900,14 @@
             ItemsSource="{Binding FunctionModifyTabItems}"
             SelectedIndex="0"
             SelectedItem="{Binding SelectedFileItem, Mode=TwoWay}"
-            Style="{DynamicResource TabControlWithScrollBar}" />
+            Style="{DynamicResource TabControlWithScrollBar}"
+            Visibility="{Binding FunctionModifyTabControlVisibility, Mode=OneWay}">
+            <behavior:Interaction.Triggers>
+                <behavior:EventTrigger EventName="SelectionChanged">
+                    <behavior:CallMethodAction MethodName="FunctionModifyTabControl_SelectionChanged" TargetObject="{Binding}" />
+                </behavior:EventTrigger>
+            </behavior:Interaction.Triggers>
+        </TabControl>
         <GridSplitter
             Grid.Row="1"
             Grid.Column="1"
@@ -909,15 +928,18 @@
                 VerticalAlignment="Center"
                 FontSize="15"
                 Foreground="White"
-                Text="数据包管理器" />
+                Text="解决方案管理器" />
             <TextBox
                 Grid.Row="1"
                 Margin="0,5,0,0"
+                Padding="2,0,0,0"
                 VerticalAlignment="Stretch"
                 HorizontalContentAlignment="Left"
+                VerticalContentAlignment="Center"
                 BorderBrush="#424242"
                 BorderThickness="1"
                 CaretBrush="White"
+                FontSize="15"
                 Foreground="White"
                 Text="{Binding DatapackSeacherValue, Mode=OneWayToSource}">
                 <TextBox.Resources>
@@ -993,7 +1015,13 @@
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                 Style="{DynamicResource TreeViewWithScrollBar}"
                 VirtualizingStackPanel.IsVirtualizing="True"
-                VirtualizingStackPanel.VirtualizationMode="Recycling" />
+                VirtualizingStackPanel.VirtualizationMode="Recycling">
+                <behavior:Interaction.Triggers>
+                    <behavior:EventTrigger EventName="SelectedItemChanged">
+                        <behavior:CallMethodAction MethodName="SolutionViewer_SelectedItemChanged" TargetObject="{Binding}" />
+                    </behavior:EventTrigger>
+                </behavior:Interaction.Triggers>
+            </TreeView>
         </Grid>
     </Grid>
 </Page>

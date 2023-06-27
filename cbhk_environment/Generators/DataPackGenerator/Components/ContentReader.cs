@@ -105,7 +105,7 @@ namespace cbhk_environment.Generators.DataPackGenerator.Components
         /// <summary>
         /// 判断读取内容的类型
         /// </summary>
-        private static ContentType JudgeTheTypeOfReadContent(string path)
+        public static ContentType JudgeTheTypeOfReadContent(string path)
         {
             ContentType result = ContentType.UnKnown;
 

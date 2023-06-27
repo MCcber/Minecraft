@@ -137,7 +137,10 @@ namespace cbhk_environment.CustomControls
                 Style selectedItemStyle = select_item.Style;
                 string selectedItemHeaderText = select_item.Header.ToString();
                 string currentItemHeaderText = current_item.Header.ToString();
-                if (select_index != current_index && select_index != -1 && current_index != -1)
+                TabControl selectItemParent = select_item.FindParent<TabControl>();
+                TabControl currentItemParent = current_item.FindParent<TabControl>();
+                if (!Equals(selectItemParent, currentItemParent)) return;
+                if (select_index != current_index && select_index != -1 && current_index != -1 && current_index >= 0)
                 {
                     TabControl current_parent = (sender as RichTabItems).FindParent<TabControl>();
                     if (select_item != null && current_item != null && current_index != -1 && select_index != -1)
